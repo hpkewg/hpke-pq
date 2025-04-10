@@ -2,13 +2,13 @@
 
 
 
-HPKE Working Group                                            Y. N. Here
-Internet-Draft                                    Your Organization Here
-Intended status: Informational                             10 April 2025
+HPKE Working Group                                          R. L. Barnes
+Internet-Draft                                                     Cisco
+Intended status: Standards Track                           10 April 2025
 Expires: 12 October 2025
 
 
-                           TODO - Your title
+  Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
                       draft-barnes-hpke-pq-latest
 
 Abstract
@@ -108,6 +108,6 @@ Acknowledgments
 
 Author's Address
 
-   Your Name Here
-   Your Organization Here
-   Email: your.email@example.com
+   Richard L. Barnes
+   Cisco
+   Email: rlb@ipv.sx
