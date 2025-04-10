@@ -107,11 +107,11 @@ Table of Contents
    It is thus a high priority for many organizations right not to
    migrate key exchange technologies to use "post-quantum" (PQ)
    algorithms, which are resistant to attack by a quantum computer
-   [I-D.ietf-pquip-engineers].  Since these PQ algorithms are relatively
-   new, there is also interest in hybrid constructions combining PQ
-   algorithms with traditional KEMs, so that if the PQ algorithm fails,
-   then the traditional algorithm will still provide security, at least
-   against classical attacks.
+   [I-D.ietf-pquip-pqc-engineers].  Since these PQ algorithms are
+   relatively new, there is also interest in hybrid constructions
+   combining PQ algorithms with traditional KEMs, so that if the PQ
+   algorithm fails, then the traditional algorithm will still provide
+   security, at least against classical attacks.
 
    Hybrid Public Key Encryption (HPKE) is a widely-used public key
    encryption scheme based on combining a Key Encapsulation Mechanism
@@ -202,7 +202,7 @@ Table of Contents
    quantum attacker, i.e., a PQ KEM.  The KEM algorithms defined in this
    document provide this level of security.  ML-KEM itself is IND-CCA2
    secure, and the IND-CCA2 security of the hybrid constructions used in
-   this document is established in [I-D.irtf-cfrg-kem-combiners].
+   this document is established in [I-D.irtf-cfrg-hybrid-kems].
 
    [[ TODO: Binding properties ]]
 
@@ -233,8 +233,12 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-barnes-hpke-
               hpke-00>.
 
-   [I-D.irtf-cfrg-kem-combiners]
-              "*** BROKEN REFERENCE ***".
+   [I-D.irtf-cfrg-hybrid-kems]
+              Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
+              Work in Progress, Internet-Draft, draft-irtf-cfrg-hybrid-
+              kems-03, 25 February 2025,
+              <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
+              hybrid-kems-03>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -251,8 +255,13 @@ Table of Contents
 
 9.2.  Informative References
 
-   [I-D.ietf-pquip-engineers]
-              "*** BROKEN REFERENCE ***".
+   [I-D.ietf-pquip-pqc-engineers]
+              Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
+              T., and M. Ounsworth, "Post-Quantum Cryptography for
+              Engineers", Work in Progress, Internet-Draft, draft-ietf-
+              pquip-pqc-engineers-09, 13 February 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
+              pqc-engineers-09>.
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS

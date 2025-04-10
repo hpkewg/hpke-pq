@@ -1226,7 +1226,7 @@ for any information observed by the attacker previously, and stored for later
 decryption.  This is the so-called "harvest now, decrypt later" attack.<a href="#section-1-1" class="pilcrow">¶</a></p>
 <p id="section-1-2">It is thus a high priority for many organizations right not to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
-to attack by a quantum computer <span>[<a href="#I-D.ietf-pquip-engineers" class="cite xref">I-D.ietf-pquip-engineers</a>]</span>.  Since these PQ
+to attack by a quantum computer <span>[<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
 combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
 fails, then the traditional algorithm will still provide security, at least
@@ -1341,7 +1341,7 @@ that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
 provides IND-CCA2 security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA2 secure, and the IND-CCA2 security of the hybrid constructions
-used in this document is established in <span>[<a href="#I-D.irtf-cfrg-kem-combiners" class="cite xref">I-D.irtf-cfrg-kem-combiners</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+used in this document is established in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">[[ TODO: Binding properties ]]<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1377,9 +1377,9 @@ used in this document is established in <span>[<a href="#I-D.irtf-cfrg-kem-combi
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-barnes-hpke-hpke-00</span>, <time datetime="2025-03-20" class="refDate">20 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.irtf-cfrg-kem-combiners">[I-D.irtf-cfrg-kem-combiners]</dt>
+<dt id="I-D.irtf-cfrg-hybrid-kems">[I-D.irtf-cfrg-hybrid-kems]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Connolly, D.</span>, <span class="refTitle">"Hybrid PQ/T Key Encapsulation Mechanisms"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hybrid-kems-03</span>, <time datetime="2025-02-25" class="refDate">25 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -1402,9 +1402,9 @@ used in this document is established in <span>[<a href="#I-D.irtf-cfrg-kem-combi
 <a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
-<dt id="I-D.ietf-pquip-engineers">[I-D.ietf-pquip-engineers]</dt>
+<dt id="I-D.ietf-pquip-pqc-engineers">[I-D.ietf-pquip-pqc-engineers]</dt>
         <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
+<span class="refAuthor">Banerjee, A.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Schoinianakis, D.</span>, <span class="refAuthor">Hollebeek, T.</span>, and <span class="refAuthor">M. Ounsworth</span>, <span class="refTitle">"Post-Quantum Cryptography for Engineers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-pquip-pqc-engineers-09</span>, <time datetime="2025-02-13" class="refDate">13 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-09">https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-09</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
         <dd>
