@@ -1,20 +1,20 @@
 ---
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-category: info
+title: "Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE"
+abbrev: "PQ HPKE"
+category: std
 
 docname: draft-barnes-hpke-pq-latest
-submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
+submissiontype: IETF
 number:
 date:
 consensus: true
 v: 3
-area: ""
+area: SEC
 workgroup: "HPKE Publication, Kept Efficient"
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - hybrid public key encryption
+ - hpke
+ - post-quantum
 venue:
   group: "HPKE Publication, Kept Efficient"
   type: ""
