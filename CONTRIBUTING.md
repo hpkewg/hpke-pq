@@ -20,7 +20,7 @@ subject to a Simplified BSD License) in Contributions.
 ## Working Group Information
 
 Discussion of this work occurs on the [HPKE Publication, Kept Efficient
- mailing list](mailto:hpke@ietf.org)
+Working Group mailing list](mailto:hpke@ietf.org)
 ([archive](https://mailarchive.ietf.org/arch/browse/hpke),
 [subscribe](https://mailman3.ietf.org/mailman3/lists/hpke.ietf.org/)).
 In addition to contributions in GitHub, you are encouraged to participate in
@@ -30,4 +30,4 @@ discussions there.
 technical issues needs to occur on the mailing list.
 
 You might also like to familiarize yourself with other
-[ documents](https://datatracker.ietf.org/wg/hpke/documents/).
+[Working Group documents](https://datatracker.ietf.org/wg/hpke/documents/).

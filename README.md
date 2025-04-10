@@ -1,8 +1,8 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# TODO - Your title
+# Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
 
-This is the working area for the individual Internet-Draft, "TODO - Your title".
+This is the working area for the individual Internet-Draft, "Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE".
 
 * [Editor's Copy](https://hpkewg.github.io/hpke-pq/#go.draft-barnes-hpke-pq.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-barnes-hpke-pq)
