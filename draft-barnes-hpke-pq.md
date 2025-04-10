@@ -65,7 +65,7 @@ decryption.  This is the so-called "harvest now, decrypt later" attack.
 
 It is thus a high priority for many organizations right not to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
-to attack by a quantum computer {{?I-D.ietf-pquip-engineers}}.  Since these PQ
+to attack by a quantum computer {{?I-D.ietf-pquip-pqc-engineers}}.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
 combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
 fails, then the traditional algorithm will still provide security, at least
@@ -143,7 +143,7 @@ that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
 provides IND-CCA2 security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA2 secure, and the IND-CCA2 security of the hybrid constructions
-used in this document is established in {{!I-D.irtf-cfrg-kem-combiners}}.
+used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 [[ TODO: Binding properties ]]
 
