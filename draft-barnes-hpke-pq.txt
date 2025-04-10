@@ -4,11 +4,11 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Informational                             10 April 2025
+Intended status: Standards Track                           10 April 2025
 Expires: 12 October 2025
 
 
-                           TODO - Your title
+  Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
                       draft-barnes-hpke-pq-latest
 
 Abstract
