@@ -132,7 +132,7 @@ encapsulation key.
 ~~~ pseudocode
 def DeriveKeyPair(ikm):
     if len(ikm) != 64:
-        raise InvalidParameterException()
+        raise DeriveKeyPairError
 
     d = ikm[:32]
     z = ikm[32:]
