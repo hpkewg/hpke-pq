@@ -116,11 +116,74 @@ operaiton and a symmetric AEAD operation.  In the context of "PQ/T hybrid",
 refers to the combination of PQ and traditional KEMs.  For clarity, we always
 use "HPKE" for the former, and "PQ/T hybrid" for the latter.
 
-# Pure Post-Quantum KEMs
+# ML-KEM
 
-[[ TODO: Map ML-KEM to HPKE API, register 768 and 1024 ]]
+The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
+{{FIPS203}}.  In this section, we define how to implement the HPKE KEM interface
+using ML-KEM.
 
-# Post-Quantum/Traditional Hybrid KEMs
+The HPKE `DeriveKeyPair()` function corresponds to the function
+`ML-KEM.KeyGen_internal()` in {{FIPS203}}.  The input `ikm` MUST be exactly
+`Nsk = 64` bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal()` are
+the first and last 32-byte segments of `ikm`, respectively.  The output `skX` is
+the generated decapsulation key and the output `pkX` is the generated
+encapsulation key.
+
+~~~ pseudocode
+def DeriveKeyPair(ikm):
+    if len(ikm) != 64:
+        raise InvalidParameterException()
+
+    d = ikm[:32]
+    z = ikm[32:]
+
+    dk = ikm
+    (ek, _) = ML-KEM.KeyGen_internal(d, z)
+    return (dk, ek)
+~~~
+
+The `GenerateKeyPair()` function is simply `DeriveKeyPair()` with a pseudorandom
+`ikm` value.  As long as the bytes supplied by `random()` meet the randomness
+requirements of {{FIPS203}}, this corresponds to the `ML-KEM.KeyGen()` function,
+with the distinction that the decapsulation key is returned in seed format
+rather than the expanded form returned by `ML-KEM.KeyGen()`.
+
+~~~ pseudocode
+def GenerateKeyPair():
+    dz = random(64)
+    return DeriveKeyPair(dz)
+~~~
+
+The `SerializePublicKey()` and `DeserializePublicKey()` functions are both the
+identity function, since the ML-KEM already uses fixed-length byte strings for
+public encapsulation keys.  The length of the byte string is determined by the
+ML-KEM parameter set in use.
+
+The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
+{{FIPS203}, where an ML-KEM encapsulation key check failure causes an HPKE
+`EncapError`.
+
+The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
+{{FIPS203}, an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure cause an HPKE `DecapError`. To be explicit, we derive the
+expanded decapsulation key from the 64-byte seed format and invoke
+`ML-KEM.Decaps()` with it:
+
+~~~ pseudocode
+def Decap(enc, skR):
+    d = skR[:32]
+    z = skR[32:]
+    (_, dk) = ML-KEM.KeyGen_internal(d, z)
+    return ML-KEM.Decaps(dk, enc)
+~~~
+
+The `AuthEncap()` and `AuthDecap()` functions are not implemented.
+
+The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
+constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
+specified in {{ml-kem-iana-table}}.
+
+# Hybrids of ML-KEM with DH
 
 [[ TODO: DHKEM + ML-KEM, in appropriate combinations ]]
 
@@ -149,7 +212,35 @@ used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 # IANA Considerations
 
+This section requests that IANA perform three actions:
+
+1. Update the entries in HPKE KEM Identifiers registry corresponding to ML-KEM
+   algorithms.
+2. Add entries to the HPKE KEM Identifiers registry for the PQ/T hybrid KEMs
+   defined in this document.
+3. Add entries to the HPKE KDF Identifiers registry for the SHA-3 KDFs defined
+   in this document.
+
+## Updated ML-KEM KEM Entries
+
+IANA should replace the entries in the HPKE KEM Identifiers registry for values
+`0x0040`, `0x0041`, and `0x0042` with the following values:
+
+| Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
+| 0x0040 | ML-KEM-512  | 32       | 768  | 800  | 64  | no   | RFCXXXX   |
+| 0x0041 | ML-KEM-768  | 32       | 1088 | 1184 | 64  | no   | RFCXXXX   |
+| 0x0042 | ML-KEM-1024 | 32       | 1568 | 1568 | 64  | no   | RFCXXXX   |
+{: #ml-kem-iana-table title="Updated ML-KEM entries for the HPKE KEM Identifiers table" }
+
+The only change being made is to update the "Reference" column to refer to this
+document.
+
+## PQ/T Hybrid KEM Entries
+
 [[ TODO: Register KEM values ]]
+
+## SHA-3 KDF Entries
 
 [[ TODO: Register KDF values ]]
 
