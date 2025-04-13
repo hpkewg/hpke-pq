@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                           10 April 2025
-Expires: 12 October 2025
+Intended status: Standards Track                           13 April 2025
+Expires: 15 October 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 October 2025.
+   This Internet-Draft will expire on 15 October 2025.
 
 Copyright Notice
 
@@ -78,12 +78,15 @@ Table of Contents
 
    1.  Introduction
    2.  Conventions and Definitions
-   3.  Pure Post-Quantum KEMs
-   4.  Post-Quantum/Traditional Hybrid KEMs
+   3.  ML-KEM
+   4.  Hybrids of ML-KEM with DH
    5.  SHA-3 as an HPKE KDF
    6.  Selection of AEAD algorithms
    7.  Security Considerations
    8.  IANA Considerations
+     8.1.  Updated ML-KEM KEM Entries
+     8.2.  PQ/T Hybrid KEM Entries
+     8.3.  SHA-3 KDF Entries
    9.  References
      9.1.  Normative References
      9.2.  Informative References
@@ -172,11 +175,69 @@ Table of Contents
    traditional KEMs.  For clarity, we always use "HPKE" for the former,
    and "PQ/T hybrid" for the latter.
 
-3.  Pure Post-Quantum KEMs
+3.  ML-KEM
 
-   [[ TODO: Map ML-KEM to HPKE API, register 768 and 1024 ]]
+   The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined
+   in [FIPS203].  In this section, we define how to implement the HPKE
+   KEM interface using ML-KEM.
 
-4.  Post-Quantum/Traditional Hybrid KEMs
+   The HPKE DeriveKeyPair() function corresponds to the function ML-
+   KEM.KeyGen_internal() in [FIPS203].  The input ikm MUST be exactly
+   Nsk = 64 bytes long.  The d and z inputs to ML-KEM.KeyGen_internal()
+   are the first and last 32-byte segments of ikm, respectively.  The
+   output skX is the generated decapsulation key and the output pkX is
+   the generated encapsulation key.
+
+   def DeriveKeyPair(ikm):
+       if len(ikm) != 64:
+           raise InvalidParameterException()
+
+       d = ikm[:32]
+       z = ikm[32:]
+
+       dk = ikm
+       (ek, _) = ML-KEM.KeyGen_internal(d, z)
+       return (dk, ek)
+
+   The GenerateKeyPair() function is simply DeriveKeyPair() with a
+   pseudorandom ikm value.  As long as the bytes supplied by random()
+   meet the randomness requirements of [FIPS203], this corresponds to
+   the ML-KEM.KeyGen() function, with the distinction that the
+   decapsulation key is returned in seed format rather than the expanded
+   form returned by ML-KEM.KeyGen().
+
+   def GenerateKeyPair():
+       dz = random(64)
+       return DeriveKeyPair(dz)
+
+   The SerializePublicKey() and DeserializePublicKey() functions are
+   both the identity function, since the ML-KEM already uses fixed-
+   length byte strings for public encapsulation keys.  The length of the
+   byte string is determined by the ML-KEM parameter set in use.
+
+   The Encap() function corresponds to the function ML-KEM.Encaps() in
+   [FIPS203], where an ML-KEM encapsulation key check failure causes an
+   HPKE EncapError.
+
+   The Decap() function corresponds to the function ML-KEM.Decaps() in
+   [FIPS203], an ML-KEM ciphertext check failure, decapsulation key
+   check failure, or hash check failure cause an HPKE DecapError.  To be
+   explicit, we derive the expanded decapsulation key from the 64-byte
+   seed format and invoke ML-KEM.Decaps() with it:
+
+   def Decap(enc, skR):
+       d = skR[:32]
+       z = skR[32:]
+       (_, dk) = ML-KEM.KeyGen_internal(d, z)
+       return ML-KEM.Decaps(dk, enc)
+
+   The AuthEncap() and AuthDecap() functions are not implemented.
+
+   The constants Nsecret and Nsk are always 32 and 64, respectively.
+   The constants Nenc and Npk depend on the ML-KEM parameter set in use;
+   they are specified in Table 1.
+
+4.  Hybrids of ML-KEM with DH
 
    [[ TODO: DHKEM + ML-KEM, in appropriate combinations ]]
 
@@ -208,7 +269,42 @@ Table of Contents
 
 8.  IANA Considerations
 
+   This section requests that IANA perform three actions:
+
+   1.  Update the entries in HPKE KEM Identifiers registry corresponding
+       to ML-KEM algorithms.
+
+   2.  Add entries to the HPKE KEM Identifiers registry for the PQ/T
+       hybrid KEMs defined in this document.
+
+   3.  Add entries to the HPKE KDF Identifiers registry for the SHA-3
+       KDFs defined in this document.
+
+8.1.  Updated ML-KEM KEM Entries
+
+   IANA should replace the entries in the HPKE KEM Identifiers registry
+   for values 0x0040, 0x0041, and 0x0042 with the following values:
+
+    +========+=============+=========+====+====+===+======+===========+
+    | Value  | KEM         | Nsecret |Nenc|Npk |Nsk| Auth | Reference |
+    +========+=============+=========+====+====+===+======+===========+
+    | 0x0040 | ML-KEM-512  | 32      |768 |800 |64 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0041 | ML-KEM-768  | 32      |1088|1184|64 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0042 | ML-KEM-1024 | 32      |1568|1568|64 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+
+     Table 1: Updated ML-KEM entries for the HPKE KEM Identifiers table
+
+   The only change being made is to update the "Reference" column to
+   refer to this document.
+
+8.2.  PQ/T Hybrid KEM Entries
+
    [[ TODO: Register KEM values ]]
+
+8.3.  SHA-3 KDF Entries
 
    [[ TODO: Register KDF values ]]
 
