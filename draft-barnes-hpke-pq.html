@@ -1325,7 +1325,7 @@ encapsulation key.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <pre>
 def DeriveKeyPair(ikm):
     if len(ikm) != 64:
-        raise InvalidParameterException()
+        raise DeriveKeyPairError
 
     d = ikm[:32]
     z = ikm[32:]
