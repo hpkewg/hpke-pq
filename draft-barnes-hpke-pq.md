@@ -185,9 +185,11 @@ specified in {{ml-kem-iana-table}}.
 
 # Hybrids of ML-KEM with DH
 
-[[ TODO: DHKEM + ML-KEM, in appropriate combinations ]]
+[[ TODO: DH + ML-KEM, in appropriate combinations ]]
 
-[[ TODO: Define HPKE API methods for the combination (just concatenating) ]]
+[[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+
+[[ TODO: Define HPKE API methods for the combination ]]
 
 # SHA-3 as an HPKE KDF
 
