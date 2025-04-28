@@ -31,6 +31,7 @@ author:
 
 normative:
     FIPS186: DOI.10.6028/NIST.FIPS.186-5
+    FIPS202: DOI.10.6028/NIST.FIPS.202
     FIPS203: DOI.10.6028/NIST.FIPS.203
 
 informative:
@@ -160,11 +161,11 @@ public encapsulation keys.  The length of the byte string is determined by the
 ML-KEM parameter set in use.
 
 The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
-{{FIPS203}, where an ML-KEM encapsulation key check failure causes an HPKE
+{{FIPS203}}, where an ML-KEM encapsulation key check failure causes an HPKE
 `EncapError`.
 
 The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
-{{FIPS203}, an ML-KEM ciphertext check failure, decapsulation key check failure,
+{{FIPS203}}, an ML-KEM ciphertext check failure, decapsulation key check failure,
 or hash check failure cause an HPKE `DecapError`. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
 `ML-KEM.Decaps()` with it:
@@ -191,9 +192,42 @@ specified in {{ml-kem-iana-table}}.
 
 [[ TODO: Define HPKE API methods for the combination ]]
 
-# SHA-3 as an HPKE KDF
+# Single-Stage KDFs
 
-[[ TODO: Defer until draft-ietf-hpke-hpke has a suitable definition ]]
+This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
+on Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}, and
+the related TurboSHAKE and KangarooTwelve XOFs are a defined in
+{{!I-D.irtf-cfrg-kangarootwelve}}.
+
+The `Nh` values for the KDFs defined in this section are listed in
+{{kdfid-values}}.  The `Derive()` functions for each XOF are as follows, where
+`<SIZE>` is either 128 or 256:
+
+~~~ pseudocode
+def SHAKE<SIZE>.Derive(ikm, L):
+    return SHAKE<SIZE>(M = ikm, d = 8*L)
+
+def TurboSHAKE<SIZE>.Derive(ikm, L):
+    return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
+
+def KT<SIZE>.Derive(ikm, L):
+    return KT<SIZE>(M = ikm, C = "", L)
+~~~
+{: #kdf-derive title="Definition of single-stage KDFs" }
+
+| Value  | KDF           | Nh  | Two-Stage | Reference |
+|:-------|:--------------|-----|-----------|:----------|
+| 0x0000 | Reserved      | N/A | N/A       | RFC 9180  |
+| TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
+| TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
+| TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
+| TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
+| TBD    | KT128         | 32  | N         | RFC XXXX  |
+| TBD    | KT256         | 64  | N         | RFC XXXX  |
+{: #kdfid-values title="Single-Stage KDF IDs"}
+
+[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]
 
 # Selection of AEAD algorithms
 
@@ -247,8 +281,8 @@ document.
 
 ## SHA-3 KDF Entries
 
-[[ TODO: Register KDF values ]]
-
+IANA is requested to add the values listed in {{kdfid-values}} to the HPKE KDF
+Identifiers registry.
 
 --- back
 
