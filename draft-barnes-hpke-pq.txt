@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                           13 April 2025
-Expires: 15 October 2025
+Intended status: Standards Track                           28 April 2025
+Expires: 30 October 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 15 October 2025.
+   This Internet-Draft will expire on 30 October 2025.
 
 Copyright Notice
 
@@ -239,10 +239,11 @@ Table of Contents
 
 4.  Hybrids of ML-KEM with DH
 
-   [[ TODO: DHKEM + ML-KEM, in appropriate combinations ]]
+   [[ TODO: DH + ML-KEM, in appropriate combinations ]]
 
-   [[ TODO: Define HPKE API methods for the combination (just
-   concatenating) ]]
+   [[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+
+   [[ TODO: Define HPKE API methods for the combination ]]
 
 5.  SHA-3 as an HPKE KDF
 
@@ -251,8 +252,12 @@ Table of Contents
 
 6.  Selection of AEAD algorithms
 
-   [[ TODO: Note that there's no need for new algorithms here; just use
-   the longer key lengths ]]
+   As discussed in Section 2.1 of [I-D.ietf-pquip-pqc-engineers], the
+   advent of quantum computers does not necessarily require changes in
+   the AEAD algorithms used in HPKE.  However, some compliance regimes
+   call for the use of AEAD algorithms with longer key lengths, for
+   example, the AES-256-GCM or ChaCha20Poly1305 algorithms registered
+   for HPKE instead of AES-128-GCM.
 
 7.  Security Considerations
 
