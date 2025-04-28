@@ -1391,8 +1391,7 @@ specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>
       </h2>
 <p id="section-5-1">This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
 on Keccak.  SHAKE is defined as part of the SHA-3 specification <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>, and
-the related TurboSHAKE and KangarooTwelve XOFs are a defined in
-<span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+the related TurboSHAKE XOFs is defined in <span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">The <code>Nh</code> values for the KDFs defined in this section are listed in
 <a href="#kdfid-values" class="auto internal xref">Table 1</a>.  The <code>Derive()</code> functions for each XOF are as follows, where
 <code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
@@ -1405,9 +1404,6 @@ def SHAKE&lt;SIZE&gt;.Derive(ikm, L):
 
 def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
     return TurboSHAKE&lt;SIZE&gt;(M = ikm, D = 0x1f, L)
-
-def KT&lt;SIZE&gt;.Derive(ikm, L):
-    return KT&lt;SIZE&gt;(M = ikm, C = "", L)
 </pre>
 </div>
 <figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
@@ -1461,20 +1457,6 @@ def KT&lt;SIZE&gt;.Derive(ikm, L):
           <tr>
             <td class="text-left" rowspan="1" colspan="1">TBD</td>
             <td class="text-left" rowspan="1" colspan="1">TurboSHAKE256</td>
-            <td class="text-left" rowspan="1" colspan="1">64</td>
-            <td class="text-left" rowspan="1" colspan="1">N</td>
-            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
-          </tr>
-          <tr>
-            <td class="text-left" rowspan="1" colspan="1">TBD</td>
-            <td class="text-left" rowspan="1" colspan="1">KT128</td>
-            <td class="text-left" rowspan="1" colspan="1">32</td>
-            <td class="text-left" rowspan="1" colspan="1">N</td>
-            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
-          </tr>
-          <tr>
-            <td class="text-left" rowspan="1" colspan="1">TBD</td>
-            <td class="text-left" rowspan="1" colspan="1">KT256</td>
             <td class="text-left" rowspan="1" colspan="1">64</td>
             <td class="text-left" rowspan="1" colspan="1">N</td>
             <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>

@@ -249,8 +249,8 @@ Table of Contents
 
    This section defines HPKE KDFs for three eXtendable Output Functions
    (XOF) based on Keccak.  SHAKE is defined as part of the SHA-3
-   specification [FIPS202], and the related TurboSHAKE and
-   KangarooTwelve XOFs are a defined in [I-D.irtf-cfrg-kangarootwelve].
+   specification [FIPS202], and the related TurboSHAKE XOFs is defined
+   in [I-D.irtf-cfrg-kangarootwelve].
 
    The Nh values for the KDFs defined in this section are listed in
    Table 1.  The Derive() functions for each XOF are as follows, where
@@ -261,9 +261,6 @@ Table of Contents
 
    def TurboSHAKE<SIZE>.Derive(ikm, L):
        return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
-
-   def KT<SIZE>.Derive(ikm, L):
-       return KT<SIZE>(M = ikm, C = "", L)
 
                  Figure 1: Definition of single-stage KDFs
 
@@ -279,10 +276,6 @@ Table of Contents
          | TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
          +--------+---------------+-----+-----------+-----------+
          | TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | KT128         | 32  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | KT256         | 64  | N         | RFC XXXX  |
          +--------+---------------+-----+-----------+-----------+
 
                       Table 1: Single-Stage KDF IDs
