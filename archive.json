@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-27T00:56:43.600423+00:00",
+  "timestamp": "2025-04-29T00:53:17.313796+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -50,5 +50,81 @@
     }
   ],
   "issues": [],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOOXfHTc6UMAGv",
+      "title": "Add support for single-stage KDFs",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/1",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Corresponds to https://github.com/hpkewg/hpke/pull/16\r\n\r\nNot sure we need all six of these?",
+      "createdAt": "2025-04-28T15:20:15Z",
+      "updatedAt": "2025-04-28T15:29:17Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "67f37b867da15d0b47523a1c4e05fb063063502a",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "xof",
+      "headRefOid": "88bd665942064ecffef0a3f4b3fdeb0cd9c62d21",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I guess it makes sense to keep both SHAKE and TurboSHAKE in case FIPS-y people don't like TurboSHAKE?",
+          "createdAt": "2025-04-28T15:29:16Z",
+          "updatedAt": "2025-04-28T15:29:16Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6m4Gko",
+          "commit": {
+            "abbreviatedOid": "3e1c3e1"
+          },
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-04-28T15:23:33Z",
+          "updatedAt": "2025-04-28T15:23:33Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "KT only makes sense for inputs longer than 24kB. Does HPKE ever pass such long inputs to the KDF?",
+              "createdAt": "2025-04-28T15:23:33Z",
+              "updatedAt": "2025-04-28T15:23:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6m4KCs",
+          "commit": {
+            "abbreviatedOid": "3e1c3e1"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-04-28T15:26:56Z",
+          "updatedAt": "2025-04-28T15:26:56Z",
+          "comments": [
+            {
+              "originalPosition": 58,
+              "body": "In principle, it's possible via the `info` parameter going into `KeySchedule`.  But it seems quite unlikely, and even then, there's a hard max of 64k, at least according to the current content of https://github.com/hpkewg/hpke/pull/16.  Given that, I would probably drop KT.",
+              "createdAt": "2025-04-28T15:26:56Z",
+              "updatedAt": "2025-04-28T15:26:56Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
