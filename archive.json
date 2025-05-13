@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-11T00:58:01.640309+00:00",
+  "timestamp": "2025-05-13T00:55:05.564864+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -49,7 +49,24 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 2,
+      "id": "I_kwDOOXfHTc62JNEo",
+      "title": "Choosing between PQ or PQ/T",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/2",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "> guidance on when to use ML-KEM directly versus using it within HPKE would be helpful for protocols that are currently using HPKE\n\nI don't know if we'd resolved on whether there would be a Recommended column in the registry, which is one potentially way of resolving this concern.  Absent that, some discussion of the considerations might be worthwhile.",
+      "createdAt": "2025-05-12T07:03:31Z",
+      "updatedAt": "2025-05-12T07:03:31Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": [
     {
       "number": 1,
