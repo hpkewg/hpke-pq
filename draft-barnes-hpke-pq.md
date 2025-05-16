@@ -63,7 +63,7 @@ do this not just for data encrypted after the creation of the computer, but also
 for any information observed by the attacker previously, and stored for later
 decryption.  This is the so-called "harvest now, decrypt later" attack.
 
-It is thus a high priority for many organizations right not to migrate key
+It is thus a high priority for many organizations right now to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
 to attack by a quantum computer {{?I-D.ietf-pquip-pqc-engineers}}.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
@@ -164,8 +164,8 @@ The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
 `EncapError`.
 
 The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
-{{FIPS203}, an ML-KEM ciphertext check failure, decapsulation key check failure,
-or hash check failure cause an HPKE `DecapError`. To be explicit, we derive the
+{{FIPS203}, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure causes an HPKE `DecapError`. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
 `ML-KEM.Decaps()` with it:
 
