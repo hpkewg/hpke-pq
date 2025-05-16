@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                           28 April 2025
-Expires: 30 October 2025
+Intended status: Standards Track                             16 May 2025
+Expires: 17 November 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 October 2025.
+   This Internet-Draft will expire on 17 November 2025.
 
 Copyright Notice
 
@@ -107,7 +107,7 @@ Table of Contents
    previously, and stored for later decryption.  This is the so-called
    "harvest now, decrypt later" attack.
 
-   It is thus a high priority for many organizations right not to
+   It is thus a high priority for many organizations right now to
    migrate key exchange technologies to use "post-quantum" (PQ)
    algorithms, which are resistant to attack by a quantum computer
    [I-D.ietf-pquip-pqc-engineers].  Since these PQ algorithms are
@@ -220,10 +220,10 @@ Table of Contents
    HPKE EncapError.
 
    The Decap() function corresponds to the function ML-KEM.Decaps() in
-   [FIPS203], an ML-KEM ciphertext check failure, decapsulation key
-   check failure, or hash check failure cause an HPKE DecapError.  To be
-   explicit, we derive the expanded decapsulation key from the 64-byte
-   seed format and invoke ML-KEM.Decaps() with it:
+   [FIPS203], where any of an ML-KEM ciphertext check failure,
+   decapsulation key check failure, or hash check failure causes an HPKE
+   DecapError.  To be explicit, we derive the expanded decapsulation key
+   from the 64-byte seed format and invoke ML-KEM.Decaps() with it:
 
    def Decap(enc, skR):
        d = skR[:32]
@@ -360,9 +360,9 @@ Table of Contents
               Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
               Engineers", Work in Progress, Internet-Draft, draft-ietf-
-              pquip-pqc-engineers-09, 13 February 2025,
+              pquip-pqc-engineers-11, 6 May 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
-              pqc-engineers-09>.
+              pqc-engineers-11>.
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
