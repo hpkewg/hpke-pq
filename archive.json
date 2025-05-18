@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-15T00:53:22.014975+00:00",
+  "timestamp": "2025-05-18T00:58:44.114108+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -148,6 +148,48 @@
               "updatedAt": "2025-04-28T15:26:56Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOOXfHTc6WYJ4s",
+      "title": "typos and clarifications",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/3",
+      "state": "MERGED",
+      "author": "cfm",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Just a couple of things spotted while reading through the draft.  :-)",
+      "createdAt": "2025-05-15T19:04:54Z",
+      "updatedAt": "2025-05-16T15:18:22Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "67f37b867da15d0b47523a1c4e05fb063063502a",
+      "headRepository": "cfm/hpke-pq",
+      "headRefName": "patch-1",
+      "headRefOid": "8b761450863d5a43dcda5c8bfa8bcc93f3e92e56",
+      "closedAt": "2025-05-16T15:18:22Z",
+      "mergedAt": "2025-05-16T15:18:22Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "125d207fb3d135f8a7dddef5a791db19101c81c2"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6pj1nz",
+          "commit": {
+            "abbreviatedOid": "8b76145"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-05-15T19:11:37Z",
+          "updatedAt": "2025-05-15T19:11:37Z",
+          "comments": []
         }
       ]
     }
