@@ -4,12 +4,12 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                           28 April 2025
-Expires: 30 October 2025
+Intended status: Standards Track                             1 June 2025
+Expires: 3 December 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
-                      draft-barnes-hpke-pq-latest
+                       draft-ietf-hpke-pq-latest
 
 Abstract
 
@@ -33,7 +33,7 @@ About This Document
    The latest revision of this draft can be found at
    https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html.  Status
    information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-barnes-hpke-pq/.
+   https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/.
 
    Discussion of this document takes place on the HPKE Publication, Kept
    Efficient mailing list (mailto:hpke@ietf.org), which is archived at
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 October 2025.
+   This Internet-Draft will expire on 3 December 2025.
 
 Copyright Notice
 
@@ -80,7 +80,7 @@ Table of Contents
    2.  Conventions and Definitions
    3.  ML-KEM
    4.  Hybrids of ML-KEM with DH
-   5.  Single-Stage KDFs
+   5.  SHA-3 as an HPKE KDF
    6.  Selection of AEAD algorithms
    7.  Security Considerations
    8.  IANA Considerations
@@ -235,7 +235,7 @@ Table of Contents
 
    The constants Nsecret and Nsk are always 32 and 64, respectively.
    The constants Nenc and Npk depend on the ML-KEM parameter set in use;
-   they are specified in Table 2.
+   they are specified in Table 1.
 
 4.  Hybrids of ML-KEM with DH
 
@@ -245,43 +245,10 @@ Table of Contents
 
    [[ TODO: Define HPKE API methods for the combination ]]
 
-5.  Single-Stage KDFs
+5.  SHA-3 as an HPKE KDF
 
-   This section defines HPKE KDFs for three eXtendable Output Functions
-   (XOF) based on Keccak.  SHAKE is defined as part of the SHA-3
-   specification [FIPS202], and the related TurboSHAKE XOFs is defined
-   in [I-D.irtf-cfrg-kangarootwelve].
-
-   The Nh values for the KDFs defined in this section are listed in
-   Table 1.  The Derive() functions for each XOF are as follows, where
-   <SIZE> is either 128 or 256:
-
-   def SHAKE<SIZE>.Derive(ikm, L):
-       return SHAKE<SIZE>(M = ikm, d = 8*L)
-
-   def TurboSHAKE<SIZE>.Derive(ikm, L):
-       return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
-
-                 Figure 1: Definition of single-stage KDFs
-
-         +========+===============+=====+===========+===========+
-         | Value  | KDF           | Nh  | Two-Stage | Reference |
-         +========+===============+=====+===========+===========+
-         | 0x0000 | Reserved      | N/A | N/A       | RFC 9180  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-         | TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
-         +--------+---------------+-----+-----------+-----------+
-
-                      Table 1: Single-Stage KDF IDs
-
-   [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned
-   to this document. ]]
+   [[ TODO: Defer until draft-ietf-hpke-hpke has a suitable definition
+   ]]
 
 6.  Selection of AEAD algorithms
 
@@ -333,7 +300,7 @@ Table of Contents
     | 0x0042 | ML-KEM-1024 | 32      |1568|1568|64 | no   | RFCXXXX   |
     +--------+-------------+---------+----+----+---+------+-----------+
 
-     Table 2: Updated ML-KEM entries for the HPKE KEM Identifiers table
+     Table 1: Updated ML-KEM entries for the HPKE KEM Identifiers table
 
    The only change being made is to update the "Reference" column to
    refer to this document.
@@ -344,8 +311,7 @@ Table of Contents
 
 8.3.  SHA-3 KDF Entries
 
-   IANA is requested to add the values listed in Table 1 to the HPKE KDF
-   Identifiers registry.
+   [[ TODO: Register KDF values ]]
 
 9.  References
 
@@ -355,11 +321,6 @@ Table of Contents
               Standards and Technology (U.S.),
               DOI 10.6028/nist.fips.186-5, February 2023,
               <https://doi.org/10.6028/nist.fips.186-5>.
-
-   [FIPS202]  "SHA-3 standard :: permutation-based hash and extendable-
-              output functions", National Institute of Standards and
-              Technology (U.S.), DOI 10.6028/nist.fips.202, 2015,
-              <https://doi.org/10.6028/nist.fips.202>.
 
    [FIPS203]  "Module-lattice-based key-encapsulation mechanism
               standard", National Institute of Standards and Technology
@@ -380,13 +341,6 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
               hybrid-kems-03>.
 
-   [I-D.irtf-cfrg-kangarootwelve]
-              Viguier, B., Wong, D., Van Assche, G., Dang, Q., and J.
-              Daemen, "KangarooTwelve and TurboSHAKE", Work in Progress,
-              Internet-Draft, draft-irtf-cfrg-kangarootwelve-17, 21
-              February 2025, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-kangarootwelve-17>.
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -406,9 +360,9 @@ Table of Contents
               Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
               Engineers", Work in Progress, Internet-Draft, draft-ietf-
-              pquip-pqc-engineers-09, 13 February 2025,
+              pquip-pqc-engineers-12, 19 May 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
-              pqc-engineers-09>.
+              pqc-engineers-12>.
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
@@ -417,10 +371,7 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               esni-24>.
 
-   [RFC9420]  Barnes, R., Beurdouche, B., Robert, R., Millican, J.,
-              Omara, E., and K. Cohn-Gordon, "The Messaging Layer
-              Security (MLS) Protocol", RFC 9420, DOI 10.17487/RFC9420,
-              July 2023, <https://www.rfc-editor.org/rfc/rfc9420>.
+   [RFC9420]  "*** BROKEN REFERENCE ***".
 
    [RFC9458]  Thomson, M. and C. A. Wood, "Oblivious HTTP", RFC 9458,
               DOI 10.17487/RFC9458, January 2024,
