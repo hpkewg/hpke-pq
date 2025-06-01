@@ -4,12 +4,12 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                             16 May 2025
-Expires: 17 November 2025
+Intended status: Standards Track                             1 June 2025
+Expires: 3 December 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
-                      draft-barnes-hpke-pq-latest
+                       draft-ietf-hpke-pq-latest
 
 Abstract
 
@@ -33,7 +33,7 @@ About This Document
    The latest revision of this draft can be found at
    https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html.  Status
    information for this document may be found at
-   https://datatracker.ietf.org/doc/draft-barnes-hpke-pq/.
+   https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/.
 
    Discussion of this document takes place on the HPKE Publication, Kept
    Efficient mailing list (mailto:hpke@ietf.org), which is archived at
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 November 2025.
+   This Internet-Draft will expire on 3 December 2025.
 
 Copyright Notice
 
@@ -360,9 +360,9 @@ Table of Contents
               Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
               Engineers", Work in Progress, Internet-Draft, draft-ietf-
-              pquip-pqc-engineers-11, 6 May 2025,
+              pquip-pqc-engineers-12, 19 May 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
-              pqc-engineers-11>.
+              pqc-engineers-12>.
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
