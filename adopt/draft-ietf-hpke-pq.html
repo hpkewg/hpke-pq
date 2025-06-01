@@ -1235,7 +1235,7 @@ Diffie-Hellman over finite fields or elliptic curves.  And it would be able to
 do this not just for data encrypted after the creation of the computer, but also
 for any information observed by the attacker previously, and stored for later
 decryption.  This is the so-called "harvest now, decrypt later" attack.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">It is thus a high priority for many organizations right not to migrate key
+<p id="section-1-2">It is thus a high priority for many organizations right now to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
 to attack by a quantum computer <span>[<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
@@ -1355,8 +1355,8 @@ ML-KEM parameter set in use.<a href="#section-3-6" class="pilcrow">¶</a></p>
 <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where an ML-KEM encapsulation key check failure causes an HPKE
 <code>EncapError</code>.<a href="#section-3-7" class="pilcrow">¶</a></p>
 <p id="section-3-8">The <code>Decap()</code> function corresponds to the function <code>ML-KEM.Decaps()</code> in
-<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, an ML-KEM ciphertext check failure, decapsulation key check failure,
-or hash check failure cause an HPKE <code>DecapError</code>. To be explicit, we derive the
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure causes an HPKE <code>DecapError</code>. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
 <code>ML-KEM.Decaps()</code> with it:<a href="#section-3-8" class="pilcrow">¶</a></p>
 <div class="lang-pseudocode sourcecode" id="section-3-9">
