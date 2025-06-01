@@ -3,7 +3,7 @@ title: "Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE"
 abbrev: "PQ HPKE"
 category: std
 
-docname: draft-barnes-hpke-pq-latest
+docname: draft-ietf-hpke-pq-latest
 submissiontype: IETF
 number:
 date:
@@ -160,11 +160,11 @@ public encapsulation keys.  The length of the byte string is determined by the
 ML-KEM parameter set in use.
 
 The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
-{{FIPS203}, where an ML-KEM encapsulation key check failure causes an HPKE
+{{FIPS203}}, where an ML-KEM encapsulation key check failure causes an HPKE
 `EncapError`.
 
 The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
-{{FIPS203}, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+{{FIPS203}}, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
 or hash check failure causes an HPKE `DecapError`. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
 `ML-KEM.Decaps()` with it:
