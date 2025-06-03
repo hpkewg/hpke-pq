@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-18T00:58:44.114108+00:00",
+  "timestamp": "2025-06-03T00:56:34.441451+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -192,6 +192,34 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOOXfHTc6Ygpap",
+      "title": "Reflect WG adoption",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/4",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Also fix a minor MD error.",
+      "createdAt": "2025-06-01T22:09:30Z",
+      "updatedAt": "2025-06-01T23:04:26Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "125d207fb3d135f8a7dddef5a791db19101c81c2",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "adopt",
+      "headRefOid": "f4ea6bb358a4c5bb64275ed1e00357aa59d23647",
+      "closedAt": "2025-06-01T23:04:26Z",
+      "mergedAt": "2025-06-01T23:04:26Z",
+      "mergedBy": "yaroslavros",
+      "mergeCommit": {
+        "oid": "f71bf8edf5843c5d6c42bdc3ce474e38576a9d38"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
