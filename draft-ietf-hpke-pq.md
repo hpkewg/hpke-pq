@@ -30,8 +30,11 @@ author:
     email: "rlb@ipv.sx"
 
 normative:
-    FIPS186: DOI.10.6028/NIST.FIPS.186-5
-    FIPS203: DOI.10.6028/NIST.FIPS.203
+  FIPS186: DOI.10.6028/NIST.FIPS.186-5
+  FIPS203: DOI.10.6028/NIST.FIPS.203
+  CONCRETE:
+    title: "TODO - CFRG Concrete hybrid KEMs"
+    date: Jun, 2001
 
 informative:
 
@@ -183,13 +186,30 @@ The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
 
-# Hybrids of ML-KEM with DH
+# Hybrid KEMs with ECDH and ML-KEM
 
-[[ TODO: DH + ML-KEM, in appropriate combinations ]]
+The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
+traditional ECDH group with ML-KEM:
 
-[[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+* HNN3: P-256 + ML-KEM-768
+* HNN5: P-384 + ML-KEM-1024
+* HNX: X25519 + ML-KEM-768
 
-[[ TODO: Define HPKE API methods for the combination ]]
+These KEMs satisfy the KEM interface defined in {{!I-D.cfrg-hybrid-kems}}.  This
+interface is mostly the same as the KEM interface in {{Section 4 of
+!I-D.ietf-hpke-hpke}}, with the following mapping:
+
+* The `GenerateKeyPair()`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
+  are identical.
+
+* The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
+  identity, since encapsulation keys are already fixed-length byte strings.
+
+* The constants map as follows:
+    * `Nsecret = Nss`
+    * `Nenc = Nct`
+    * `Npk = Nek`
+    * `Nsk = Ndk`
 
 # SHA-3 as an HPKE KDF
 
@@ -206,11 +226,11 @@ ChaCha20Poly1305 algorithms registered for HPKE instead of AES-128-GCM.
 # Security Considerations
 
 As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2 secure
-public-key encryption scheme if the KEM it uses is IND-CCA2 secure.  It follows
+public-key encryption scheme if the KEM it uses is IND-CCA secure.  It follows
 that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
-provides IND-CCA2 security against a quantum attacker, i.e., a PQ KEM.  The KEM
+provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
-itself is IND-CCA2 secure, and the IND-CCA2 security of the hybrid constructions
+itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 [[ TODO: Binding properties ]]
@@ -236,6 +256,9 @@ IANA should replace the entries in the HPKE KEM Identifiers registry for values
 | 0x0040 | ML-KEM-512  | 32       | 768  | 800  | 64  | no   | RFCXXXX   |
 | 0x0041 | ML-KEM-768  | 32       | 1088 | 1184 | 64  | no   | RFCXXXX   |
 | 0x0042 | ML-KEM-1024 | 32       | 1568 | 1568 | 64  | no   | RFCXXXX   |
+| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
+| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
 {: #ml-kem-iana-table title="Updated ML-KEM entries for the HPKE KEM Identifiers table" }
 
 The only change being made is to update the "Reference" column to refer to this
