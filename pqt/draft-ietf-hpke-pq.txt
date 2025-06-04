@@ -286,13 +286,13 @@ Table of Contents
 
 7.  Security Considerations
 
-   As discussed in the HPKE Security Considerations, HPKE is an IND-CCA
-   secure public-key encryption scheme if the KEM it uses is IND-CCA2
+   As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2
+   secure public-key encryption scheme if the KEM it uses is IND-CCA
    secure.  It follows that HPKE is IND-CCA2 secure against a quantum
-   attacker if it uses a KEM that provides IND-CCA2 security against a
+   attacker if it uses a KEM that provides IND-CCA security against a
    quantum attacker, i.e., a PQ KEM.  The KEM algorithms defined in this
-   document provide this level of security.  ML-KEM itself is IND-CCA2
-   secure, and the IND-CCA2 security of the hybrid constructions used in
+   document provide this level of security.  ML-KEM itself is IND-CCA
+   secure, and the IND-CCA security of the hybrid constructions used in
    this document is established in [I-D.irtf-cfrg-hybrid-kems].
 
    [[ TODO: Binding properties ]]
