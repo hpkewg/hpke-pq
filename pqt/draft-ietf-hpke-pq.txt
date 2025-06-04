@@ -239,11 +239,36 @@ Table of Contents
 
 4.  Hybrid KEMs with ECDH and ML-KEM
 
-   [[ TODO: DH + ML-KEM, in appropriate combinations ]]
+   The HNN3, HNN5, and HNX KEMs are defined in [CONCRETE].  These KEMs
+   combine a traditional ECDH group with ML-KEM:
 
-   [[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+   *  HNN3: P-256 + ML-KEM-768
 
-   [[ TODO: Define HPKE API methods for the combination ]]
+   *  HNN5: P-384 + ML-KEM-1024
+
+   *  HNX: X25519 + ML-KEM-768
+
+   These KEMs satisfy the KEM interface defined in
+   [I-D.cfrg-hybrid-kems].  This interface is mostly the same as the KEM
+   interface in Section 4 of [I-D.ietf-hpke-hpke], with the following
+   mapping:
+
+   *  The GenerateKeyPair(), DeriveKeyPair, and Encap and Decap
+      algorithms are identical.
+
+   *  The SerializePublicKey and DeserializePublicKey algorithms are the
+      identity, since encapsulation keys are already fixed-length byte
+      strings.
+
+   *  The constants map as follows:
+
+      -  Nsecret = Nss
+
+      -  Nenc = Nct
+
+      -  Npk = Nek
+
+      -  Nsk = Ndk
 
 5.  SHA-3 as an HPKE KDF
 
@@ -299,6 +324,12 @@ Table of Contents
     +--------+-------------+---------+----+----+---+------+-----------+
     | 0x0042 | ML-KEM-1024 | 32      |1568|1568|64 | no   | RFCXXXX   |
     +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0050 | HNN3        | 32      |1153|1249|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0051 | HNN5        | 32      |1221|1317|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0052 | HNX         | 32      |1120|1600|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
 
      Table 1: Updated ML-KEM entries for the HPKE KEM Identifiers table
 
@@ -317,6 +348,8 @@ Table of Contents
 
 9.1.  Normative References
 
+   [CONCRETE] "TODO - CFRG Concrete hybrid KEMs", June 2001.
+
    [FIPS186]  "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
               DOI 10.6028/nist.fips.186-5, February 2023,
@@ -332,6 +365,16 @@ Table of Contents
               "Hybrid Public Key Encryption", Work in Progress,
               Internet-Draft, draft-barnes-hpke-hpke-00, 20 March 2025,
               <https://datatracker.ietf.org/doc/html/draft-barnes-hpke-
+              hpke-00>.
+
+   [I-D.cfrg-hybrid-kems]
+              "*** BROKEN REFERENCE ***".
+
+   [I-D.ietf-hpke-hpke]
+              Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
+              "Hybrid Public Key Encryption", Work in Progress,
+              Internet-Draft, draft-ietf-hpke-hpke-00, 1 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
               hpke-00>.
 
    [I-D.irtf-cfrg-hybrid-kems]
