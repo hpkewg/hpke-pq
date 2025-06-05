@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-03T00:56:34.441451+00:00",
+  "timestamp": "2025-06-05T00:55:37.817219+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -219,6 +219,40 @@
         "oid": "f71bf8edf5843c5d6c42bdc3ce474e38576a9d38"
       },
       "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOOXfHTc6ZBO90",
+      "title": "Define HPKE KEMs using PQ/T hybrid KEMs",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/5",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "CFRG has two drafts in progress for hybrid KEMs:\r\n\r\n* [draft-irtf-cfrg-hybrid-kems](https://cfrg.github.io/draft-irtf-cfrg-hybrid-kems/draft-irtf-cfrg-hybrid-kems.html) defines general schemes for constructing PQ/T hybrid KEMs from a T group/KEM and a PQ KEM.\r\n* [draft-irtf-cfrg-concrete-hybrid-kems](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/blob/main/draft-irtf-cfrg-concrete-hybrid-kems.md) defines a few specific instantiations of the general schemes.\r\n\r\n(Note that I am referring to the GitHub / editor's copies of these docs for now, since the authors of those docs haven't yet released new drafts reflecting the required changes.  Should be soon.)\r\n\r\nThis PR just maps the KEM interface from those documents to the HPKE one, and registers KEM IDs for the hybrid KEMs.\r\n\r\nAlso, as a bit of terminology cleanup, we use \"IND-CCA2\" to talk about public-key encryption, and \"IND-CCA\" to talk about KEMs, since this seems to be the standard terminology.",
+      "createdAt": "2025-06-04T12:52:18Z",
+      "updatedAt": "2025-06-04T14:44:28Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "017ffabee4796fd67d07eaf028ca9b2f0489e707",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "pqt",
+      "headRefOid": "b880a586e20be71c2e59ff9a4f8c497fa721089b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Also: KEM names are likely to change as the bikeshed gets painted, so regard these names as pretty provisional.",
+          "createdAt": "2025-06-04T14:44:28Z",
+          "updatedAt": "2025-06-04T14:44:28Z"
+        }
+      ],
       "reviews": []
     }
   ]
