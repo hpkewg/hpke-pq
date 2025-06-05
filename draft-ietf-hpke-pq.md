@@ -47,7 +47,7 @@ Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
 HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
 KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
 use with these KEMs.  When used with these algorithms, HPKE is resilient with
-respect to attack by a quantum computer.
+respect to attacks by a quantum computer.
 
 --- middle
 
