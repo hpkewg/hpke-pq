@@ -183,6 +183,10 @@ The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
 
+> Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest
+> of completeness, the security level that ML-KEM-512 provides is not generally
+> considered suitable for general use on the Internet.
+
 # Hybrids of ML-KEM with DH {#hybrids}
 
 [[ TODO: DH + ML-KEM, in appropriate combinations ]]
