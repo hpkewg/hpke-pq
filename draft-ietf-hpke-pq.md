@@ -183,7 +183,7 @@ The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
 
-# Hybrids of ML-KEM with DH
+# Hybrids of ML-KEM with DH {#hybrids}
 
 [[ TODO: DH + ML-KEM, in appropriate combinations ]]
 
@@ -214,6 +214,15 @@ itself is IND-CCA2 secure, and the IND-CCA2 security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 [[ TODO: Binding properties ]]
+
+## PQ Hybrid vs. Pure PQ
+
+Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
+{{hybrids}} or the pure PQ KEMs defined in {{ml-kem}} provide security against a
+quantum attacker.  In environments where there is concern that ML-KEM might not
+be secure, the hybrid KEMs can be used to provide security against a non-quantum
+attacker.  See {{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid
+security properties.”
 
 # IANA Considerations
 
