@@ -82,6 +82,7 @@ This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
 allows HPKE to provide post-quantum security, as discussed in
 {{security-considerations}}:
 
+* ML-KEM-512
 * ML-KEM-768
 * ML-KEM-1024
 * X25519 + ML-KEM-768
