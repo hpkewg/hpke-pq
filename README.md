@@ -5,8 +5,8 @@
 This is the working area for the individual Internet-Draft, "Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE".
 
 * [Editor's Copy](https://hpkewg.github.io/hpke-pq/#go.draft-ietf-hpke-pq.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-barnes-hpke-pq)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-barnes-hpke-pq)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-hpke-pq)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-ietf-hpke-pq)
 * [Compare Editor's Copy to Individual Draft](https://hpkewg.github.io/hpke-pq/#go.draft-ietf-hpke-pq.diff)
 
 
