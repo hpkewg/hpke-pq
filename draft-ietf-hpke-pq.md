@@ -193,7 +193,7 @@ specified in {{ml-kem-iana-table}}.
 > of completeness, the security level that ML-KEM-512 provides is not generally
 > considered suitable for general use on the Internet.
 
-# Hybrid KEMs with ECDH and ML-KEM
+# Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
 The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
 traditional ECDH group with ML-KEM:
