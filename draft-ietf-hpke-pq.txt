@@ -128,6 +128,8 @@ Table of Contents
    HPKE, which allows HPKE to provide post-quantum security, as
    discussed in Section 7:
 
+   *  ML-KEM-512
+
    *  ML-KEM-768
 
    *  ML-KEM-1024
