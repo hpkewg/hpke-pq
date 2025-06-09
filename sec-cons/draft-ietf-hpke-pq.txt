@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                             6 June 2025
-Expires: 8 December 2025
+Intended status: Standards Track                             9 June 2025
+Expires: 11 December 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 December 2025.
+   This Internet-Draft will expire on 11 December 2025.
 
 Copyright Notice
 
@@ -286,7 +286,7 @@ Table of Contents
    concern that ML-KEM might not be secure, the hybrid KEMs can be used
    to provide security against a non-quantum attacker.  See
    [I-D.irtf-cfrg-hybrid-kems] for further analysis of hybrid security
-   properties.”
+   properties.
 
 8.  IANA Considerations
 
