@@ -200,7 +200,7 @@ These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
 This interface is mostly the same as the KEM interface in {{Section 4 of
 !I-D.ietf-hpke-hpke}}, with the following mapping:
 
-* The `GenerateKeyPair()`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
+* The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
   are identical.
 
 * The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
