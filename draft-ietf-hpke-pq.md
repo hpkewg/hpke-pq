@@ -30,8 +30,12 @@ author:
     email: "rlb@ipv.sx"
 
 normative:
-    FIPS186: DOI.10.6028/NIST.FIPS.186-5
-    FIPS203: DOI.10.6028/NIST.FIPS.203
+  FIPS186: DOI.10.6028/NIST.FIPS.186-5
+  FIPS202: DOI.10.6028/NIST.FIPS.202
+  FIPS203: DOI.10.6028/NIST.FIPS.203
+  CONCRETE:
+    title: "TODO - CFRG Concrete hybrid KEMs"
+    date: Jun, 2001
 
 informative:
 
@@ -47,7 +51,7 @@ Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
 HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
 KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
 use with these KEMs.  When used with these algorithms, HPKE is resilient with
-respect to attack by a quantum computer.
+respect to attacks by a quantum computer.
 
 --- middle
 
@@ -82,6 +86,7 @@ This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
 allows HPKE to provide post-quantum security, as discussed in
 {{security-considerations}}:
 
+* ML-KEM-512
 * ML-KEM-768
 * ML-KEM-1024
 * X25519 + ML-KEM-768
@@ -188,17 +193,67 @@ specified in {{ml-kem-iana-table}}.
 > of completeness, the security level that ML-KEM-512 provides is not generally
 > considered suitable for general use on the Internet.
 
-# Hybrids of ML-KEM with DH {#hybrids}
+# Hybrid KEMs with ECDH and ML-KEM
 
-[[ TODO: DH + ML-KEM, in appropriate combinations ]]
+The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
+traditional ECDH group with ML-KEM:
 
-[[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+HNN3:
+: P-256 + ML-KEM-768
 
-[[ TODO: Define HPKE API methods for the combination ]]
+HNN5:
+: P-384 + ML-KEM-1024
 
-# SHA-3 as an HPKE KDF
+HNX:
+: X25519 + ML-KEM-768
+{: spacing="compact"}
 
-[[ TODO: Defer until draft-ietf-hpke-hpke has a suitable definition ]]
+These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
+This interface is mostly the same as the KEM interface in {{Section 4 of
+!I-D.ietf-hpke-hpke}}, with the following mapping:
+
+* The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
+  are identical.
+
+* The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
+  identity, since encapsulation keys are already fixed-length byte strings.
+
+* The constants map as follows:
+    * `Nsecret = Nss`
+    * `Nenc = Nct`
+    * `Npk = Nek`
+    * `Nsk = Ndk`
+
+# Single-Stage KDFs
+
+This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
+on Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}, and
+the related TurboSHAKE XOFs is defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
+
+The `Nh` values for the KDFs defined in this section are listed in
+{{kdfid-values}}.  The `Derive()` functions for each XOF are as follows, where
+`<SIZE>` is either 128 or 256:
+
+~~~ pseudocode
+def SHAKE<SIZE>.Derive(ikm, L):
+    return SHAKE<SIZE>(M = ikm, d = 8*L)
+
+def TurboSHAKE<SIZE>.Derive(ikm, L):
+    return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
+~~~
+{: #kdf-derive title="Definition of single-stage KDFs" }
+
+| Value  | KDF           | Nh  | Two-Stage | Reference |
+|:-------|:--------------|-----|-----------|:----------|
+| 0x0000 | Reserved      | N/A | N/A       | RFC 9180  |
+| TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
+| TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
+| TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
+| TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
+{: #kdfid-values title="Single-Stage KDF IDs"}
+
+[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]
 
 # Selection of AEAD algorithms
 
@@ -211,11 +266,11 @@ ChaCha20Poly1305 algorithms registered for HPKE instead of AES-128-GCM.
 # Security Considerations
 
 As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2 secure
-public-key encryption scheme if the KEM it uses is IND-CCA2 secure.  It follows
+public-key encryption scheme if the KEM it uses is IND-CCA secure.  It follows
 that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
-provides IND-CCA2 security against a quantum attacker, i.e., a PQ KEM.  The KEM
+provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
-itself is IND-CCA2 secure, and the IND-CCA2 security of the hybrid constructions
+itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 [[ TODO: Binding properties ]]
@@ -250,6 +305,9 @@ IANA should replace the entries in the HPKE KEM Identifiers registry for values
 | 0x0040 | ML-KEM-512  | 32       | 768  | 800  | 64  | no   | RFCXXXX   |
 | 0x0041 | ML-KEM-768  | 32       | 1088 | 1184 | 64  | no   | RFCXXXX   |
 | 0x0042 | ML-KEM-1024 | 32       | 1568 | 1568 | 64  | no   | RFCXXXX   |
+| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
+| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
 {: #ml-kem-iana-table title="Updated ML-KEM entries for the HPKE KEM Identifiers table" }
 
 The only change being made is to update the "Reference" column to refer to this
@@ -261,8 +319,8 @@ document.
 
 ## SHA-3 KDF Entries
 
-[[ TODO: Register KDF values ]]
-
+IANA is requested to add the values listed in {{kdfid-values}} to the HPKE KDF
+Identifiers registry.
 
 --- back
 
