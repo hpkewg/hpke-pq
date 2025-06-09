@@ -192,9 +192,15 @@ specified in {{ml-kem-iana-table}}.
 The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
 traditional ECDH group with ML-KEM:
 
-* HNN3: P-256 + ML-KEM-768
-* HNN5: P-384 + ML-KEM-1024
-* HNX: X25519 + ML-KEM-768
+HNN3:
+: P-256 + ML-KEM-768
+
+HNN5:
+: P-384 + ML-KEM-1024
+
+HNX:
+: X25519 + ML-KEM-768
+{: spacing="compact"}
 
 These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
 This interface is mostly the same as the KEM interface in {{Section 4 of
