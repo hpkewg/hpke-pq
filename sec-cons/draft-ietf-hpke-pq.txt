@@ -23,7 +23,7 @@ Abstract
    based on both post-quantum KEMs and hybrid constructions of post-
    quantum KEMs with traditional KEMs, as well as a KDF based on SHA-3
    that is suitable for use with these KEMs.  When used with these
-   algorithms, HPKE is resilient with respect to attack by a quantum
+   algorithms, HPKE is resilient with respect to attacks by a quantum
    computer.
 
 About This Document
@@ -79,8 +79,8 @@ Table of Contents
    1.  Introduction
    2.  Conventions and Definitions
    3.  ML-KEM
-   4.  Hybrids of ML-KEM with DH
-   5.  SHA-3 as an HPKE KDF
+   4.  Hybrid KEMs with ECDH and ML-KEM
+   5.  Single-Stage KDFs
    6.  Selection of AEAD algorithms
    7.  Security Considerations
      7.1.  PQ Hybrid vs. Pure PQ
@@ -128,6 +128,8 @@ Table of Contents
    This document defines a collection of PQ and PQ/T KEM algorithms for
    HPKE, which allows HPKE to provide post-quantum security, as
    discussed in Section 7:
+
+   *  ML-KEM-512
 
    *  ML-KEM-768
 
@@ -236,25 +238,81 @@ Table of Contents
 
    The constants Nsecret and Nsk are always 32 and 64, respectively.
    The constants Nenc and Npk depend on the ML-KEM parameter set in use;
-   they are specified in Table 1.
+   they are specified in Table 2.
 
       |  Note: While this document defines an HPKE KEM for ML-KEM-512 in
       |  the interest of completeness, the security level that ML-
       |  KEM-512 provides is not generally considered suitable for
       |  general use on the Internet.
 
-4.  Hybrids of ML-KEM with DH
+4.  Hybrid KEMs with ECDH and ML-KEM
 
-   [[ TODO: DH + ML-KEM, in appropriate combinations ]]
+   The HNN3, HNN5, and HNX KEMs are defined in [CONCRETE].  These KEMs
+   combine a traditional ECDH group with ML-KEM:
 
-   [[ TODO: Decide whether to use DHKEM, or use DH directly ]]
+   HNN3:  P-256 + ML-KEM-768
+   HNN5:  P-384 + ML-KEM-1024
+   HNX:  X25519 + ML-KEM-768
 
-   [[ TODO: Define HPKE API methods for the combination ]]
+   These KEMs satisfy the KEM interface defined in
+   [I-D.irtf-cfrg-hybrid-kems].  This interface is mostly the same as
+   the KEM interface in Section 4 of [I-D.ietf-hpke-hpke], with the
+   following mapping:
 
-5.  SHA-3 as an HPKE KDF
+   *  The GenerateKeyPair, DeriveKeyPair, and Encap and Decap algorithms
+      are identical.
 
-   [[ TODO: Defer until draft-ietf-hpke-hpke has a suitable definition
-   ]]
+   *  The SerializePublicKey and DeserializePublicKey algorithms are the
+      identity, since encapsulation keys are already fixed-length byte
+      strings.
+
+   *  The constants map as follows:
+
+      -  Nsecret = Nss
+
+      -  Nenc = Nct
+
+      -  Npk = Nek
+
+      -  Nsk = Ndk
+
+5.  Single-Stage KDFs
+
+   This section defines HPKE KDFs for three eXtendable Output Functions
+   (XOF) based on Keccak.  SHAKE is defined as part of the SHA-3
+   specification [FIPS202], and the related TurboSHAKE XOFs is defined
+   in [I-D.irtf-cfrg-kangarootwelve].
+
+   The Nh values for the KDFs defined in this section are listed in
+   Table 1.  The Derive() functions for each XOF are as follows, where
+   <SIZE> is either 128 or 256:
+
+   def SHAKE<SIZE>.Derive(ikm, L):
+       return SHAKE<SIZE>(M = ikm, d = 8*L)
+
+   def TurboSHAKE<SIZE>.Derive(ikm, L):
+       return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
+
+                 Figure 1: Definition of single-stage KDFs
+
+         +========+===============+=====+===========+===========+
+         | Value  | KDF           | Nh  | Two-Stage | Reference |
+         +========+===============+=====+===========+===========+
+         | 0x0000 | Reserved      | N/A | N/A       | RFC 9180  |
+         +--------+---------------+-----+-----------+-----------+
+         | TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
+         +--------+---------------+-----+-----------+-----------+
+         | TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
+         +--------+---------------+-----+-----------+-----------+
+         | TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
+         +--------+---------------+-----+-----------+-----------+
+         | TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
+         +--------+---------------+-----+-----------+-----------+
+
+                      Table 1: Single-Stage KDF IDs
+
+   [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned
+   to this document. ]]
 
 6.  Selection of AEAD algorithms
 
@@ -268,12 +326,12 @@ Table of Contents
 7.  Security Considerations
 
    As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2
-   secure public-key encryption scheme if the KEM it uses is IND-CCA2
+   secure public-key encryption scheme if the KEM it uses is IND-CCA
    secure.  It follows that HPKE is IND-CCA2 secure against a quantum
-   attacker if it uses a KEM that provides IND-CCA2 security against a
+   attacker if it uses a KEM that provides IND-CCA security against a
    quantum attacker, i.e., a PQ KEM.  The KEM algorithms defined in this
-   document provide this level of security.  ML-KEM itself is IND-CCA2
-   secure, and the IND-CCA2 security of the hybrid constructions used in
+   document provide this level of security.  ML-KEM itself is IND-CCA
+   secure, and the IND-CCA security of the hybrid constructions used in
    this document is established in [I-D.irtf-cfrg-hybrid-kems].
 
    [[ TODO: Binding properties ]]
@@ -315,8 +373,14 @@ Table of Contents
     +--------+-------------+---------+----+----+---+------+-----------+
     | 0x0042 | ML-KEM-1024 | 32      |1568|1568|64 | no   | RFCXXXX   |
     +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0050 | HNN3        | 32      |1153|1249|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0051 | HNN5        | 32      |1221|1317|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
+    | 0x0052 | HNX         | 32      |1120|1600|32 | no   | RFCXXXX   |
+    +--------+-------------+---------+----+----+---+------+-----------+
 
-     Table 1: Updated ML-KEM entries for the HPKE KEM Identifiers table
+     Table 2: Updated ML-KEM entries for the HPKE KEM Identifiers table
 
    The only change being made is to update the "Reference" column to
    refer to this document.
@@ -327,16 +391,24 @@ Table of Contents
 
 8.3.  SHA-3 KDF Entries
 
-   [[ TODO: Register KDF values ]]
+   IANA is requested to add the values listed in Table 1 to the HPKE KDF
+   Identifiers registry.
 
 9.  References
 
 9.1.  Normative References
 
+   [CONCRETE] "TODO - CFRG Concrete hybrid KEMs", June 2001.
+
    [FIPS186]  "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
               DOI 10.6028/nist.fips.186-5, February 2023,
               <https://doi.org/10.6028/nist.fips.186-5>.
+
+   [FIPS202]  "SHA-3 standard :: permutation-based hash and extendable-
+              output functions", National Institute of Standards and
+              Technology (U.S.), DOI 10.6028/nist.fips.202, 2015,
+              <https://doi.org/10.6028/nist.fips.202>.
 
    [FIPS203]  "Module-lattice-based key-encapsulation mechanism
               standard", National Institute of Standards and Technology
@@ -350,12 +422,26 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-barnes-hpke-
               hpke-00>.
 
+   [I-D.ietf-hpke-hpke]
+              Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
+              "Hybrid Public Key Encryption", Work in Progress,
+              Internet-Draft, draft-ietf-hpke-hpke-00, 1 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
+              hpke-00>.
+
    [I-D.irtf-cfrg-hybrid-kems]
               Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
               Work in Progress, Internet-Draft, draft-irtf-cfrg-hybrid-
               kems-03, 25 February 2025,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
               hybrid-kems-03>.
+
+   [I-D.irtf-cfrg-kangarootwelve]
+              Viguier, B., Wong, D., Van Assche, G., Dang, Q., and J.
+              Daemen, "KangarooTwelve and TurboSHAKE", Work in Progress,
+              Internet-Draft, draft-irtf-cfrg-kangarootwelve-17, 21
+              February 2025, <https://datatracker.ietf.org/doc/html/
+              draft-irtf-cfrg-kangarootwelve-17>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
