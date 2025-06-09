@@ -1318,9 +1318,9 @@ use "HPKE" for the former, and "PQ/T hybrid" for the latter.<a href="#section-2-
 <p id="section-3-1">The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
 <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  In this section, we define how to implement the HPKE KEM interface
 using ML-KEM.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The HPKE <code>DeriveKeyPair()</code> function corresponds to the function
-<code>ML-KEM.KeyGen_internal()</code> in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  The input <code>ikm</code> <span class="bcp14">MUST</span> be exactly
-<code>Nsk = 64</code> bytes long.  The <code>d</code> and <code>z</code> inputs to <code>ML-KEM.KeyGen_internal()</code> are
+<p id="section-3-2">The HPKE <code>DeriveKeyPair</code> function corresponds to the function
+<code>ML-KEM.KeyGen_internal</code> in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  The input <code>ikm</code> <span class="bcp14">MUST</span> be exactly
+<code>Nsk = 64</code> bytes long.  The <code>d</code> and <code>z</code> inputs to <code>ML-KEM.KeyGen_internal</code> are
 the first and last 32-byte segments of <code>ikm</code>, respectively.  The output <code>skX</code> is
 the generated decapsulation key and the output <code>pkX</code> is the generated
 encapsulation key.<a href="#section-3-2" class="pilcrow">¶</a></p>
@@ -1338,11 +1338,11 @@ def DeriveKeyPair(ikm):
     return (dk, ek)
 </pre><a href="#section-3-3" class="pilcrow">¶</a>
 </div>
-<p id="section-3-4">The <code>GenerateKeyPair()</code> function is simply <code>DeriveKeyPair()</code> with a pseudorandom
-<code>ikm</code> value.  As long as the bytes supplied by <code>random()</code> meet the randomness
-requirements of <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, this corresponds to the <code>ML-KEM.KeyGen()</code> function,
+<p id="section-3-4">The <code>GenerateKeyPair</code> function is simply <code>DeriveKeyPair</code> with a pseudorandom
+<code>ikm</code> value.  As long as the bytes supplied by <code>random</code> meet the randomness
+requirements of <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, this corresponds to the <code>ML-KEM.KeyGen</code> function,
 with the distinction that the decapsulation key is returned in seed format
-rather than the expanded form returned by <code>ML-KEM.KeyGen()</code>.<a href="#section-3-4" class="pilcrow">¶</a></p>
+rather than the expanded form returned by <code>ML-KEM.KeyGen</code>.<a href="#section-3-4" class="pilcrow">¶</a></p>
 <div class="lang-pseudocode sourcecode" id="section-3-5">
 <pre>
 def GenerateKeyPair():
@@ -1350,18 +1350,18 @@ def GenerateKeyPair():
     return DeriveKeyPair(dz)
 </pre><a href="#section-3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-3-6">The <code>SerializePublicKey()</code> and <code>DeserializePublicKey()</code> functions are both the
+<p id="section-3-6">The <code>SerializePublicKey</code> and <code>DeserializePublicKey</code> functions are both the
 identity function, since the ML-KEM already uses fixed-length byte strings for
 public encapsulation keys.  The length of the byte string is determined by the
 ML-KEM parameter set in use.<a href="#section-3-6" class="pilcrow">¶</a></p>
-<p id="section-3-7">The <code>Encap()</code> function corresponds to the function <code>ML-KEM.Encaps()</code> in
+<p id="section-3-7">The <code>Encap</code> function corresponds to the function <code>ML-KEM.Encaps</code> in
 <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where an ML-KEM encapsulation key check failure causes an HPKE
 <code>EncapError</code>.<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">The <code>Decap()</code> function corresponds to the function <code>ML-KEM.Decaps()</code> in
+<p id="section-3-8">The <code>Decap</code> function corresponds to the function <code>ML-KEM.Decaps</code> in
 <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
 or hash check failure causes an HPKE <code>DecapError</code>. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
-<code>ML-KEM.Decaps()</code> with it:<a href="#section-3-8" class="pilcrow">¶</a></p>
+<code>ML-KEM.Decaps</code> with it:<a href="#section-3-8" class="pilcrow">¶</a></p>
 <div class="lang-pseudocode sourcecode" id="section-3-9">
 <pre>
 def Decap(enc, skR):
@@ -1371,10 +1371,9 @@ def Decap(enc, skR):
     return ML-KEM.Decaps(dk, enc)
 </pre><a href="#section-3-9" class="pilcrow">¶</a>
 </div>
-<p id="section-3-10">The <code>AuthEncap()</code> and <code>AuthDecap()</code> functions are not implemented.<a href="#section-3-10" class="pilcrow">¶</a></p>
-<p id="section-3-11">The constants <code>Nsecret</code> and <code>Nsk</code> are always 32 and 64, respectively.  The
+<p id="section-3-10">The constants <code>Nsecret</code> and <code>Nsk</code> are always 32 and 64, respectively.  The
 constants <code>Nenc</code> and <code>Npk</code> depend on the ML-KEM parameter set in use; they are
-specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>.<a href="#section-3-11" class="pilcrow">¶</a></p>
+specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>.<a href="#section-3-10" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hybrid-kems-with-ecdh-and-ml-kem">
