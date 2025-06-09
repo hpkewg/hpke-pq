@@ -16,7 +16,7 @@ Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
 HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
 KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
 use with these KEMs.  When used with these algorithms, HPKE is resilient with
-respect to attack by a quantum computer. 
+respect to attacks by a quantum computer. 
     ' name="description">
 <meta content="xml2rfc 3.28.1" name="generator">
 <meta content="hybrid public key encryption" name="keyword">
@@ -1059,7 +1059,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Barnes</td>
-<td class="center">Expires 6 December 2025</td>
+<td class="center">Expires 11 December 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1072,12 +1072,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-hpke-pq-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-06-04" class="published">4 June 2025</time>
+<time datetime="2025-06-09" class="published">9 June 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-12-06">6 December 2025</time></dd>
+<dd class="expires"><time datetime="2025-12-11">11 December 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1099,7 +1099,7 @@ Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
 HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
 KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
 use with these KEMs.  When used with these algorithms, HPKE is resilient with
-respect to attack by a quantum computer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+respect to attacks by a quantum computer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1136,7 +1136,7 @@ respect to attack by a quantum computer.<a href="#section-abstract-1" class="pil
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1178,7 +1178,7 @@ respect to attack by a quantum computer.<a href="#section-abstract-1" class="pil
             <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-hybrid-kems-with-ecdh-and-m" class="internal xref">Hybrid KEMs with ECDH and ML-KEM</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-sha-3-as-an-hpke-kdf" class="internal xref">SHA-3 as an HPKE KDF</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-single-stage-kdfs" class="internal xref">Single-Stage KDFs</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-selection-of-aead-algorithm" class="internal xref">Selection of AEAD algorithms</a></p>
@@ -1371,7 +1371,7 @@ def Decap(enc, skR):
 <p id="section-3-10">The <code>AuthEncap()</code> and <code>AuthDecap()</code> functions are not implemented.<a href="#section-3-10" class="pilcrow">¶</a></p>
 <p id="section-3-11">The constants <code>Nsecret</code> and <code>Nsk</code> are always 32 and 64, respectively.  The
 constants <code>Nenc</code> and <code>Npk</code> depend on the ML-KEM parameter set in use; they are
-specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 1</a>.<a href="#section-3-11" class="pilcrow">¶</a></p>
+specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>.<a href="#section-3-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hybrid-kems-with-ecdh-and-ml-kem">
@@ -1392,8 +1392,8 @@ traditional ECDH group with ML-KEM:<a href="#section-4-1" class="pilcrow">¶</a>
           <p id="section-4-2.3.1">HNX: X25519 + ML-KEM-768<a href="#section-4-2.3.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-3">These KEMs satisfy the KEM interface defined in <span>[<a href="#I-D.cfrg-hybrid-kems" class="cite xref">I-D.cfrg-hybrid-kems</a>]</span>.  This
-interface is mostly the same as the KEM interface in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00#section-4" class="relref">Section 4</a> of [<a href="#I-D.ietf-hpke-hpke" class="cite xref">I-D.ietf-hpke-hpke</a>]</span>, with the following mapping:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-3">These KEMs satisfy the KEM interface defined in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.
+This interface is mostly the same as the KEM interface in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00#section-4" class="relref">Section 4</a> of [<a href="#I-D.ietf-hpke-hpke" class="cite xref">I-D.ietf-hpke-hpke</a>]</span>, with the following mapping:<a href="#section-4-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4-4.1">
           <p id="section-4-4.1.1">The <code>GenerateKeyPair()</code>, <code>DeriveKeyPair</code>, and <code>Encap</code> and <code>Decap</code> algorithms
@@ -1423,12 +1423,88 @@ identity, since encapsulation keys are already fixed-length byte strings.<a href
       </ul>
 </section>
 </div>
-<div id="sha-3-as-an-hpke-kdf">
+<div id="single-stage-kdfs">
 <section id="section-5">
-      <h2 id="name-sha-3-as-an-hpke-kdf">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-sha-3-as-an-hpke-kdf" class="section-name selfRef">SHA-3 as an HPKE KDF</a>
+      <h2 id="name-single-stage-kdfs">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-single-stage-kdfs" class="section-name selfRef">Single-Stage KDFs</a>
       </h2>
-<p id="section-5-1">[[ TODO: Defer until draft-ietf-hpke-hpke has a suitable definition ]]<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
+on Keccak.  SHAKE is defined as part of the SHA-3 specification <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>, and
+the related TurboSHAKE XOFs is defined in <span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The <code>Nh</code> values for the KDFs defined in this section are listed in
+<a href="#kdfid-values" class="auto internal xref">Table 1</a>.  The <code>Derive()</code> functions for each XOF are as follows, where
+<code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<span id="name-definition-of-single-stage-"></span><div id="kdf-derive">
+<figure id="figure-1">
+        <div class="lang-pseudocode sourcecode" id="section-5-3.1">
+<pre>
+def SHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return SHAKE&lt;SIZE&gt;(M = ikm, d = 8*L)
+
+def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return TurboSHAKE&lt;SIZE&gt;(M = ikm, D = 0x1f, L)
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-definition-of-single-stage-" class="selfRef">Definition of single-stage KDFs</a>
+        </figcaption></figure>
+</div>
+<span id="name-single-stage-kdf-ids"></span><div id="kdfid-values">
+<table class="center" id="table-1">
+        <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-single-stage-kdf-ids" class="selfRef">Single-Stage KDF IDs</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Value</th>
+            <th class="text-left" rowspan="1" colspan="1">KDF</th>
+            <th class="text-left" rowspan="1" colspan="1">Nh</th>
+            <th class="text-left" rowspan="1" colspan="1">Two-Stage</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-left" rowspan="1" colspan="1">Reserved</td>
+            <td class="text-left" rowspan="1" colspan="1">N/A</td>
+            <td class="text-left" rowspan="1" colspan="1">N/A</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC 9180</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+<p id="section-5-5">[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]<a href="#section-5-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="selection-of-aead-algorithms">
@@ -1486,9 +1562,9 @@ in this document.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
 <p id="section-8.1-1">IANA should replace the entries in the HPKE KEM Identifiers registry for values
 <code>0x0040</code>, <code>0x0041</code>, and <code>0x0042</code> with the following values:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 <span id="name-updated-ml-kem-entries-for-"></span><div id="ml-kem-iana-table">
-<table class="center" id="table-1">
+<table class="center" id="table-2">
           <caption>
-<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#table-2" class="selfRef">Table 2</a>:
 <a href="#name-updated-ml-kem-entries-for-" class="selfRef">Updated ML-KEM entries for the HPKE KEM Identifiers table</a>
           </caption>
 <thead>
@@ -1584,7 +1660,8 @@ document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
         <h3 id="name-sha-3-kdf-entries">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-sha-3-kdf-entries" class="section-name selfRef">SHA-3 KDF Entries</a>
         </h3>
-<p id="section-8.3-1">[[ TODO: Register KDF values ]]<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-1">IANA is requested to add the values listed in <a href="#kdfid-values" class="auto internal xref">Table 1</a> to the HPKE KDF
+Identifiers registry.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1608,6 +1685,10 @@ document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
         <dd>
 <span class="refTitle">"Digital Signature Standard (DSS)"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.186-5</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.186-5">https://doi.org/10.6028/nist.fips.186-5</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="FIPS202">[FIPS202]</dt>
+        <dd>
+<span class="refTitle">"SHA-3 standard :: permutation-based hash and extendable-output functions"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.202</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.202">https://doi.org/10.6028/nist.fips.202</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="FIPS203">[FIPS203]</dt>
         <dd>
 <span class="refTitle">"Module-lattice-based key-encapsulation mechanism standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.203</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.203">https://doi.org/10.6028/nist.fips.203</a>&gt;</span>. </dd>
@@ -1616,10 +1697,6 @@ document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-barnes-hpke-hpke-00</span>, <time datetime="2025-03-20" class="refDate">20 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.cfrg-hybrid-kems">[I-D.cfrg-hybrid-kems]</dt>
-        <dd>
-<span class="refTitle">"*** BROKEN REFERENCE ***"</span>. </dd>
-<dd class="break"></dd>
 <dt id="I-D.ietf-hpke-hpke">[I-D.ietf-hpke-hpke]</dt>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-hpke-hpke-00</span>, <time datetime="2025-06-01" class="refDate">1 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00</a>&gt;</span>. </dd>
@@ -1627,6 +1704,10 @@ document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
 <dt id="I-D.irtf-cfrg-hybrid-kems">[I-D.irtf-cfrg-hybrid-kems]</dt>
         <dd>
 <span class="refAuthor">Connolly, D.</span>, <span class="refTitle">"Hybrid PQ/T Key Encapsulation Mechanisms"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hybrid-kems-03</span>, <time datetime="2025-02-25" class="refDate">25 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-kangarootwelve">[I-D.irtf-cfrg-kangarootwelve]</dt>
+        <dd>
+<span class="refAuthor">Viguier, B.</span>, <span class="refAuthor">Wong, D.</span>, <span class="refAuthor">Van Assche, G.</span>, <span class="refAuthor">Dang, Q.</span>, and <span class="refAuthor">J. Daemen</span>, <span class="refTitle">"KangarooTwelve and TurboSHAKE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-kangarootwelve-17</span>, <time datetime="2025-02-21" class="refDate">21 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
