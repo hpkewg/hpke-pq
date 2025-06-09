@@ -3,7 +3,7 @@ title: "Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE"
 abbrev: "PQ HPKE"
 category: std
 
-docname: draft-barnes-hpke-pq-latest
+docname: draft-ietf-hpke-pq-latest
 submissiontype: IETF
 number:
 date:
@@ -48,7 +48,7 @@ Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
 HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
 KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
 use with these KEMs.  When used with these algorithms, HPKE is resilient with
-respect to attack by a quantum computer.
+respect to attacks by a quantum computer.
 
 --- middle
 
@@ -64,7 +64,7 @@ do this not just for data encrypted after the creation of the computer, but also
 for any information observed by the attacker previously, and stored for later
 decryption.  This is the so-called "harvest now, decrypt later" attack.
 
-It is thus a high priority for many organizations right not to migrate key
+It is thus a high priority for many organizations right now to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
 to attack by a quantum computer {{?I-D.ietf-pquip-pqc-engineers}}.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
@@ -165,8 +165,8 @@ The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
 `EncapError`.
 
 The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
-{{FIPS203}}, an ML-KEM ciphertext check failure, decapsulation key check failure,
-or hash check failure cause an HPKE `DecapError`. To be explicit, we derive the
+{{FIPS203}}, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure causes an HPKE `DecapError`. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
 `ML-KEM.Decaps()` with it:
 
