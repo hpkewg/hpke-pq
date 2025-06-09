@@ -226,7 +226,7 @@ Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
 quantum attacker.  In environments where there is concern that ML-KEM might not
 be secure, the hybrid KEMs can be used to provide security against a non-quantum
 attacker.  See {{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid
-security properties.”
+security properties.
 
 # IANA Considerations
 
