@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                             1 June 2025
-Expires: 3 December 2025
+Intended status: Standards Track                             9 June 2025
+Expires: 11 December 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -23,7 +23,7 @@ Abstract
    based on both post-quantum KEMs and hybrid constructions of post-
    quantum KEMs with traditional KEMs, as well as a KDF based on SHA-3
    that is suitable for use with these KEMs.  When used with these
-   algorithms, HPKE is resilient with respect to attack by a quantum
+   algorithms, HPKE is resilient with respect to attacks by a quantum
    computer.
 
 About This Document
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 December 2025.
+   This Internet-Draft will expire on 11 December 2025.
 
 Copyright Notice
 
