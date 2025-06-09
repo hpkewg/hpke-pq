@@ -127,9 +127,9 @@ The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
 {{FIPS203}}.  In this section, we define how to implement the HPKE KEM interface
 using ML-KEM.
 
-The HPKE `DeriveKeyPair()` function corresponds to the function
-`ML-KEM.KeyGen_internal()` in {{FIPS203}}.  The input `ikm` MUST be exactly
-`Nsk = 64` bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal()` are
+The HPKE `DeriveKeyPair` function corresponds to the function
+`ML-KEM.KeyGen_internal` in {{FIPS203}}.  The input `ikm` MUST be exactly
+`Nsk = 64` bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal` are
 the first and last 32-byte segments of `ikm`, respectively.  The output `skX` is
 the generated decapsulation key and the output `pkX` is the generated
 encapsulation key.
@@ -147,11 +147,11 @@ def DeriveKeyPair(ikm):
     return (dk, ek)
 ~~~
 
-The `GenerateKeyPair()` function is simply `DeriveKeyPair()` with a pseudorandom
-`ikm` value.  As long as the bytes supplied by `random()` meet the randomness
-requirements of {{FIPS203}}, this corresponds to the `ML-KEM.KeyGen()` function,
+The `GenerateKeyPair` function is simply `DeriveKeyPair` with a pseudorandom
+`ikm` value.  As long as the bytes supplied by `random` meet the randomness
+requirements of {{FIPS203}}, this corresponds to the `ML-KEM.KeyGen` function,
 with the distinction that the decapsulation key is returned in seed format
-rather than the expanded form returned by `ML-KEM.KeyGen()`.
+rather than the expanded form returned by `ML-KEM.KeyGen`.
 
 ~~~ pseudocode
 def GenerateKeyPair():
@@ -159,20 +159,20 @@ def GenerateKeyPair():
     return DeriveKeyPair(dz)
 ~~~
 
-The `SerializePublicKey()` and `DeserializePublicKey()` functions are both the
+The `SerializePublicKey` and `DeserializePublicKey` functions are both the
 identity function, since the ML-KEM already uses fixed-length byte strings for
 public encapsulation keys.  The length of the byte string is determined by the
 ML-KEM parameter set in use.
 
-The `Encap()` function corresponds to the function `ML-KEM.Encaps()` in
+The `Encap` function corresponds to the function `ML-KEM.Encaps` in
 {{FIPS203}}, where an ML-KEM encapsulation key check failure causes an HPKE
 `EncapError`.
 
-The `Decap()` function corresponds to the function `ML-KEM.Decaps()` in
+The `Decap` function corresponds to the function `ML-KEM.Decaps` in
 {{FIPS203}}, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
 or hash check failure causes an HPKE `DecapError`. To be explicit, we derive the
 expanded decapsulation key from the 64-byte seed format and invoke
-`ML-KEM.Decaps()` with it:
+`ML-KEM.Decaps` with it:
 
 ~~~ pseudocode
 def Decap(enc, skR):
@@ -181,8 +181,6 @@ def Decap(enc, skR):
     (_, dk) = ML-KEM.KeyGen_internal(d, z)
     return ML-KEM.Decaps(dk, enc)
 ~~~
-
-The `AuthEncap()` and `AuthDecap()` functions are not implemented.
 
 The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
