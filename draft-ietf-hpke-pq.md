@@ -197,7 +197,7 @@ specified in {{ml-kem-iana-table}}.
 > ML-KEM, however, there is some concern that new cryptanalysis might reduce the
 > security level of ML-KEM-512.  Use of ML-KEM-768 or ML-KEM-1024 acts as a
 > hedge against cryptanalysis of ML-KEM that removes some bits of security but
-> is not catstrophic, at a modest performance penalty.
+> is not catastrophic, at a modest performance penalty.
 
 # Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
