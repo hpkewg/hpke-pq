@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-08T01:01:11.595873+00:00",
+  "timestamp": "2025-06-10T00:56:23.744213+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -94,6 +94,38 @@
           "updatedAt": "2025-06-06T17:13:47Z"
         }
       ]
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOOXfHTc66pIli",
+      "title": "Finalize PQ/T hybrids",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/9",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The general framework for referencing PQ/T hybrid KEMs was set up in #5.  Those documents are still stabilizing, so we will need to update this document as they firm up.",
+      "createdAt": "2025-06-09T20:03:22Z",
+      "updatedAt": "2025-06-09T20:03:22Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 11,
+      "id": "I_kwDOOXfHTc66p0G5",
+      "title": "Add test vectors for some combinations",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/11",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "RFC 9180 has test vectors for a few combinations of KDF/KEM/AEAD.  It might be nice for this document to include test vectors for combinations including the KEMs and KDFs defined here, at least the combos that are [likely to be adopted by MLS](https://www.ietf.org/archive/id/draft-mahy-mls-pq-00.html):\n\n* Hybrid(X25519 + ML-KEM-768) + SHAKE128 + AES-128-GCM\n* Hybrid(P256 + ML-KEM-768) + SHAKE128 + AES-128-GCM\n* Hybrid(P384 + ML-KEM-1024) + SHAKE256 + AES-256-GCM\n* ML-KEM-768 + SHAKE128 + AES-128-GCM\n* ML-KEM-1024 + SHAKE256 + AES-256-GCM\n\n(This is presuming that MLS will use the SHA3 version, as opposed to the SHA2 things that are in the draft now.  TBD)",
+      "createdAt": "2025-06-09T21:22:37Z",
+      "updatedAt": "2025-06-09T21:22:37Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -102,24 +134,26 @@
       "id": "PR_kwDOOXfHTc6UMAGv",
       "title": "Add support for single-stage KDFs",
       "url": "https://github.com/hpkewg/hpke-pq/pull/1",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Corresponds to https://github.com/hpkewg/hpke/pull/16\r\n\r\nNot sure we need all six of these?",
       "createdAt": "2025-04-28T15:20:15Z",
-      "updatedAt": "2025-06-06T16:33:16Z",
+      "updatedAt": "2025-06-09T19:57:19Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
-      "baseRefOid": "67f37b867da15d0b47523a1c4e05fb063063502a",
+      "baseRefOid": "6009aeb36e2f2dbc6bf94b3823ec86d3eab0261a",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "xof",
-      "headRefOid": "88bd665942064ecffef0a3f4b3fdeb0cd9c62d21",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "290ff88b096a5093631e83c7695b8e71d1560ed9",
+      "closedAt": "2025-06-09T19:57:19Z",
+      "mergedAt": "2025-06-09T19:57:19Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "ecdfcffbb9c25641718867bd21189e788c49f931"
+      },
       "comments": [
         {
           "author": "bifurcation",
@@ -176,7 +210,7 @@
             "abbreviatedOid": "88bd665"
           },
           "author": "dconnolly",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "\ud83d\udc4d",
           "createdAt": "2025-06-06T16:33:16Z",
@@ -260,24 +294,26 @@
       "id": "PR_kwDOOXfHTc6ZBO90",
       "title": "Define HPKE KEMs using PQ/T hybrid KEMs",
       "url": "https://github.com/hpkewg/hpke-pq/pull/5",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "CFRG has two drafts in progress for hybrid KEMs:\r\n\r\n* [draft-irtf-cfrg-hybrid-kems](https://cfrg.github.io/draft-irtf-cfrg-hybrid-kems/draft-irtf-cfrg-hybrid-kems.html) defines general schemes for constructing PQ/T hybrid KEMs from a T group/KEM and a PQ KEM.\r\n* [draft-irtf-cfrg-concrete-hybrid-kems](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/blob/main/draft-irtf-cfrg-concrete-hybrid-kems.md) defines a few specific instantiations of the general schemes.\r\n\r\n(Note that I am referring to the GitHub / editor's copies of these docs for now, since the authors of those docs haven't yet released new drafts reflecting the required changes.  Should be soon.)\r\n\r\nThis PR just maps the KEM interface from those documents to the HPKE one, and registers KEM IDs for the hybrid KEMs.\r\n\r\nAlso, as a bit of terminology cleanup, we use \"IND-CCA2\" to talk about public-key encryption, and \"IND-CCA\" to talk about KEMs, since this seems to be the standard terminology.",
       "createdAt": "2025-06-04T12:52:18Z",
-      "updatedAt": "2025-06-06T16:40:45Z",
+      "updatedAt": "2025-06-09T20:09:45Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
-      "baseRefOid": "017ffabee4796fd67d07eaf028ca9b2f0489e707",
+      "baseRefOid": "ecdfcffbb9c25641718867bd21189e788c49f931",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "pqt",
-      "headRefOid": "b880a586e20be71c2e59ff9a4f8c497fa721089b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "1f4a62d83364e7f8f78dce7d4a45c08407c43b55",
+      "closedAt": "2025-06-09T20:09:32Z",
+      "mergedAt": "2025-06-09T20:09:32Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "5d800e03849fba379a30bed9b1b13efa38f013b9"
+      },
       "comments": [
         {
           "author": "bifurcation",
@@ -288,7 +324,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Action to take a question about the use of SHA-2 in these KEMs.  Just to confirm that there isn't anyone who is stuck on CNSA 2.0 and so needs a combination with those.",
           "createdAt": "2025-06-06T16:40:43Z",
           "updatedAt": "2025-06-06T16:40:43Z"
@@ -301,7 +337,7 @@
             "abbreviatedOid": "b880a58"
           },
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-05T01:24:08Z",
@@ -321,7 +357,7 @@
             "abbreviatedOid": "b880a58"
           },
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-06-05T01:25:23Z",
@@ -342,52 +378,84 @@
       "id": "PR_kwDOOXfHTc6ZJpD6",
       "title": "typo fix",
       "url": "https://github.com/hpkewg/hpke-pq/pull/6",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "loganaden",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-06-05T07:57:04Z",
-      "updatedAt": "2025-06-05T07:57:04Z",
+      "updatedAt": "2025-06-09T19:53:44Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "017ffabee4796fd67d07eaf028ca9b2f0489e707",
       "headRepository": "cyberstormdotmu/hpke-pq",
       "headRefName": "loganaden-hpke_pq_typo",
       "headRefOid": "3282b4a458630dce716b279dc3637d8f37647954",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-09T19:53:44Z",
+      "mergedAt": "2025-06-09T19:53:44Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "6009aeb36e2f2dbc6bf94b3823ec86d3eab0261a"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6thQKx",
+          "commit": {
+            "abbreviatedOid": "3282b4a"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-09T19:52:59Z",
+          "updatedAt": "2025-06-09T19:52:59Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 7,
       "id": "PR_kwDOOXfHTc6ZbK82",
       "title": "Mention ML-KEM-512 in the intro",
       "url": "https://github.com/hpkewg/hpke-pq/pull/7",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "dconnolly",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-06-06T17:18:15Z",
-      "updatedAt": "2025-06-06T17:18:15Z",
+      "updatedAt": "2025-06-09T20:05:02Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "017ffabee4796fd67d07eaf028ca9b2f0489e707",
       "headRepository": "dconnolly/hpke-pq",
       "headRefName": "patch-1",
       "headRefOid": "3d64a8cf135b75b46d212f5b8c25167e0bc55d55",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-09T20:05:02Z",
+      "mergedAt": "2025-06-09T20:05:02Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "4e6555f60aa1eafd81e43e5831cadfbeabe24863"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6thYGy",
+          "commit": {
+            "abbreviatedOid": "3d64a8c"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-09T20:04:37Z",
+          "updatedAt": "2025-06-09T20:04:37Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 8,
@@ -401,17 +469,86 @@
       "labels": [],
       "body": "As discussed in #17 and at the 2025-06-06 interim, this PR makes a couple of caveats:\r\n\r\n* ML-KEM-512 is noted to be \"not suitable for general use on the Internet\"\r\n* The security considerations get a note describing the difference between hybrid and pure PQ",
       "createdAt": "2025-06-06T17:53:58Z",
-      "updatedAt": "2025-06-06T17:53:58Z",
+      "updatedAt": "2025-06-09T20:13:35Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
-      "baseRefOid": "017ffabee4796fd67d07eaf028ca9b2f0489e707",
+      "baseRefOid": "5d800e03849fba379a30bed9b1b13efa38f013b9",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "sec-cons",
-      "headRefOid": "9b5df61bb4ea135b49922652c0053561bc2d3428",
+      "headRefOid": "5b3d3d33330bfda31725d43d0981a5477c8fef53",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6ta063",
+          "commit": {
+            "abbreviatedOid": "9b5df61"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-09T09:27:54Z",
+          "updatedAt": "2025-06-09T09:27:55Z",
+          "comments": [
+            {
+              "originalPosition": 24,
+              "body": "```suggestion\r\nsecurity properties.\r\n```",
+              "createdAt": "2025-06-09T09:27:54Z",
+              "updatedAt": "2025-06-09T09:27:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6ta1p9",
+          "commit": {
+            "abbreviatedOid": "9b5df61"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-09T09:28:37Z",
+          "updatedAt": "2025-06-09T09:28:38Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\n{:aside}\r\n> Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest\r\n```\r\n\r\nNot taking any position on Quynh's feedback on the list.",
+              "createdAt": "2025-06-09T09:28:38Z",
+              "updatedAt": "2025-06-09T09:28:38Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOOXfHTc6ZvkKH",
+      "title": "Clean up the pure ML-KEM section",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/10",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Inspired by [a PR comment](https://github.com/hpkewg/hpke-pq/pull/5#pullrequestreview-2898620188) from @martinthomson, this PR cleans up the same `()` notation in the pure ML-KEM KEM definitions.\r\n\r\nIt also removes the mention of AuthEncap / AuthDecap, since these have been removed from draft-ietf-hpke-hpke.",
+      "createdAt": "2025-06-09T20:16:53Z",
+      "updatedAt": "2025-06-09T20:19:29Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "5d800e03849fba379a30bed9b1b13efa38f013b9",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ml-kem-cleanup",
+      "headRefOid": "eeebba4745220fc4cd7054d412737bb90df5313c",
+      "closedAt": "2025-06-09T20:19:24Z",
+      "mergedAt": "2025-06-09T20:19:24Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398"
+      },
       "comments": [],
       "reviews": []
     }
