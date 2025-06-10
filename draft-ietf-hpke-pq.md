@@ -190,8 +190,14 @@ specified in {{ml-kem-iana-table}}.
 
 {:aside}
 > Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest
-> of completeness, the security level that ML-KEM-512 provides is not generally
-> considered suitable for general use on the Internet.
+> of completeness, implementors should generally prefer ML-KEM-768 or
+> ML-KEM-1024, or the PQ/T hybrids described in {{hybrids}}.  According to
+> current cryptanalysis, ML-KEM-512 provides security compatible with a 128-bit
+> security level (or NIST security category 1).  Given the relative novelty of
+> ML-KEM, however, there is some concern that new cryptanalysis might reduce the
+> security level of ML-KEM-512.  Use of ML-KEM-768 or ML-KEM-1024 acts as a
+> hedge against cryptanalysis of ML-KEM that removes some bits of security but
+> is not catstrophic, at a modest performance penalty.
 
 # Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
