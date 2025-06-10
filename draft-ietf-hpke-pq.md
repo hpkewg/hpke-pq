@@ -186,7 +186,18 @@ The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
 
-# Hybrid KEMs with ECDH and ML-KEM
+{:aside}
+> Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest
+> of completeness, implementors should generally prefer ML-KEM-768 or
+> ML-KEM-1024, or the PQ/T hybrids described in {{hybrids}}.  According to
+> current cryptanalysis, ML-KEM-512 provides security compatible with a 128-bit
+> security level (or NIST security category 1).  Given the relative novelty of
+> ML-KEM, however, there is some concern that new cryptanalysis might reduce the
+> security level of ML-KEM-512.  Use of ML-KEM-768 or ML-KEM-1024 acts as a
+> hedge against cryptanalysis of ML-KEM that removes some bits of security but
+> is not catastrophic, at a modest performance penalty.
+
+# Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
 The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
 traditional ECDH group with ML-KEM:
@@ -267,6 +278,15 @@ itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
 [[ TODO: Binding properties ]]
+
+## PQ Hybrid vs. Pure PQ
+
+Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
+{{hybrids}} or the pure PQ KEMs defined in {{ml-kem}} provide security against a
+quantum attacker.  In environments where there is concern that ML-KEM might not
+be secure, the hybrid KEMs can be used to provide security against a non-quantum
+attacker.  See {{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid
+security properties.
 
 # IANA Considerations
 
