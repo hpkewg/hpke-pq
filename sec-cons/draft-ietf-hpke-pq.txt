@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                             9 June 2025
-Expires: 11 December 2025
+Intended status: Standards Track                            10 June 2025
+Expires: 12 December 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 December 2025.
+   This Internet-Draft will expire on 12 December 2025.
 
 Copyright Notice
 
@@ -241,9 +241,16 @@ Table of Contents
    they are specified in Table 2.
 
       |  Note: While this document defines an HPKE KEM for ML-KEM-512 in
-      |  the interest of completeness, the security level that ML-
-      |  KEM-512 provides is not generally considered suitable for
-      |  general use on the Internet.
+      |  the interest of completeness, implementors should generally
+      |  prefer ML-KEM-768 or ML-KEM-1024, or the PQ/T hybrids described
+      |  in Section 4.  According to current cryptanalysis, ML-KEM-512
+      |  provides security compatible with a 128-bit security level (or
+      |  NIST security category 1).  Given the relative novelty of ML-
+      |  KEM, however, there is some concern that new cryptanalysis
+      |  might reduce the security level of ML-KEM-512.  Use of ML-
+      |  KEM-768 or ML-KEM-1024 acts as a hedge against cryptanalysis of
+      |  ML-KEM that removes some bits of security but is not
+      |  catstrophic, at a modest performance penalty.
 
 4.  Hybrid KEMs with ECDH and ML-KEM
 
