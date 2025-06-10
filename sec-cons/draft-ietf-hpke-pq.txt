@@ -250,7 +250,7 @@ Table of Contents
       |  might reduce the security level of ML-KEM-512.  Use of ML-
       |  KEM-768 or ML-KEM-1024 acts as a hedge against cryptanalysis of
       |  ML-KEM that removes some bits of security but is not
-      |  catstrophic, at a modest performance penalty.
+      |  catastrophic, at a modest performance penalty.
 
 4.  Hybrid KEMs with ECDH and ML-KEM
 
