@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-10T00:56:23.744213+00:00",
+  "timestamp": "2025-06-12T00:55:49.365505+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -469,13 +469,13 @@
       "labels": [],
       "body": "As discussed in #17 and at the 2025-06-06 interim, this PR makes a couple of caveats:\r\n\r\n* ML-KEM-512 is noted to be \"not suitable for general use on the Internet\"\r\n* The security considerations get a note describing the difference between hybrid and pure PQ",
       "createdAt": "2025-06-06T17:53:58Z",
-      "updatedAt": "2025-06-09T20:13:35Z",
+      "updatedAt": "2025-06-10T14:56:22Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "5d800e03849fba379a30bed9b1b13efa38f013b9",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "sec-cons",
-      "headRefOid": "5b3d3d33330bfda31725d43d0981a5477c8fef53",
+      "headRefOid": "6db2b1ddb9d4e1f0e4bdd51ef0cb766879ebbffa",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -519,6 +519,52 @@
               "body": "```suggestion\r\n{:aside}\r\n> Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest\r\n```\r\n\r\nNot taking any position on Quynh's feedback on the list.",
               "createdAt": "2025-06-09T09:28:38Z",
               "updatedAt": "2025-06-09T09:28:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6toGEi",
+          "commit": {
+            "abbreviatedOid": "5b3d3d3"
+          },
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-06-10T10:44:17Z",
+          "updatedAt": "2025-06-10T10:44:17Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "It's a bit more subtle than that. At the time of writing there is no peer-reviewed evidence that ML-KEM-512 doesn't reach its claimed security level (AES-128). ML-KEM-768 is a hedge against cryptanalytic improvement.",
+              "createdAt": "2025-06-10T10:44:17Z",
+              "updatedAt": "2025-06-10T10:44:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6tr1CU",
+          "commit": {
+            "abbreviatedOid": "24308d1"
+          },
+          "author": "thomwiggers",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "One typo, one suggestion.",
+          "createdAt": "2025-06-10T14:52:19Z",
+          "updatedAt": "2025-06-10T14:54:23Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "```suggestion\r\n> is not catastrophic, at a modest performance penalty.\r\n```",
+              "createdAt": "2025-06-10T14:52:20Z",
+              "updatedAt": "2025-06-10T14:54:23Z"
+            },
+            {
+              "originalPosition": 28,
+              "body": "```suggestion\r\nquantum attacker.  In environments where there is concern that (an implementation of) ML-KEM might not\r\n```\r\n\r\nI think it's more fair to ML-KEM to make it more explicit that we're more worried about implementation concerns than to keep casting doubt about the algorithm itself.",
+              "createdAt": "2025-06-10T14:54:08Z",
+              "updatedAt": "2025-06-10T14:54:23Z"
             }
           ]
         }
