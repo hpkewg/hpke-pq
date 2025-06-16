@@ -303,7 +303,7 @@ IANA is requested to add the following entries to the HPKE KEM Identifiers regis
 | 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
 | 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
 | 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
-{: #ml-kem-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
+{: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
 
 
 ## SHA-3 KDF Entries
