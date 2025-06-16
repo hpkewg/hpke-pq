@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE</title>
+<meta content="Richard Barnes" name="author">
+<meta content='
+       Updating key exchange and public-key encryption protocols to resist attack by
+quantum computers is a high priority given the possibility of "harvest now,
+decrypt later" attacks.  Hybrid Public Key Encryption (HPKE) is a widely-used
+public key encryption scheme based on combining a Key Encapsulation Mechanism
+(KEM), a Key Derivation Function (KDF), and an Authenticated Encryption with
+Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
+HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
+KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
+use with these KEMs.  When used with these algorithms, HPKE is resilient with
+respect to attacks by a quantum computer. 
+    ' name="description">
+<meta content="xml2rfc 3.28.1" name="generator">
+<meta content="hybrid public key encryption" name="keyword">
+<meta content="hpke" name="keyword">
+<meta content="post-quantum" name="keyword">
+<meta content="draft-ietf-hpke-pq-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.28.1
+    Python 3.12.11
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.4
+    setuptools 80.9.0
+    wcwidth 0.2.13
+-->
+<link href="draft-ietf-hpke-pq.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">PQ HPKE</td>
+<td class="right">June 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Barnes</td>
+<td class="center">Expires 18 December 2025</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HPKE Publication, Kept Efficient</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-hpke-pq-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-06-16" class="published">16 June 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2025-12-18">18 December 2025</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">R. Barnes</div>
+<div class="org">Your Organization Here</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">Updating key exchange and public-key encryption protocols to resist attack by
+quantum computers is a high priority given the possibility of "harvest now,
+decrypt later" attacks.  Hybrid Public Key Encryption (HPKE) is a widely-used
+public key encryption scheme based on combining a Key Encapsulation Mechanism
+(KEM), a Key Derivation Function (KDF), and an Authenticated Encryption with
+Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
+HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
+KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
+use with these KEMs.  When used with these algorithms, HPKE is resilient with
+respect to attacks by a quantum computer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html">https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/">https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        HPKE Publication, Kept Efficient  mailing list (<span><a href="mailto:hpke@ietf.org">mailto:hpke@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/hpke">https://mailarchive.ietf.org/arch/browse/hpke</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/hpke/">https://www.ietf.org/mailman/listinfo/hpke/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/hpkewg/hpke-pq">https://github.com/hpkewg/hpke-pq</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 18 December 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-ml-kem" class="internal xref">ML-KEM</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-hybrid-kems-with-ecdh-and-m" class="internal xref">Hybrid KEMs with ECDH and ML-KEM</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-single-stage-kdfs" class="internal xref">Single-Stage KDFs</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-selection-of-aead-algorithm" class="internal xref">Selection of AEAD algorithms</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-updated-ml-kem-kem-entries" class="internal xref">Updated ML-KEM KEM Entries</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-pq-t-hybrid-kem-entries" class="internal xref">PQ/T Hybrid KEM Entries</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-sha-3-kdf-entries" class="internal xref">SHA-3 KDF Entries</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">A cryptographically relevant quantum computer may or may not exist as of this
+writing.  The conventional wisdom, however, is that if one does not already,
+then it likely will within the lifetime of information that is cryptographically
+protected today.  Such a computer would have the ability to infer decapsulation
+keys from encapsulation keys used for traditional KEMs, e.g., KEMs based on
+Diffie-Hellman over finite fields or elliptic curves.  And it would be able to
+do this not just for data encrypted after the creation of the computer, but also
+for any information observed by the attacker previously, and stored for later
+decryption.  This is the so-called "harvest now, decrypt later" attack.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">It is thus a high priority for many organizations right now to migrate key
+exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
+to attack by a quantum computer <span>[<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>.  Since these PQ
+algorithms are relatively new, there is also interest in hybrid constructions
+combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
+fails, then the traditional algorithm will still provide security, at least
+against classical attacks.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Hybrid Public Key Encryption (HPKE) is a widely-used public key encryption
+scheme based on combining a Key Encapsulation Mechanism (KEM), a Key Derivation
+Function (KDF), and an Authenticated Encryption with Associated Data (AEAD)
+scheme <span>[<a href="#I-D.barnes-hpke-hpke" class="cite xref">I-D.barnes-hpke-hpke</a>]</span>.  It is the foundation of the Messaging Layer
+Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
+ClientHello extension <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> <span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span> <span>[<a href="#I-D.ietf-tls-esni" class="cite xref">I-D.ietf-tls-esni</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
+allows HPKE to provide post-quantum security, as discussed in
+<a href="#security-considerations" class="auto internal xref">Section 7</a>:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-5.1">
+          <p id="section-1-5.1.1">ML-KEM-512<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.2">
+          <p id="section-1-5.2.1">ML-KEM-768<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.3">
+          <p id="section-1-5.3.1">ML-KEM-1024<a href="#section-1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.4">
+          <p id="section-1-5.4.1">X25519 + ML-KEM-768<a href="#section-1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.5">
+          <p id="section-1-5.5.1">P-256 + ML-KEM-768<a href="#section-1-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.6">
+          <p id="section-1-5.6.1">P-384 + ML-KEM-1024<a href="#section-1-5.6.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-6">ML-KEM, X25519, and P-256/P-384 are defined in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, <span>[<a href="#RFC7748" class="cite xref">RFC7748</a>]</span>, and
+<span>[<a href="#FIPS186" class="cite xref">FIPS186</a>]</span>, respectively.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">This selection of KEM algorithms was chosen to provide a reasonably consolidated
+set of algorithms (in the interest of broad interoperability), while still
+allowing HPKE users flexibility along a few axes:<a href="#section-1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-8.1">
+          <p id="section-1-8.1.1">Pure PQ vs. PQ/T hybrid<a href="#section-1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-8.2">
+          <p id="section-1-8.2.1">CFRG-defined vs. NIST-defined elliptic curves<a href="#section-1-8.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-8.3">
+          <p id="section-1-8.3.1">Different security levels (NIST category 3 vs. category 5)<a href="#section-1-8.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-9">We also define HPKE KDF algorithms based on the SHA-3 family of hash functions.
+SHA-3 is used internally to ML-KEM, and so it could be convenient for HPKE users
+using the KEM algorithms in this document to rely solely on SHA-3.<a href="#section-1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">We generally use the terminology defined in the HPKE specification
+<span>[<a href="#I-D.barnes-hpke-hpke" class="cite xref">I-D.barnes-hpke-hpke</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">There are two meanings of "hybrid" in this document.  In the context of "hybrid
+public key encryption", it refers to the combination of an asymmetric KEM
+operaiton and a symmetric AEAD operation.  In the context of "PQ/T hybrid",
+refers to the combination of PQ and traditional KEMs.  For clarity, we always
+use "HPKE" for the former, and "PQ/T hybrid" for the latter.<a href="#section-2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ml-kem">
+<section id="section-3">
+      <h2 id="name-ml-kem">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-ml-kem" class="section-name selfRef">ML-KEM</a>
+      </h2>
+<p id="section-3-1">The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  In this section, we define how to implement the HPKE KEM interface
+using ML-KEM.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The HPKE <code>DeriveKeyPair</code> function corresponds to the function
+<code>ML-KEM.KeyGen_internal</code> in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  The input <code>ikm</code> <span class="bcp14">MUST</span> be exactly
+<code>Nsk = 64</code> bytes long.  The <code>d</code> and <code>z</code> inputs to <code>ML-KEM.KeyGen_internal</code> are
+the first and last 32-byte segments of <code>ikm</code>, respectively.  The output <code>skX</code> is
+the generated decapsulation key and the output <code>pkX</code> is the generated
+encapsulation key.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-3">
+<pre>
+def DeriveKeyPair(ikm):
+    if len(ikm) != 64:
+        raise DeriveKeyPairError
+
+    d = ikm[:32]
+    z = ikm[32:]
+
+    dk = ikm
+    (ek, _) = ML-KEM.KeyGen_internal(d, z)
+    return (dk, ek)
+</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3-4">The <code>GenerateKeyPair</code> function is simply <code>DeriveKeyPair</code> with a pseudorandom
+<code>ikm</code> value.  As long as the bytes supplied by <code>random</code> meet the randomness
+requirements of <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, this corresponds to the <code>ML-KEM.KeyGen</code> function,
+with the distinction that the decapsulation key is returned in seed format
+rather than the expanded form returned by <code>ML-KEM.KeyGen</code>.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-5">
+<pre>
+def GenerateKeyPair():
+    dz = random(64)
+    return DeriveKeyPair(dz)
+</pre><a href="#section-3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3-6">The <code>SerializePublicKey</code> and <code>DeserializePublicKey</code> functions are both the
+identity function, since the ML-KEM already uses fixed-length byte strings for
+public encapsulation keys.  The length of the byte string is determined by the
+ML-KEM parameter set in use.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">The <code>Encap</code> function corresponds to the function <code>ML-KEM.Encaps</code> in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where an ML-KEM encapsulation key check failure causes an HPKE
+<code>EncapError</code>.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">The <code>Decap</code> function corresponds to the function <code>ML-KEM.Decaps</code> in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure causes an HPKE <code>DecapError</code>. To be explicit, we derive the
+expanded decapsulation key from the 64-byte seed format and invoke
+<code>ML-KEM.Decaps</code> with it:<a href="#section-3-8" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-9">
+<pre>
+def Decap(enc, skR):
+    d = skR[:32]
+    z = skR[32:]
+    (_, dk) = ML-KEM.KeyGen_internal(d, z)
+    return ML-KEM.Decaps(dk, enc)
+</pre><a href="#section-3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3-10">The constants <code>Nsecret</code> and <code>Nsk</code> are always 32 and 64, respectively.  The
+constants <code>Nenc</code> and <code>Npk</code> depend on the ML-KEM parameter set in use; they are
+specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>.<a href="#section-3-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="hybrid-kems-with-ecdh-and-ml-kem">
+<section id="section-4">
+      <h2 id="name-hybrid-kems-with-ecdh-and-m">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-hybrid-kems-with-ecdh-and-m" class="section-name selfRef">Hybrid KEMs with ECDH and ML-KEM</a>
+      </h2>
+<p id="section-4-1">The HNN3, HNN5, and HNX KEMs are defined in <span>[<a href="#CONCRETE" class="cite xref">CONCRETE</a>]</span>.  These KEMs combine a
+traditional ECDH group with ML-KEM:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-4-2">
+        <dt id="section-4-2.1">HNN3:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.2">
+          <p id="section-4-2.2.1">P-256 + ML-KEM-768<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-4-2.3">HNN5:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.4">
+          <p id="section-4-2.4.1">P-384 + ML-KEM-1024<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-4-2.5">HNX:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.6">
+          <p id="section-4-2.6.1">X25519 + ML-KEM-768<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-4-3">These KEMs satisfy the KEM interface defined in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.
+This interface is mostly the same as the KEM interface in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00#section-4" class="relref">Section 4</a> of [<a href="#I-D.ietf-hpke-hpke" class="cite xref">I-D.ietf-hpke-hpke</a>]</span>, with the following mapping:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-4.1">
+          <p id="section-4-4.1.1">The <code>GenerateKeyPair</code>, <code>DeriveKeyPair</code>, and <code>Encap</code> and <code>Decap</code> algorithms
+are identical.<a href="#section-4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-4.2">
+          <p id="section-4-4.2.1">The <code>SerializePublicKey</code> and <code>DeserializePublicKey</code> algorithms are the
+identity, since encapsulation keys are already fixed-length byte strings.<a href="#section-4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-4.3">
+          <p id="section-4-4.3.1">The constants map as follows:<a href="#section-4-4.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-4.3.2.1">
+              <p id="section-4-4.3.2.1.1"><code>Nsecret = Nss</code><a href="#section-4-4.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.2">
+              <p id="section-4-4.3.2.2.1"><code>Nenc = Nct</code><a href="#section-4-4.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.3">
+              <p id="section-4-4.3.2.3.1"><code>Npk = Nek</code><a href="#section-4-4.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.4">
+              <p id="section-4-4.3.2.4.1"><code>Nsk = Ndk</code><a href="#section-4-4.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+      </ul>
+</section>
+</div>
+<div id="single-stage-kdfs">
+<section id="section-5">
+      <h2 id="name-single-stage-kdfs">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-single-stage-kdfs" class="section-name selfRef">Single-Stage KDFs</a>
+      </h2>
+<p id="section-5-1">This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
+on Keccak.  SHAKE is defined as part of the SHA-3 specification <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>, and
+the related TurboSHAKE XOFs is defined in <span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The <code>Nh</code> values for the KDFs defined in this section are listed in
+<a href="#kdfid-values" class="auto internal xref">Table 1</a>.  The <code>Derive()</code> functions for each XOF are as follows, where
+<code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<span id="name-definition-of-single-stage-"></span><div id="kdf-derive">
+<figure id="figure-1">
+        <div class="lang-pseudocode sourcecode" id="section-5-3.1">
+<pre>
+def SHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return SHAKE&lt;SIZE&gt;(M = ikm, d = 8*L)
+
+def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return TurboSHAKE&lt;SIZE&gt;(M = ikm, D = 0x1f, L)
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-definition-of-single-stage-" class="selfRef">Definition of single-stage KDFs</a>
+        </figcaption></figure>
+</div>
+<span id="name-single-stage-kdf-ids"></span><div id="kdfid-values">
+<table class="center" id="table-1">
+        <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-single-stage-kdf-ids" class="selfRef">Single-Stage KDF IDs</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Value</th>
+            <th class="text-left" rowspan="1" colspan="1">KDF</th>
+            <th class="text-left" rowspan="1" colspan="1">Nh</th>
+            <th class="text-left" rowspan="1" colspan="1">Two-Stage</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0000</td>
+            <td class="text-left" rowspan="1" colspan="1">Reserved</td>
+            <td class="text-left" rowspan="1" colspan="1">N/A</td>
+            <td class="text-left" rowspan="1" colspan="1">N/A</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC 9180</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">TBD</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+<p id="section-5-5">[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]<a href="#section-5-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="selection-of-aead-algorithms">
+<section id="section-6">
+      <h2 id="name-selection-of-aead-algorithm">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-selection-of-aead-algorithm" class="section-name selfRef">Selection of AEAD algorithms</a>
+      </h2>
+<p id="section-6-1">As discussed in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-12#section-2.1" class="relref">Section 2.1</a> of [<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>, the advent of
+quantum computers does not necessarily require changes in the AEAD algorithms
+used in HPKE.  However, some compliance regimes call for the use of AEAD
+algorithms with longer key lengths, for example, the AES-256-GCM or
+ChaCha20Poly1305 algorithms registered for HPKE instead of AES-128-GCM.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-7-1">As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2 secure
+public-key encryption scheme if the KEM it uses is IND-CCA secure.  It follows
+that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
+provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
+algorithms defined in this document provide this level of security.  ML-KEM
+itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
+used in this document is established in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">[[ TODO: Binding properties ]]<a href="#section-7-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-8-1">This section requests that IANA perform three actions:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-2">
+<li id="section-8-2.1">
+          <p id="section-8-2.1.1">Update the entries in HPKE KEM Identifiers registry corresponding to ML-KEM
+algorithms.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.2">
+          <p id="section-8-2.2.1">Add entries to the HPKE KEM Identifiers registry for the PQ/T hybrid KEMs
+defined in this document.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.3">
+          <p id="section-8-2.3.1">Add entries to the HPKE KDF Identifiers registry for the SHA-3 KDFs defined
+in this document.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<div id="updated-ml-kem-kem-entries">
+<section id="section-8.1">
+        <h3 id="name-updated-ml-kem-kem-entries">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-updated-ml-kem-kem-entries" class="section-name selfRef">Updated ML-KEM KEM Entries</a>
+        </h3>
+<p id="section-8.1-1">IANA is requested to replace the entries in the HPKE KEM Identifiers registry
+for values <code>0x0040</code>, <code>0x0041</code>, and <code>0x0042</code> with the following values:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<span id="name-updated-ml-kem-entries-for-"></span><div id="ml-kem-iana-table">
+<table class="center" id="table-2">
+          <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-updated-ml-kem-entries-for-" class="selfRef">Updated ML-KEM entries for the HPKE KEM Identifiers table</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">KEM</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsecret</th>
+              <th class="text-left" rowspan="1" colspan="1">Nenc</th>
+              <th class="text-left" rowspan="1" colspan="1">Npk</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsk</th>
+              <th class="text-left" rowspan="1" colspan="1">Auth</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0040</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-512</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">768</td>
+              <td class="text-left" rowspan="1" colspan="1">800</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0041</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-768</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1088</td>
+              <td class="text-left" rowspan="1" colspan="1">1184</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0042</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-1024</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1568</td>
+              <td class="text-left" rowspan="1" colspan="1">1568</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-8.1-3">The only change being made is to update the "Reference" column to refer to this
+document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="pqt-hybrid-kem-entries">
+<section id="section-8.2">
+        <h3 id="name-pq-t-hybrid-kem-entries">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-pq-t-hybrid-kem-entries" class="section-name selfRef">PQ/T Hybrid KEM Entries</a>
+        </h3>
+<p id="section-8.2-1">IANA is requested to add the following entries to the HPKE KEM Identifiers registry:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<span id="name-new-pq-t-for-the-hpke-kem-i"></span><div id="pqt-iana-table">
+<table class="center" id="table-3">
+          <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-new-pq-t-for-the-hpke-kem-i" class="selfRef">New PQ/T for the HPKE KEM Identifiers table</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">KEM</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsecret</th>
+              <th class="text-left" rowspan="1" colspan="1">Nenc</th>
+              <th class="text-left" rowspan="1" colspan="1">Npk</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsk</th>
+              <th class="text-left" rowspan="1" colspan="1">Auth</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0050</td>
+              <td class="text-left" rowspan="1" colspan="1">HNN3</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1153</td>
+              <td class="text-left" rowspan="1" colspan="1">1249</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0051</td>
+              <td class="text-left" rowspan="1" colspan="1">HNN5</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1221</td>
+              <td class="text-left" rowspan="1" colspan="1">1317</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0052</td>
+              <td class="text-left" rowspan="1" colspan="1">HNX</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1120</td>
+              <td class="text-left" rowspan="1" colspan="1">1600</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+</section>
+</div>
+<div id="sha-3-kdf-entries">
+<section id="section-8.3">
+        <h3 id="name-sha-3-kdf-entries">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-sha-3-kdf-entries" class="section-name selfRef">SHA-3 KDF Entries</a>
+        </h3>
+<p id="section-8.3-1">IANA is requested to add the values listed in <a href="#kdfid-values" class="auto internal xref">Table 1</a> to the HPKE KDF
+Identifiers registry.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="CONCRETE">[CONCRETE]</dt>
+        <dd>
+<span class="refTitle">"TODO - CFRG Concrete hybrid KEMs"</span>, <time datetime="2001-06" class="refDate">June 2001</time>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS186">[FIPS186]</dt>
+        <dd>
+<span class="refTitle">"Digital Signature Standard (DSS)"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.186-5</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.186-5">https://doi.org/10.6028/nist.fips.186-5</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS202">[FIPS202]</dt>
+        <dd>
+<span class="refTitle">"SHA-3 standard :: permutation-based hash and extendable-output functions"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.202</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.202">https://doi.org/10.6028/nist.fips.202</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS203">[FIPS203]</dt>
+        <dd>
+<span class="refTitle">"Module-lattice-based key-encapsulation mechanism standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.203</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.203">https://doi.org/10.6028/nist.fips.203</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.barnes-hpke-hpke">[I-D.barnes-hpke-hpke]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-barnes-hpke-hpke-00</span>, <time datetime="2025-03-20" class="refDate">20 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-hpke-hpke">[I-D.ietf-hpke-hpke]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-hpke-hpke-00</span>, <time datetime="2025-06-01" class="refDate">1 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-hybrid-kems">[I-D.irtf-cfrg-hybrid-kems]</dt>
+        <dd>
+<span class="refAuthor">Connolly, D.</span>, <span class="refTitle">"Hybrid PQ/T Key Encapsulation Mechanisms"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hybrid-kems-03</span>, <time datetime="2025-02-25" class="refDate">25 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-kangarootwelve">[I-D.irtf-cfrg-kangarootwelve]</dt>
+        <dd>
+<span class="refAuthor">Viguier, B.</span>, <span class="refAuthor">Wong, D.</span>, <span class="refAuthor">Van Assche, G.</span>, <span class="refAuthor">Dang, Q.</span>, and <span class="refAuthor">J. Daemen</span>, <span class="refTitle">"KangarooTwelve and TurboSHAKE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-kangarootwelve-17</span>, <time datetime="2025-02-21" class="refDate">21 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7748">[RFC7748]</dt>
+        <dd>
+<span class="refAuthor">Langley, A.</span>, <span class="refAuthor">Hamburg, M.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Elliptic Curves for Security"</span>, <span class="seriesInfo">RFC 7748</span>, <span class="seriesInfo">DOI 10.17487/RFC7748</span>, <time datetime="2016-01" class="refDate">January 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7748">https://www.rfc-editor.org/rfc/rfc7748</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-pquip-pqc-engineers">[I-D.ietf-pquip-pqc-engineers]</dt>
+        <dd>
+<span class="refAuthor">Banerjee, A.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Schoinianakis, D.</span>, <span class="refAuthor">Hollebeek, T.</span>, and <span class="refAuthor">M. Ounsworth</span>, <span class="refTitle">"Post-Quantum Cryptography for Engineers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-pquip-pqc-engineers-12</span>, <time datetime="2025-05-19" class="refDate">19 May 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-12">https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-12</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-25</span>, <time datetime="2025-06-14" class="refDate">14 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-25">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-25</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9420">[RFC9420]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Beurdouche, B.</span>, <span class="refAuthor">Robert, R.</span>, <span class="refAuthor">Millican, J.</span>, <span class="refAuthor">Omara, E.</span>, and <span class="refAuthor">K. Cohn-Gordon</span>, <span class="refTitle">"The Messaging Layer Security (MLS) Protocol"</span>, <span class="seriesInfo">RFC 9420</span>, <span class="seriesInfo">DOI 10.17487/RFC9420</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9420">https://www.rfc-editor.org/rfc/rfc9420</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9458">[RFC9458]</dt>
+      <dd>
+<span class="refAuthor">Thomson, M.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Oblivious HTTP"</span>, <span class="seriesInfo">RFC 9458</span>, <span class="seriesInfo">DOI 10.17487/RFC9458</span>, <time datetime="2024-01" class="refDate">January 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9458">https://www.rfc-editor.org/rfc/rfc9458</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">TODO acknowledge.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Richard Barnes</span></div>
+<div dir="auto" class="left"><span class="org">Your Organization Here</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:rlb@ipv.sx" class="email">rlb@ipv.sx</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
