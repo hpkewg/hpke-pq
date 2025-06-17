@@ -307,8 +307,3 @@ IANA is requested to add the values listed in {{kdfid-values}} to the HPKE KDF
 Identifiers registry.
 
 --- back
-
-# Acknowledgments
-{:numbered="false"}
-
-TODO acknowledge.
