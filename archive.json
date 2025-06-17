@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-12T00:55:49.365505+00:00",
+  "timestamp": "2025-06-17T00:56:19.077700+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -595,6 +595,58 @@
       "mergeCommit": {
         "oid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOOXfHTc6aoGmj",
+      "title": "Follow your own structure for IANA",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/12",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-06-16T01:32:07Z",
+      "updatedAt": "2025-06-16T02:50:30Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "iana-update",
+      "headRefOid": "7a293fc44b0170582e1433bc7b860709cda351de",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDOOXfHTc6aoIG3",
+      "title": "Rearrange the KDF definitions slightly",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/13",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "For readability.\r\n\r\nRemoves the caption for the pseudocode (this uses \"as follows\", so no need to assign a figure number).\r\nReorders slightly.\r\nRemoves \"Reserved\" from the table, which duplicates the hpke-hpke draft.",
+      "createdAt": "2025-06-16T01:38:11Z",
+      "updatedAt": "2025-06-16T01:38:11Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "split-kdf",
+      "headRefOid": "a51384bfd81aea24bd9ac273948e5c8263158411",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
