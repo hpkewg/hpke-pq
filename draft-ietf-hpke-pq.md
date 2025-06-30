@@ -33,9 +33,7 @@ normative:
   FIPS186: DOI.10.6028/NIST.FIPS.186-5
   FIPS202: DOI.10.6028/NIST.FIPS.202
   FIPS203: DOI.10.6028/NIST.FIPS.203
-  CONCRETE:
-    title: "TODO - CFRG Concrete hybrid KEMs"
-    date: Jun, 2001
+  CONCRETE: I-D.irtf-cfrg-hybrid-kems
 
 informative:
   CDM23:
@@ -98,7 +96,7 @@ against classical attacks.
 Hybrid Public Key Encryption (HPKE) is a widely-used public key encryption
 scheme based on combining a Key Encapsulation Mechanism (KEM), a Key Derivation
 Function (KDF), and an Authenticated Encryption with Associated Data (AEAD)
-scheme {{!I-D.barnes-hpke-hpke}}.  It is the foundation of the Messaging Layer
+scheme {{!HPKE=I-D.ietf-hpke-hpke}}.  It is the foundation of the Messaging Layer
 Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
 ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?I-D.ietf-tls-esni}}.
 
@@ -133,7 +131,7 @@ using the KEM algorithms in this document to rely solely on SHA-3.
 {::boilerplate bcp14-tagged}
 
 We generally use the terminology defined in the HPKE specification
-{{I-D.barnes-hpke-hpke}}.
+{{!HPKE}}.
 
 There are two meanings of "hybrid" in this document.  In the context of "hybrid
 public key encryption", it refers to the combination of an asymmetric KEM
@@ -232,9 +230,9 @@ QSF-P384-MLKEM1024-SHAKE256-SHA3256:
 : P-384 + ML-KEM-1024
 {: spacing="compact"}
 
-These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
+These KEMs satisfy the KEM interface defined in {{!CONCRETE}}.
 This interface is mostly the same as the KEM interface in {{Section 4 of
-!I-D.ietf-hpke-hpke}}, with the following mapping:
+!HPKE=I-D.ietf-hpke-hpke}}, with the following mapping:
 
 * The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
   are identical.
@@ -300,7 +298,7 @@ that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
 provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
-used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
+used in this document is established in {{CONCRETE}}.
 
 Another security property that is salient in some use cases is "key binding".
 In {{CDM23}}, these notions are referred to with the shorthand X-BIND-P-Q.
@@ -320,8 +318,7 @@ it, even if the decapsulation key is leaked to an attacker after the encryption
 has been done.
 
 DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
-KEMs also provide these properties, as discussed in
-{{I-D.irtf-cfrg-hybrid-kems}}.
+KEMs also provide these properties, as discussed in {{CONCRETE}}.
 
 ## PQ Hybrid vs. Pure PQ
 
@@ -330,8 +327,7 @@ Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
 quantum attacker.  Hybrid KEMs can be used to provide security against a
 non-quantum attacker in the event of failures with regard to the PQ algorithm,
 including both implementation flaws as well as new cryptanalysis. See
-{{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid security
-properties.
+{{?CONCRETE}} for further analysis of hybrid security properties.
 
 # IANA Considerations
 
