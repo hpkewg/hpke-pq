@@ -275,10 +275,10 @@ The `Nh` values for the KDFs defined in this section are listed in
 
 | Value  | KDF           | Nh  | Two-Stage | Reference |
 |:-------|:--------------|-----|-----------|:----------|
-| TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
-| TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
-| TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
-| TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
+| 0x0010 | SHAKE128      | 32  | N         | RFC XXXX  |
+| 0x0011 | SHAKE256      | 64  | N         | RFC XXXX  |
+| 0x0012 | TurboSHAKE128 | 32  | N         | RFC XXXX  |
+| 0x0013 | TurboSHAKE256 | 64  | N         | RFC XXXX  |
 {: #kdfid-values title="Single-Stage KDF IDs"}
 
 [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
@@ -363,11 +363,11 @@ document.
 
 IANA is requested to add the following entries to the HPKE KEM Identifiers registry:
 
-| Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
-|:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
-| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
-| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+| Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
+| 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
+| 0x0052 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
 {: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
 
 
