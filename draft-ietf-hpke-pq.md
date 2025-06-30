@@ -55,7 +55,10 @@ informative:
         ins: N. Medinger
         name: Niklas Medinger
         org: CISPA Helmholtz Center for Information Security
-
+  TestVectors:
+    title: "HPKE Test Vectors for Post-Quantum Algorithms"
+    target: https://github.com/hpkewg/hpke-pq/blob/main/test-vectors.json
+    date: 2025
 
 --- abstract
 
@@ -216,17 +219,17 @@ specified in {{ml-kem-iana-table}}.
 
 # Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
-The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
-traditional ECDH group with ML-KEM:
+{{CONCRETE}} defines a collection of concrete PQ/T hybrid KEMs.  These KEMs
+combine a traditional ECDH group with ML-KEM:
 
-HNN3:
+QSF-P256-MLKEM768-SHAKE256-SHA3256:
 : P-256 + ML-KEM-768
 
-HNN5:
-: P-384 + ML-KEM-1024
-
-HNX:
+QSF-X25519-MLKEM768-SHAKE256-SHA3256:
 : X25519 + ML-KEM-768
+
+QSF-P384-MLKEM1024-SHAKE256-SHA3256:
+: P-384 + ML-KEM-1024
 {: spacing="compact"}
 
 These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
@@ -272,10 +275,10 @@ The `Nh` values for the KDFs defined in this section are listed in
 
 | Value  | KDF           | Nh  | Two-Stage | Reference |
 |:-------|:--------------|-----|-----------|:----------|
-| TBD    | SHAKE128      | 32  | N         | RFC XXXX  |
-| TBD    | SHAKE256      | 64  | N         | RFC XXXX  |
-| TBD    | TurboSHAKE128 | 32  | N         | RFC XXXX  |
-| TBD    | TurboSHAKE256 | 64  | N         | RFC XXXX  |
+| 0x0010 | SHAKE128      | 32  | N         | RFC XXXX  |
+| 0x0011 | SHAKE256      | 64  | N         | RFC XXXX  |
+| 0x0012 | TurboSHAKE128 | 32  | N         | RFC XXXX  |
+| 0x0013 | TurboSHAKE256 | 64  | N         | RFC XXXX  |
 {: #kdfid-values title="Single-Stage KDF IDs"}
 
 [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
@@ -360,11 +363,11 @@ document.
 
 IANA is requested to add the following entries to the HPKE KEM Identifiers registry:
 
-| Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
-|:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
-| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
-| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+| Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
+| 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
+| 0x0052 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
 {: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
 
 
@@ -374,3 +377,33 @@ IANA is requested to add the values listed in {{kdfid-values}} to the HPKE KDF
 Identifiers registry.
 
 --- back
+
+# Test Vectors
+
+Each section below contains test vectors for a single selection of HPKE
+algorithms and contains the following values:
+
+1. Configuration information and private key material: This includes the `mode`,
+   `info` string, HPKE ciphersuite identifiers (`kem_id`, `kdf_id`, `aead_id`),
+   and all sender and recipient key material. For each role S or R, (sender and
+   recipient, respectively) key pairs are generated as `(skX, pkX) =
+   DeriveKeyPair(ikmX)`.  Each key pair `(skX, pkX)` is written in its
+   serialized form, where `skXm = SerializePrivateKey(skX)` and `pkXm =
+   SerializePublicKey(pkX)`.  For the PSK mode, the shared PSK and PSK
+   identifier are also included.
+2. Context creation intermediate values: This includes the KEM outputs `enc` and
+   `shared_secret` used to create the context, as well as the context values
+   `key`, `base_nonce`, and `exporter_secret`.
+3. Encryption test vectors: A fixed plaintext message is encrypted using
+   different sequence numbers and AAD values using the context computed in (2).
+   Each test vector lists the sequence number and corresponding nonce computed
+   with `base_nonce`, the plaintext message `pt`, AAD `aad`, and output
+   ciphertext `ct`.
+4. Export test vectors: Several exported values of the same length with differing
+   context parameters are computed using the context computed in (2). Each test
+   vector lists the `exporter_context`, output length `L`, and resulting export
+   value.
+
+These test vectors are also available in JSON format at {{TestVectors}}.
+
+{::include test-vectors.md}

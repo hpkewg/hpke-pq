@@ -1,0 +1,41 @@
+[package]
+name = "hpke-ref"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aead = "0.5.2"
+aes-gcm = "0.10.3"
+chacha20poly1305 = "0.10.1"
+hkdf = "0.12.4"
+hmac = "0.12.1"
+ml-kem = "0.2.1"
+p256 = { version = "0.13.2", features = ["ecdh"] }
+p384 = "0.13.1"
+p521 = { version = "0.13.3", features = ["ecdh"] }
+rand = "0.9"
+sha2 = "0.10.8"
+sha3 = "0.10.8"
+x25519-dalek = { version = "2.0.1", features = ["static_secrets"] }
+x448 = "0.6.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex = { version = "0.4", features = ["serde"] }
+hex-literal = "1.0.0"
+generic-array = "0.14"
+
+# Import the generic hybrid KEM crate
+concrete-hybrid-kem = { path = "../../draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation" }
+
+
+[[bin]]
+name = "generate-test-vectors"
+path = "src/bin/generate.rs"
+
+[[bin]]
+name = "verify-test-vectors"
+path = "src/bin/verify.rs"
+
+[[bin]]
+name = "json-to-markdown"
+path = "src/bin/json-to-markdown.rs"
