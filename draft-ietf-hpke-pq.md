@@ -199,6 +199,12 @@ def Decap(enc, skR):
     return ML-KEM.Decaps(dk, enc)
 ~~~
 
+<<<<<<< Updated upstream
+=======
+The `AuthEncap()` and `AuthDecap()` functions (from {{?RFC9180}}) are not
+implemented.
+
+>>>>>>> Stashed changes
 The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
@@ -216,17 +222,17 @@ specified in {{ml-kem-iana-table}}.
 
 # Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
-The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
-traditional ECDH group with ML-KEM:
+{{CONCRETE}} defines a collection of concrete PQ/T hybrid KEMs.  These KEMs
+combine a traditional ECDH group with ML-KEM:
 
-HNN3:
+QSF-P256-MLKEM768-SHAKE256-SHA3256:
 : P-256 + ML-KEM-768
 
-HNN5:
-: P-384 + ML-KEM-1024
-
-HNX:
+QSF-X25519-MLKEM768-SHAKE256-SHA3256:
 : X25519 + ML-KEM-768
+
+QSF-P384-MLKEM1024-SHAKE256-SHA3256:
+: P-384 + ML-KEM-1024
 {: spacing="compact"}
 
 These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
