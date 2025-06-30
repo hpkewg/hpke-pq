@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                            10 June 2025
-Expires: 12 December 2025
+Intended status: Standards Track                            30 June 2025
+Expires: 1 January 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 December 2025.
+   This Internet-Draft will expire on 1 January 2026.
 
 Copyright Notice
 
@@ -341,15 +341,34 @@ Table of Contents
    secure, and the IND-CCA security of the hybrid constructions used in
    this document is established in [I-D.irtf-cfrg-hybrid-kems].
 
-   [[ TODO: Binding properties ]]
+   Another security property that is salient in some use cases is "key
+   binding".  In [CDM23], these notions are referred to with the
+   shorthand X-BIND-P-Q.  The most salient for protocol design provide
+   assurances similar to those provided by transcript hashing in
+   protocols like TLS:
+
+   LEAK-BIND-K-PK:  If the sender and receiver have the same key (K,
+      shared_secret above), then there is only one encapsulation key
+      (PK, pk) that could have produced it, even if the decapsulation
+      key is leaked to an attacker after the encryption has been done.
+
+   LEAK-BIND-K-CT:  If the sender and receiver have the same key (K,
+      shared_secret above), then there is only one KEM ciphertext (CT,
+      enc) that could have produced it, even if the decapsulation key is
+      leaked to an attacker after the encryption has been done.
+
+   DHKEM and ML-KEM meet these properties, as shown in [CDM23].  QSF-
+   based hybrid KEMs also provide these properties, as discussed in
+   [I-D.irtf-cfrg-hybrid-kems].
 
 7.1.  PQ Hybrid vs. Pure PQ
 
    Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined
    in Section 4 or the pure PQ KEMs defined in Section 3 provide
-   security against a quantum attacker.  In environments where there is
-   concern that ML-KEM might not be secure, the hybrid KEMs can be used
-   to provide security against a non-quantum attacker.  See
+   security against a quantum attacker.  Hybrid KEMs can be used to
+   provide security against a non-quantum attacker in the event of
+   failures with regard to the PQ algorithm, including both
+   implementation flaws as well as new cryptanalysis.  See
    [I-D.irtf-cfrg-hybrid-kems] for further analysis of hybrid security
    properties.
 
@@ -432,9 +451,9 @@ Table of Contents
    [I-D.ietf-hpke-hpke]
               Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
-              Internet-Draft, draft-ietf-hpke-hpke-00, 1 June 2025,
+              Internet-Draft, draft-ietf-hpke-hpke-01, 24 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
-              hpke-00>.
+              hpke-01>.
 
    [I-D.irtf-cfrg-hybrid-kems]
               Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
@@ -465,6 +484,11 @@ Table of Contents
 
 9.2.  Informative References
 
+   [CDM23]    Cremers, C., Dax, A., and N. Medinger, "Keeping Up with
+              the KEMs: Stronger Security Notions for KEMs and automated
+              analysis of KEM-based protocols", 2023,
+              <https://eprint.iacr.org/2023/1933.pdf>.
+
    [I-D.ietf-pquip-pqc-engineers]
               Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
@@ -476,9 +500,9 @@ Table of Contents
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-24, 20 March 2025,
+              draft-ietf-tls-esni-25, 14 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-24>.
+              esni-25>.
 
    [RFC9420]  Barnes, R., Beurdouche, B., Robert, R., Millican, J.,
               Omara, E., and K. Cohn-Gordon, "The Messaging Layer
