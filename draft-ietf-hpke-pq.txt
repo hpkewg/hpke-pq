@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                    Your Organization Here
-Intended status: Standards Track                             9 June 2025
-Expires: 11 December 2025
+Intended status: Standards Track                            30 June 2025
+Expires: 1 January 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 December 2025.
+   This Internet-Draft will expire on 1 January 2026.
 
 Copyright Notice
 
@@ -90,7 +90,6 @@ Table of Contents
    9.  References
      9.1.  Normative References
      9.2.  Informative References
-   Acknowledgments
    Author's Address
 
 1.  Introduction
@@ -407,9 +406,9 @@ Table of Contents
    [I-D.ietf-hpke-hpke]
               Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
-              Internet-Draft, draft-ietf-hpke-hpke-00, 1 June 2025,
+              Internet-Draft, draft-ietf-hpke-hpke-01, 24 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
-              hpke-00>.
+              hpke-01>.
 
    [I-D.irtf-cfrg-hybrid-kems]
               Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
@@ -451,9 +450,9 @@ Table of Contents
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-24, 20 March 2025,
+              draft-ietf-tls-esni-25, 14 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-24>.
+              esni-25>.
 
    [RFC9420]  Barnes, R., Beurdouche, B., Robert, R., Millican, J.,
               Omara, E., and K. Cohn-Gordon, "The Messaging Layer
@@ -463,10 +462,6 @@ Table of Contents
    [RFC9458]  Thomson, M. and C. A. Wood, "Oblivious HTTP", RFC 9458,
               DOI 10.17487/RFC9458, January 2024,
               <https://www.rfc-editor.org/rfc/rfc9458>.
-
-Acknowledgments
-
-   TODO acknowledge.
 
 Author's Address
 
