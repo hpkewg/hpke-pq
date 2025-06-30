@@ -1436,24 +1436,24 @@ identity, since encapsulation keys are already fixed-length byte strings.<a href
 <p id="section-5-1">This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
 on Keccak.  SHAKE is defined as part of the SHA-3 specification <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>, and
 the related TurboSHAKE XOFs is defined in <span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">The <code>Nh</code> values for the KDFs defined in this section are listed in
-<a href="#kdfid-values" class="auto internal xref">Table 1</a>.  The <code>Derive()</code> functions for each XOF are as follows, where
-<code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
-<span id="name-definition-of-single-stage-"></span><div id="kdf-derive">
-<figure id="figure-1">
-        <div class="lang-pseudocode sourcecode" id="section-5-3.1">
+<p id="section-5-2">The <code>Derive()</code> function for SHAKE is as follows,
+where <code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-5-3">
 <pre>
 def SHAKE&lt;SIZE&gt;.Derive(ikm, L):
     return SHAKE&lt;SIZE&gt;(M = ikm, d = 8*L)
-
+</pre><a href="#section-5-3" class="pilcrow">¶</a>
+</div>
+<p id="section-5-4">The <code>Derive()</code> function for TurboSHAKE is as follows,
+where <code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-4" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-5-5">
+<pre>
 def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
     return TurboSHAKE&lt;SIZE&gt;(M = ikm, D = 0x1f, L)
-</pre>
+</pre><a href="#section-5-5" class="pilcrow">¶</a>
 </div>
-<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
-<a href="#name-definition-of-single-stage-" class="selfRef">Definition of single-stage KDFs</a>
-        </figcaption></figure>
-</div>
+<p id="section-5-6">The <code>Nh</code> values for the KDFs defined in this section are listed in
+<a href="#kdfid-values" class="auto internal xref">Table 1</a>.<a href="#section-5-6" class="pilcrow">¶</a></p>
 <span id="name-single-stage-kdf-ids"></span><div id="kdfid-values">
 <table class="center" id="table-1">
         <caption>
@@ -1470,13 +1470,6 @@ def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="text-left" rowspan="1" colspan="1">0x0000</td>
-            <td class="text-left" rowspan="1" colspan="1">Reserved</td>
-            <td class="text-left" rowspan="1" colspan="1">N/A</td>
-            <td class="text-left" rowspan="1" colspan="1">N/A</td>
-            <td class="text-left" rowspan="1" colspan="1">RFC 9180</td>
-          </tr>
           <tr>
             <td class="text-left" rowspan="1" colspan="1">TBD</td>
             <td class="text-left" rowspan="1" colspan="1">SHAKE128</td>
@@ -1508,8 +1501,8 @@ def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
         </tbody>
       </table>
 </div>
-<p id="section-5-5">[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
-document. ]]<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-8">[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]<a href="#section-5-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="selection-of-aead-algorithms">
