@@ -38,6 +38,23 @@ normative:
     date: Jun, 2001
 
 informative:
+  CDM23:
+    title: "Keeping Up with the KEMs: Stronger Security Notions for KEMs and automated analysis of KEM-based protocols"
+    target: https://eprint.iacr.org/2023/1933.pdf
+    date: 2023
+    author:
+      -
+        ins: C. Cremers
+        name: Cas Cremers
+        org: CISPA Helmholtz Center for Information Security
+      -
+        ins: A. Dax
+        name: Alexander Dax
+        org: CISPA Helmholtz Center for Information Security
+      -
+        ins: N. Medinger
+        name: Niklas Medinger
+        org: CISPA Helmholtz Center for Information Security
 
 
 --- abstract
@@ -186,7 +203,18 @@ The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
 
-# Hybrid KEMs with ECDH and ML-KEM
+{:aside}
+> Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest
+> of completeness, implementors should generally prefer ML-KEM-768 or
+> ML-KEM-1024, or the PQ/T hybrids described in {{hybrids}}.  According to
+> current cryptanalysis, ML-KEM-512 provides security compatible with a 128-bit
+> security level (or NIST security category 1).  Given the relative novelty of
+> ML-KEM, however, there is some concern that new cryptanalysis might reduce the
+> security level of ML-KEM-512.  Use of ML-KEM-768 or ML-KEM-1024 acts as a
+> hedge against cryptanalysis of ML-KEM that removes some bits of security but
+> is not catastrophic, at a modest performance penalty.
+
+# Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
 The HNN3, HNN5, and HNX KEMs are defined in {{CONCRETE}}.  These KEMs combine a
 traditional ECDH group with ML-KEM:
@@ -271,7 +299,36 @@ algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
-[[ TODO: Binding properties ]]
+Another security property that is salient in some use cases is "key binding".
+In {{CDM23}}, these notions are referred to with the shorthand X-BIND-P-Q.
+The most salient for protocol design provide assurances similar to those
+provided by transcript hashing in protocols like TLS:
+
+LEAK-BIND-K-PK:
+: If the sender and receiver have the same key (`K`, `shared_secret` above),
+then there is only one encapsulation key (`PK`, `pk`) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.
+
+LEAK-BIND-K-CT:
+: If the sender and receiver have the same key (`K`, `shared_secret` above),
+then there is only one KEM ciphertext (`CT`, `enc`) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.
+
+DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
+KEMs also provide these properties, as discussed in
+{{I-D.irtf-cfrg-hybrid-kems}}.
+
+## PQ Hybrid vs. Pure PQ
+
+Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
+{{hybrids}} or the pure PQ KEMs defined in {{ml-kem}} provide security against a
+quantum attacker.  Hybrid KEMs can be used to provide security against a
+non-quantum attacker in the event of failures with regard to the PQ algorithm,
+including both implementation flaws as well as new cryptanalysis. See
+{{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid security
+properties.
 
 # IANA Considerations
 
