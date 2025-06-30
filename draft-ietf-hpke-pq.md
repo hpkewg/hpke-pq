@@ -38,6 +38,23 @@ normative:
     date: Jun, 2001
 
 informative:
+  CDM23:
+    title: "Keeping Up with the KEMs: Stronger Security Notions for KEMs and automated analysis of KEM-based protocols"
+    target: https://eprint.iacr.org/2023/1933.pdf
+    date: 2023
+    author:
+      -
+        ins: C. Cremers
+        name: Cas Cremers
+        org: CISPA Helmholtz Center for Information Security
+      -
+        ins: A. Dax
+        name: Alexander Dax
+        org: CISPA Helmholtz Center for Information Security
+      -
+        ins: N. Medinger
+        name: Niklas Medinger
+        org: CISPA Helmholtz Center for Information Security
 
 
 --- abstract
@@ -279,16 +296,36 @@ algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
 used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
 
-[[ TODO: Binding properties ]]
+Another security property that is salient in some use cases is "key binding".
+In {{CDM23}}, these notions are referred to with the shorthand X-BIND-P-Q.
+The most salient for protocol design provide assurances similar to those
+provided by transcript hashing in protocols like TLS:
+
+LEAK-BIND-K-PK:
+: If the sender and receiver have the same key (`K`, `shared_secret` above),
+then there is only one encapsulation key (`PK`, `pk`) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.
+
+LEAK-BIND-K-CT:
+: If the sender and receiver have the same key (`K`, `shared_secret` above),
+then there is only one KEM ciphertext (`CT`, `enc`) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.
+
+DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
+KEMs also provide these properties, as discussed in
+{{I-D.irtf-cfrg-hybrid-kems}}.
 
 ## PQ Hybrid vs. Pure PQ
 
 Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
 {{hybrids}} or the pure PQ KEMs defined in {{ml-kem}} provide security against a
-quantum attacker.  In environments where there is concern that ML-KEM might not
-be secure, the hybrid KEMs can be used to provide security against a non-quantum
-attacker.  See {{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid
-security properties.
+quantum attacker.  Hybrid KEMs can be used to provide security against a
+non-quantum attacker in the event of failures with regard to the PQ algorithm,
+including both implementation flaws as well as new cryptanalysis. See
+{{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid security
+properties.
 
 # IANA Considerations
 
