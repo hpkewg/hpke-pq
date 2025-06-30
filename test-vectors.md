@@ -1,5 +1,3 @@
-# Test Vectors
-
 ## ML-KEM-768, HKDF-SHA256, AES-128-GCM
 
 ### Base Setup Information

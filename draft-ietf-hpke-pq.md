@@ -55,7 +55,10 @@ informative:
         ins: N. Medinger
         name: Niklas Medinger
         org: CISPA Helmholtz Center for Information Security
-
+  TestVectors:
+    title: "HPKE Test Vectors for Post-Quantum Algorithms"
+    target: https://github.com/hpkewg/hpke-pq/blob/main/test-vectors.json
+    date: 2025
 
 --- abstract
 
@@ -199,12 +202,6 @@ def Decap(enc, skR):
     return ML-KEM.Decaps(dk, enc)
 ~~~
 
-<<<<<<< Updated upstream
-=======
-The `AuthEncap()` and `AuthDecap()` functions (from {{?RFC9180}}) are not
-implemented.
-
->>>>>>> Stashed changes
 The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
 constants `Nenc` and `Npk` depend on the ML-KEM parameter set in use; they are
 specified in {{ml-kem-iana-table}}.
@@ -380,3 +377,33 @@ IANA is requested to add the values listed in {{kdfid-values}} to the HPKE KDF
 Identifiers registry.
 
 --- back
+
+# Test Vectors
+
+Each section below contains test vectors for a single selection of HPKE
+algorithms and contains the following values:
+
+1. Configuration information and private key material: This includes the `mode`,
+   `info` string, HPKE ciphersuite identifiers (`kem_id`, `kdf_id`, `aead_id`),
+   and all sender and recipient key material. For each role S or R, (sender and
+   recipient, respectively) key pairs are generated as `(skX, pkX) =
+   DeriveKeyPair(ikmX)`.  Each key pair `(skX, pkX)` is written in its
+   serialized form, where `skXm = SerializePrivateKey(skX)` and `pkXm =
+   SerializePublicKey(pkX)`.  For the PSK mode, the shared PSK and PSK
+   identifier are also included.
+2. Context creation intermediate values: This includes the KEM outputs `enc` and
+   `shared_secret` used to create the context, as well as the context values
+   `key`, `base_nonce`, and `exporter_secret`.
+3. Encryption test vectors: A fixed plaintext message is encrypted using
+   different sequence numbers and AAD values using the context computed in (2).
+   Each test vector lists the sequence number and corresponding nonce computed
+   with `base_nonce`, the plaintext message `pt`, AAD `aad`, and output
+   ciphertext `ct`.
+4. Export test vectors: Several exported values of the same length with differing
+   context parameters are computed using the context computed in (2). Each test
+   vector lists the `exporter_context`, output length `L`, and resulting export
+   value.
+
+These test vectors are also available in JSON format at {{TestVectors}}.
+
+{::include test-vectors.md}
