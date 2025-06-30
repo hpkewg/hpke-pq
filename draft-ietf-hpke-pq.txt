@@ -343,8 +343,9 @@ Table of Contents
 
 8.1.  Updated ML-KEM KEM Entries
 
-   IANA should replace the entries in the HPKE KEM Identifiers registry
-   for values 0x0040, 0x0041, and 0x0042 with the following values:
+   IANA is requested to replace the entries in the HPKE KEM Identifiers
+   registry for values 0x0040, 0x0041, and 0x0042 with the following
+   values:
 
     +========+=============+=========+====+====+===+======+===========+
     | Value  | KEM         | Nsecret |Nenc|Npk |Nsk| Auth | Reference |
@@ -355,12 +356,6 @@ Table of Contents
     +--------+-------------+---------+----+----+---+------+-----------+
     | 0x0042 | ML-KEM-1024 | 32      |1568|1568|64 | no   | RFCXXXX   |
     +--------+-------------+---------+----+----+---+------+-----------+
-    | 0x0050 | HNN3        | 32      |1153|1249|32 | no   | RFCXXXX   |
-    +--------+-------------+---------+----+----+---+------+-----------+
-    | 0x0051 | HNN5        | 32      |1221|1317|32 | no   | RFCXXXX   |
-    +--------+-------------+---------+----+----+---+------+-----------+
-    | 0x0052 | HNX         | 32      |1120|1600|32 | no   | RFCXXXX   |
-    +--------+-------------+---------+----+----+---+------+-----------+
 
      Table 2: Updated ML-KEM entries for the HPKE KEM Identifiers table
 
@@ -369,7 +364,20 @@ Table of Contents
 
 8.2.  PQ/T Hybrid KEM Entries
 
-   [[ TODO: Register KEM values ]]
+   IANA is requested to add the following entries to the HPKE KEM
+   Identifiers registry:
+
+    +========+======+=========+======+======+=====+======+===========+
+    | Value  | KEM  | Nsecret | Nenc | Npk  | Nsk | Auth | Reference |
+    +========+======+=========+======+======+=====+======+===========+
+    | 0x0050 | HNN3 | 32      | 1153 | 1249 | 32  | no   | RFCXXXX   |
+    +--------+------+---------+------+------+-----+------+-----------+
+    | 0x0051 | HNN5 | 32      | 1221 | 1317 | 32  | no   | RFCXXXX   |
+    +--------+------+---------+------+------+-----+------+-----------+
+    | 0x0052 | HNX  | 32      | 1120 | 1600 | 32  | no   | RFCXXXX   |
+    +--------+------+---------+------+------+-----+------+-----------+
+
+           Table 3: New PQ/T for the HPKE KEM Identifiers table
 
 8.3.  SHA-3 KDF Entries
 
