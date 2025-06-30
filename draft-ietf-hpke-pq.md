@@ -286,17 +286,14 @@ This section requests that IANA perform three actions:
 
 ## Updated ML-KEM KEM Entries
 
-IANA should replace the entries in the HPKE KEM Identifiers registry for values
-`0x0040`, `0x0041`, and `0x0042` with the following values:
+IANA is requested to replace the entries in the HPKE KEM Identifiers registry
+for values `0x0040`, `0x0041`, and `0x0042` with the following values:
 
 | Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
 |:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
 | 0x0040 | ML-KEM-512  | 32       | 768  | 800  | 64  | no   | RFCXXXX   |
 | 0x0041 | ML-KEM-768  | 32       | 1088 | 1184 | 64  | no   | RFCXXXX   |
 | 0x0042 | ML-KEM-1024 | 32       | 1568 | 1568 | 64  | no   | RFCXXXX   |
-| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
-| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
 {: #ml-kem-iana-table title="Updated ML-KEM entries for the HPKE KEM Identifiers table" }
 
 The only change being made is to update the "Reference" column to refer to this
@@ -304,7 +301,15 @@ document.
 
 ## PQ/T Hybrid KEM Entries
 
-[[ TODO: Register KEM values ]]
+IANA is requested to add the following entries to the HPKE KEM Identifiers registry:
+
+| Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
+| 0x0050 | HNN3        | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | HNN5        | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
+| 0x0052 | HNX         | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+{: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
+
 
 ## SHA-3 KDF Entries
 
