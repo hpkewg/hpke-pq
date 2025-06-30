@@ -3,7 +3,7 @@
 
 
 HPKE Publication, Kept Efficient                               R. Barnes
-Internet-Draft                                    Your Organization Here
+Internet-Draft                                                     Cisco
 Intended status: Standards Track                            30 June 2025
 Expires: 1 January 2026
 
@@ -466,5 +466,5 @@ Table of Contents
 Author's Address
 
    Richard Barnes
-   Your Organization Here
+   Cisco
    Email: rlb@ipv.sx
