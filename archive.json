@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-06-19T00:56:26.690686+00:00",
+  "timestamp": "2025-07-01T01:03:37.387829+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOOXfHTc62JNEo",
       "title": "Choosing between PQ or PQ/T",
       "url": "https://github.com/hpkewg/hpke-pq/issues/2",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "> guidance on when to use ML-KEM directly versus using it within HPKE would be helpful for protocols that are currently using HPKE\n\nI don't know if we'd resolved on whether there would be a Recommended column in the registry, which is one potentially way of resolving this concern.  Absent that, some discussion of the considerations might be worthwhile.",
       "createdAt": "2025-05-12T07:03:31Z",
-      "updatedAt": "2025-06-06T17:13:48Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-30T12:13:50Z",
+      "closedAt": "2025-06-30T12:13:50Z",
       "comments": [
         {
           "author": "bifurcation",
@@ -74,7 +74,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Discussed 2025-06-06: Sense of the room was to avoid the controversy.  Will confirm on-list.",
           "createdAt": "2025-06-06T16:51:19Z",
           "updatedAt": "2025-06-06T16:51:19Z"
@@ -92,6 +92,13 @@
           "body": "I can put my comment from the chat then on the record here as well: I think that the best course of action in order to stay out of the controversy is to only include PQ/T for now. There is really no significant downside to the PQ/T apart from a minor performance hit (and by minor I think negligible tbh). But the PQ-only has security risk attached to it. Putting it into the draft as an \"equal\" option is putting Internet users at risk atm, because implementors will implement it and provide it. (Understanding the nuanced discussions around PQ-only and PQ/T is difficult to convey even withing the crypto community so I think the task of providing meaningful \"guidance\" is borderline futile). See also my comment https://github.com/hpkewg/hpke/issues/17 which IMO would be another option where no choice needs to be made and both put in. Then, by having suitable categories such as a recommended column, notice how in the hypothetical year 2035 when ML-KEM is broken and no QC is here it will look a lot less bad if the recommended colum sais \"discouraged\" or something.",
           "createdAt": "2025-06-06T17:10:40Z",
           "updatedAt": "2025-06-06T17:13:47Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Addressed in #8 ",
+          "createdAt": "2025-06-30T12:13:50Z",
+          "updatedAt": "2025-06-30T12:13:50Z"
         }
       ]
     },
@@ -116,15 +123,15 @@
       "id": "I_kwDOOXfHTc66p0G5",
       "title": "Add test vectors for some combinations",
       "url": "https://github.com/hpkewg/hpke-pq/issues/11",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "RFC 9180 has test vectors for a few combinations of KDF/KEM/AEAD.  It might be nice for this document to include test vectors for combinations including the KEMs and KDFs defined here, at least the combos that are [likely to be adopted by MLS](https://www.ietf.org/archive/id/draft-mahy-mls-pq-00.html):\n\n* Hybrid(X25519 + ML-KEM-768) + SHAKE128 + AES-128-GCM\n* Hybrid(P256 + ML-KEM-768) + SHAKE128 + AES-128-GCM\n* Hybrid(P384 + ML-KEM-1024) + SHAKE256 + AES-256-GCM\n* ML-KEM-768 + SHAKE128 + AES-128-GCM\n* ML-KEM-1024 + SHAKE256 + AES-256-GCM\n\n(This is presuming that MLS will use the SHA3 version, as opposed to the SHA2 things that are in the draft now.  TBD)",
       "createdAt": "2025-06-09T21:22:37Z",
-      "updatedAt": "2025-06-09T21:22:37Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-30T22:21:04Z",
+      "closedAt": "2025-06-30T22:21:04Z",
       "comments": []
     },
     {
@@ -132,15 +139,15 @@
       "id": "I_kwDOOXfHTc674VQe",
       "title": "Your Organization Here",
       "url": "https://github.com/hpkewg/hpke-pq/issues/14",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Maybe this is who Richard works for.  Maybe not.",
       "createdAt": "2025-06-17T05:12:18Z",
-      "updatedAt": "2025-06-17T05:23:48Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-30T11:45:50Z",
+      "closedAt": "2025-06-30T11:45:50Z",
       "comments": []
     },
     {
@@ -148,31 +155,39 @@
       "id": "I_kwDOOXfHTc674bBy",
       "title": "TODO: Binding Properties",
       "url": "https://github.com/hpkewg/hpke-pq/issues/16",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This is still a TODO in the draft.",
       "createdAt": "2025-06-17T05:10:29Z",
-      "updatedAt": "2025-06-17T05:38:41Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-06-30T12:13:23Z",
+      "closedAt": "2025-06-30T12:13:22Z",
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Addressed in #8 ",
+          "createdAt": "2025-06-30T12:13:23Z",
+          "updatedAt": "2025-06-30T12:13:23Z"
+        }
+      ]
     },
     {
       "number": 17,
       "id": "I_kwDOOXfHTc674bza",
       "title": "Acknowledge (or not)",
       "url": "https://github.com/hpkewg/hpke-pq/issues/17",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This might be one where acknowledgments aren't necessary.",
       "createdAt": "2025-06-17T05:40:19Z",
-      "updatedAt": "2025-06-17T05:40:19Z",
-      "closedAt": null,
+      "updatedAt": "2025-06-30T11:45:31Z",
+      "closedAt": "2025-06-30T11:45:31Z",
       "comments": []
     }
   ],
@@ -510,24 +525,26 @@
       "id": "PR_kwDOOXfHTc6ZbdQK",
       "title": "Add security considerations about PQ/T hybrid vs. pure PQ",
       "url": "https://github.com/hpkewg/hpke-pq/pull/8",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "As discussed in #17 and at the 2025-06-06 interim, this PR makes a couple of caveats:\r\n\r\n* ML-KEM-512 is noted to be \"not suitable for general use on the Internet\"\r\n* The security considerations get a note describing the difference between hybrid and pure PQ",
       "createdAt": "2025-06-06T17:53:58Z",
-      "updatedAt": "2025-06-10T14:56:22Z",
+      "updatedAt": "2025-06-30T12:12:53Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "5d800e03849fba379a30bed9b1b13efa38f013b9",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "sec-cons",
-      "headRefOid": "6db2b1ddb9d4e1f0e4bdd51ef0cb766879ebbffa",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "ae3e9b40840381a6dbc77342d1f6242b396c80de",
+      "closedAt": "2025-06-30T12:12:53Z",
+      "mergedAt": "2025-06-30T12:12:53Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "4d5fbb207287ad23f028620c4f3a71fb999285fb"
+      },
       "comments": [],
       "reviews": [
         {
@@ -596,7 +613,7 @@
             "abbreviatedOid": "24308d1"
           },
           "author": "thomwiggers",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "One typo, one suggestion.",
           "createdAt": "2025-06-10T14:52:19Z",
@@ -651,98 +668,216 @@
       "id": "PR_kwDOOXfHTc6aoGmj",
       "title": "Follow your own structure for IANA",
       "url": "https://github.com/hpkewg/hpke-pq/pull/12",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-06-16T01:32:07Z",
-      "updatedAt": "2025-06-16T02:50:30Z",
+      "updatedAt": "2025-06-30T11:48:13Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "iana-update",
       "headRefOid": "7a293fc44b0170582e1433bc7b860709cda351de",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-30T11:48:13Z",
+      "mergedAt": "2025-06-30T11:48:13Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "36ff7cdf8f092cea11c06409e3a4f58f682072f3"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xFMmA",
+          "commit": {
+            "abbreviatedOid": "7a293fc"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T11:47:50Z",
+          "updatedAt": "2025-06-30T11:47:50Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 13,
       "id": "PR_kwDOOXfHTc6aoIG3",
       "title": "Rearrange the KDF definitions slightly",
       "url": "https://github.com/hpkewg/hpke-pq/pull/13",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "For readability.\r\n\r\nRemoves the caption for the pseudocode (this uses \"as follows\", so no need to assign a figure number).\r\nReorders slightly.\r\nRemoves \"Reserved\" from the table, which duplicates the hpke-hpke draft.",
       "createdAt": "2025-06-16T01:38:11Z",
-      "updatedAt": "2025-06-16T01:38:11Z",
+      "updatedAt": "2025-06-30T11:46:47Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "split-kdf",
       "headRefOid": "a51384bfd81aea24bd9ac273948e5c8263158411",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-30T11:46:46Z",
+      "mergedAt": "2025-06-30T11:46:46Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "4b4cfe1465f8ce0006f01436200229e841f3abc1"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xFL5-",
+          "commit": {
+            "abbreviatedOid": "a51384b"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T11:46:41Z",
+          "updatedAt": "2025-06-30T11:46:41Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 15,
       "id": "PR_kwDOOXfHTc6a1EAs",
       "title": "Update author affiliation",
       "url": "https://github.com/hpkewg/hpke-pq/pull/15",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Closes #14.",
       "createdAt": "2025-06-17T05:31:46Z",
-      "updatedAt": "2025-06-17T05:31:46Z",
+      "updatedAt": "2025-06-30T11:45:49Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "barnes-affiliation",
       "headRefOid": "fbe8b0d3b9127ef4bb65aad132288175a58639c9",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-06-30T11:45:49Z",
+      "mergedAt": "2025-06-30T11:45:49Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "4b6d9919d5a0c3d5469acdd323b7fe6563f0be66"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xFLUU",
+          "commit": {
+            "abbreviatedOid": "fbe8b0d"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T11:45:43Z",
+          "updatedAt": "2025-06-30T11:45:43Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 18,
       "id": "PR_kwDOOXfHTc6a1Hag",
       "title": "No acknowledg[e]ments",
       "url": "https://github.com/hpkewg/hpke-pq/pull/18",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The easy option.  Feel free to open a different PR with actual content and close this if that is more appropriate.\r\n\r\nCloses #17.",
       "createdAt": "2025-06-17T05:41:26Z",
-      "updatedAt": "2025-06-17T05:41:26Z",
+      "updatedAt": "2025-06-30T11:45:30Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "f9038bcd4247137b6ca9f228eb14db07b1d6c398",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "noack",
       "headRefOid": "998de33b43b5477f0818c0c870fded2e96e8c5d5",
+      "closedAt": "2025-06-30T11:45:30Z",
+      "mergedAt": "2025-06-30T11:45:30Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "6ef6e3144e760e598ccd8a6ecb85816bb21f0135"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xFLIV",
+          "commit": {
+            "abbreviatedOid": "998de33"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-06-30T11:45:25Z",
+          "updatedAt": "2025-06-30T11:45:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOOXfHTc6csBU_",
+      "title": "Add a reference implementation and test vectors",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/19",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR adds a reference implementation that leverages the corresponding reference implementations for [hybrid KEMs](https://github.com/cfrg/draft-irtf-cfrg-hybrid-kems/pull/33) and [concrete hybrid KEMs](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/8), then uses it to add test vectors.\r\n\r\nIt also updates the names of the hybrid constructions to match the current names in the [concrete hybrid KEMs repo](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/blob/main/draft-irtf-cfrg-concrete-hybrid-kems.md#concrete-hybrid-kem-instances), and assigns values to the KDF registrations.\r\n\r\nFixes #11 ",
+      "createdAt": "2025-06-30T12:32:44Z",
+      "updatedAt": "2025-06-30T22:21:03Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "4d5fbb207287ad23f028620c4f3a71fb999285fb",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ref-impl",
+      "headRefOid": "70ce766a6045c5f6a00a2113af7ecb1a1fb07fbd",
+      "closedAt": "2025-06-30T22:21:02Z",
+      "mergedAt": "2025-06-30T22:21:02Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "e93b03f0e767a7e6b5686c188f5883cadae74136"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOOXfHTc6cyGoo",
+      "title": "Fix some references",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/20",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "draft-barnes-hpke-hpke is easy.\r\n\r\nThe \\[CONCRETE] reference isn't so obvious.  I think that the intent was to reference the hybrid-kems draft, from context.",
+      "createdAt": "2025-06-30T23:05:36Z",
+      "updatedAt": "2025-06-30T23:05:36Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "barnes",
+      "headRefOid": "dc1489b064f06c1e35d847a67fd9e991d8d38eea",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
