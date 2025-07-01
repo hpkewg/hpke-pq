@@ -33,9 +33,12 @@ normative:
   FIPS186: DOI.10.6028/NIST.FIPS.186-5
   FIPS202: DOI.10.6028/NIST.FIPS.202
   FIPS203: DOI.10.6028/NIST.FIPS.203
+  GENERIC: I-D.irtf-cfrg-hybrid-kems
   CONCRETE: I-D.irtf-cfrg-hybrid-kems
+  HPKE: I-D.ietf-hpke-hpke
 
 informative:
+  PQCE: I-D.ietf-pquip-pqc-engineers
   CDM23:
     title: "Keeping Up with the KEMs: Stronger Security Notions for KEMs and automated analysis of KEM-based protocols"
     target: https://eprint.iacr.org/2023/1933.pdf
@@ -87,7 +90,7 @@ decryption.  This is the so-called "harvest now, decrypt later" attack.
 
 It is thus a high priority for many organizations right now to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
-to attack by a quantum computer {{?I-D.ietf-pquip-pqc-engineers}}.  Since these PQ
+to attack by a quantum computer {{PQCE}}.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
 combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
 fails, then the traditional algorithm will still provide security, at least
@@ -96,9 +99,9 @@ against classical attacks.
 Hybrid Public Key Encryption (HPKE) is a widely-used public key encryption
 scheme based on combining a Key Encapsulation Mechanism (KEM), a Key Derivation
 Function (KDF), and an Authenticated Encryption with Associated Data (AEAD)
-scheme {{!HPKE=I-D.ietf-hpke-hpke}}.  It is the foundation of the Messaging Layer
+scheme {{HPKE}}.  It is the foundation of the Messaging Layer
 Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
-ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?I-D.ietf-tls-esni}}.
+ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?TLS-ECH=I-D.ietf-tls-esni}}.
 
 This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
 allows HPKE to provide post-quantum security, as discussed in
@@ -131,7 +134,7 @@ using the KEM algorithms in this document to rely solely on SHA-3.
 {::boilerplate bcp14-tagged}
 
 We generally use the terminology defined in the HPKE specification
-{{!HPKE}}.
+{{HPKE}}.
 
 There are two meanings of "hybrid" in this document.  In the context of "hybrid
 public key encryption", it refers to the combination of an asymmetric KEM
@@ -230,9 +233,9 @@ QSF-P384-MLKEM1024-SHAKE256-SHA3256:
 : P-384 + ML-KEM-1024
 {: spacing="compact"}
 
-These KEMs satisfy the KEM interface defined in {{!CONCRETE}}.
-This interface is mostly the same as the KEM interface in {{Section 4 of
-!HPKE=I-D.ietf-hpke-hpke}}, with the following mapping:
+These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface is
+mostly the same as the KEM interface in {{Section 4 of HPKE}}, with the
+following mapping:
 
 * The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
   are identical.
@@ -318,7 +321,7 @@ it, even if the decapsulation key is leaked to an attacker after the encryption
 has been done.
 
 DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
-KEMs also provide these properties, as discussed in {{CONCRETE}}.
+KEMs also provide these properties, as discussed in {{GENERIC}}.
 
 ## PQ Hybrid vs. Pure PQ
 
@@ -327,7 +330,7 @@ Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
 quantum attacker.  Hybrid KEMs can be used to provide security against a
 non-quantum attacker in the event of failures with regard to the PQ algorithm,
 including both implementation flaws as well as new cryptanalysis. See
-{{?CONCRETE}} for further analysis of hybrid security properties.
+{{GENERIC}} for further analysis of hybrid security properties.
 
 # IANA Considerations
 
