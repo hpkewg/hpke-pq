@@ -333,6 +333,17 @@ including both implementation flaws as well as new cryptanalysis. See
 {{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid security
 properties.
 
+## Asymmetric-key-authenticated modes of RFC9180
+
+In the {{?RFC9180}} version of HPKE, KEMs could optionally define the
+additional functions `AuthEncap` and `AuthDecap`. These functions allowed
+a sender to authenticate the message to the recipient without interaction.
+
+The KEMs defined in this document do not support `AuthEncap`/`AuthDecap` and
+can not be used to migrate uses of HPKE that rely on this mode.
+Pre-shared-key-authenticated HPKE ({{!I-D.ietf-hpke-hpke}}, Section 5.1.2)
+or (post-quantum) digital signatures may be suitable alternatives.
+
 # IANA Considerations
 
 This section requests that IANA perform three actions:
