@@ -340,7 +340,7 @@ additional functions `AuthEncap` and `AuthDecap`. These functions allowed
 a sender to authenticate the message to the recipient without interaction.
 
 The KEMs defined in this document do not support `AuthEncap`/`AuthDecap` and
-can not be used to migrate uses of HPKE that rely on this mode.
+cannot be used to migrate uses of HPKE that rely on this mode.
 Pre-shared-key-authenticated HPKE ({{!I-D.ietf-hpke-hpke}}, Section 5.1.2)
 or (post-quantum) digital signatures may be suitable alternatives.
 
