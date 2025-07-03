@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-01T01:03:37.387829+00:00",
+  "timestamp": "2025-07-03T00:56:51.579244+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -871,19 +871,191 @@
       "labels": [],
       "body": "draft-barnes-hpke-hpke is easy.\r\n\r\nThe \\[CONCRETE] reference isn't so obvious.  I think that the intent was to reference the hybrid-kems draft, from context.",
       "createdAt": "2025-06-30T23:05:36Z",
-      "updatedAt": "2025-06-30T23:05:36Z",
+      "updatedAt": "2025-07-01T22:51:07Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "barnes",
-      "headRefOid": "dc1489b064f06c1e35d847a67fd9e991d8d38eea",
+      "headRefOid": "9ef553b81cbd8313646f1c0858a15313e22fa4f3",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xYWpm",
+          "commit": {
+            "abbreviatedOid": "dc1489b"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2025-07-01T15:26:07Z",
+          "updatedAt": "2025-07-01T15:27:18Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "This is wrong.  The KEM interface is defined in the generic doc, i.e., draft-irtf-cfrg-hybrid-kems.  Suggest making two references GENERIC and CONCRETE, which can both point to draft-irtf-cfrg-hybrid-kems for now, and then CONCRETE will get moved over once that is published.",
+              "createdAt": "2025-07-01T15:26:07Z",
+              "updatedAt": "2025-07-01T15:27:18Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "If we're going to have a nickname, let's put it above, not inline.",
+              "createdAt": "2025-07-01T15:26:25Z",
+              "updatedAt": "2025-07-01T15:27:18Z"
+            },
+            {
+              "originalPosition": 37,
+              "body": "Redefinition of the nickname.",
+              "createdAt": "2025-07-01T15:26:33Z",
+              "updatedAt": "2025-07-01T15:27:18Z"
+            },
+            {
+              "originalPosition": 66,
+              "body": "This should be GENERIC.",
+              "createdAt": "2025-07-01T15:26:58Z",
+              "updatedAt": "2025-07-01T15:27:18Z"
+            },
+            {
+              "originalPosition": 56,
+              "body": "This should be GENERIC.",
+              "createdAt": "2025-07-01T15:27:02Z",
+              "updatedAt": "2025-07-01T15:27:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6xdCNS",
+          "commit": {
+            "abbreviatedOid": "dc1489b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-01T22:51:02Z",
+          "updatedAt": "2025-07-01T22:51:02Z",
+          "comments": [
+            {
+              "originalPosition": 37,
+              "body": "Redefinition is fine, but - for you - I'll fix it.",
+              "createdAt": "2025-07-01T22:51:02Z",
+              "updatedAt": "2025-07-01T22:51:02Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "PR_kwDOOXfHTc6c59pe",
+      "title": "Auth modes of RFC9180 and limitations of KEMs",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/21",
+      "state": "OPEN",
+      "author": "thomwiggers",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Security considerations seemed to make sense, but this section could also go into the introduction.\r\n\r\nI did not get too technical (\"DH is a NIKE, KEMs are not NIKE\"), but if we want that is an option.\r\n\r\nIf there's a better way to link to a paragraph in another draft, that'd be a great improvement over my hard-coded section number.",
+      "createdAt": "2025-07-01T13:14:52Z",
+      "updatedAt": "2025-07-02T22:47:30Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "headRepository": "thomwiggers/hpke-pq",
+      "headRefName": "no-auth-mode",
+      "headRefOid": "567e152b0dd0607e4d66677969e66102680c9538",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6xYfE-",
+          "commit": {
+            "abbreviatedOid": "b891850"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "FWIW, the [text that was removed](https://github.com/hpkewg/hpke-pq/pull/10/files#diff-19fbaf93b7b41ba746f54a68220cf10d39decc31ebad0a21e8acb4b07263013bL185) was smaller and inline with the KEM definition:\r\n\r\n> The `AuthEncap()` and `AuthDecap()` functions are not implemented.\r\n\r\nBut I can see the appeal of having this in the Security Considerations.  If we did the inline approach, we would at least have to repeat it for the hybrid KEMs.\r\n\r\n",
+          "createdAt": "2025-07-01T15:37:37Z",
+          "updatedAt": "2025-07-01T15:38:30Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "```suggestion\r\nPSK-authenticated HPKE ({{Section 5.1.2 of HPKE}})\r\nor digital signatures may be suitable alternatives.\r\n```\r\n\r\n(Note: `{{HPKE}}` will break the build until #20 lands.)",
+              "createdAt": "2025-07-01T15:37:37Z",
+              "updatedAt": "2025-07-01T15:38:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6xdCjQ",
+          "commit": {
+            "abbreviatedOid": "b891850"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-01T22:52:19Z",
+          "updatedAt": "2025-07-01T22:52:19Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "```suggestion\r\ncannot be used to migrate uses of HPKE that rely on this mode.\r\n```",
+              "createdAt": "2025-07-01T22:52:19Z",
+              "updatedAt": "2025-07-01T22:52:19Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6xkT1A",
+          "commit": {
+            "abbreviatedOid": "b891850"
+          },
+          "author": "thomwiggers",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-02T13:03:26Z",
+          "updatedAt": "2025-07-02T13:03:26Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "I take it that there's no secret way to use the `#mode-psk` (or whatever it is) anchor? ",
+              "createdAt": "2025-07-02T13:03:26Z",
+              "updatedAt": "2025-07-02T13:03:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6xrBaM",
+          "commit": {
+            "abbreviatedOid": "b891850"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-02T22:47:29Z",
+          "updatedAt": "2025-07-02T22:47:30Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "That doesn't exist, sadly.  I've considering doing that work, but it's not a simple thing to do.  So, obviously, this will rot.",
+              "createdAt": "2025-07-02T22:47:30Z",
+              "updatedAt": "2025-07-02T22:47:30Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
