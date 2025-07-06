@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-03T00:56:51.579244+00:00",
+  "timestamp": "2025-07-06T01:02:09.674882+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -962,7 +962,7 @@
       "labels": [],
       "body": "Security considerations seemed to make sense, but this section could also go into the introduction.\r\n\r\nI did not get too technical (\"DH is a NIKE, KEMs are not NIKE\"), but if we want that is an option.\r\n\r\nIf there's a better way to link to a paragraph in another draft, that'd be a great improvement over my hard-coded section number.",
       "createdAt": "2025-07-01T13:14:52Z",
-      "updatedAt": "2025-07-02T22:47:30Z",
+      "updatedAt": "2025-07-03T07:42:01Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
@@ -1054,8 +1054,54 @@
               "updatedAt": "2025-07-02T22:47:30Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6xvzIp",
+          "commit": {
+            "abbreviatedOid": "b891850"
+          },
+          "author": "thomwiggers",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-03T07:42:01Z",
+          "updatedAt": "2025-07-03T07:42:01Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Yeah, I figured as much. I guess that's why our registration fees are funding the RFC editors.",
+              "createdAt": "2025-07-03T07:42:01Z",
+              "updatedAt": "2025-07-03T07:42:01Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOOXfHTc6dYoX7",
+      "title": "Wrap the test vectors",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/22",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This makes them harder to process; and maybe this would be better in the original script, but one step at a time.",
+      "createdAt": "2025-07-04T07:03:35Z",
+      "updatedAt": "2025-07-04T07:03:35Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "rapping",
+      "headRefOid": "4f556fe8b49607a7f467755c2978b70b0391a802",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
