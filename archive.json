@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-06T01:02:09.674882+00:00",
+  "timestamp": "2025-07-08T00:57:14.071275+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -114,9 +114,17 @@
       "labels": [],
       "body": "The general framework for referencing PQ/T hybrid KEMs was set up in #5.  Those documents are still stabilizing, so we will need to update this document as they firm up.",
       "createdAt": "2025-06-09T20:03:22Z",
-      "updatedAt": "2025-06-09T20:03:22Z",
+      "updatedAt": "2025-07-07T20:59:44Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "Should we use XWing or KitchenSink or QSF for ML-KEM768 + X25519?\n",
+          "createdAt": "2025-07-07T20:08:44Z",
+          "updatedAt": "2025-07-07T20:59:44Z"
+        }
+      ]
     },
     {
       "number": 11,
@@ -188,6 +196,38 @@
       "createdAt": "2025-06-17T05:40:19Z",
       "updatedAt": "2025-06-30T11:45:31Z",
       "closedAt": "2025-06-30T11:45:31Z",
+      "comments": []
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOOXfHTc6_MrzW",
+      "title": "Ref-impl some KDF IDs seem incorrect",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/23",
+      "state": "OPEN",
+      "author": "ilaril",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The reference implementation seems to have some KDF identifiers set incorrectly:\n\n* SHAKE256 seems to have ID 0x10, should presumably be 0x11.\n  - Line 225 of reference-implementation/src/kdf.rs\n* TurboSHAKE128 seems to have ID 0x10, should presumably be 0x12.\n  - Line 242 of reference-implementation/src/kdf.rs\n* TurboSHAKE256 seems to have ID 0x10, should presumably be 0x13.\n  - Line 261 of reference-implementation/src/kdf.rs\n\n(Took me a while to find this while trying to debug why the KDF part of test vectors do not verify against my own HPKE implementation.)\n",
+      "createdAt": "2025-07-07T06:55:15Z",
+      "updatedAt": "2025-07-07T06:55:15Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 24,
+      "id": "I_kwDOOXfHTc6_Vpth",
+      "title": "Should the KDFs include XOF() in the them?",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/24",
+      "state": "OPEN",
+      "author": "rohanmahy",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHA256 sufficiently unambiguous?",
+      "createdAt": "2025-07-07T20:07:50Z",
+      "updatedAt": "2025-07-07T20:07:50Z",
+      "closedAt": null,
       "comments": []
     }
   ],
