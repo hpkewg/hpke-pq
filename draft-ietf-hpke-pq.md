@@ -341,7 +341,7 @@ a sender to authenticate the message to the recipient without interaction.
 
 The KEMs defined in this document do not support `AuthEncap`/`AuthDecap` and
 cannot be used to migrate uses of HPKE that rely on this mode.
-PSK-authenticated HPKE ({{Section 5.1.2 of HPKE}})
+PSK-authenticated HPKE ({{Section 5.1.2 of I-D.barnes-hpke-hpke}})
 or digital signatures may be suitable alternatives.
 
 # IANA Considerations
