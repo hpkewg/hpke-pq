@@ -7,36 +7,40 @@ const MAX_LINE_LENGTH: usize = 70;
 
 fn format_hex(data: &[u8], label: &str) -> String {
     let hex_string = hex::encode(data);
-    
+
     // Check if the entire hex string fits on one line with the label
     if label.len() + hex_string.len() <= MAX_LINE_LENGTH {
         return hex_string;
     }
-    
+
     // Calculate how many hex characters can fit on the first line after the label
     let first_line_chars = MAX_LINE_LENGTH - label.len();
-    
+
     // Calculate how many hex characters can fit on subsequent lines
     let indent_length = label.len();
     let subsequent_line_chars = MAX_LINE_LENGTH - indent_length;
-    
+
     let mut result = String::new();
     let mut chars = hex_string.chars();
-    
+
     // First line - take as many characters as will fit after the label
     let first_line: String = chars.by_ref().take(first_line_chars).collect();
     result.push_str(&first_line);
-    
+
     // Subsequent lines - indent and take appropriate number of characters
     let indent = " ".repeat(indent_length);
     let remaining: String = chars.collect();
-    
-    for chunk in remaining.chars().collect::<Vec<_>>().chunks(subsequent_line_chars) {
+
+    for chunk in remaining
+        .chars()
+        .collect::<Vec<_>>()
+        .chunks(subsequent_line_chars)
+    {
         result.push('\n');
         result.push_str(&indent);
         result.push_str(&chunk.iter().collect::<String>());
     }
-    
+
     result
 }
 
@@ -101,7 +105,7 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
     output.push_str(&format!("kem_id: {}\n", tv.kem_id));
     output.push_str(&format!("kdf_id: {}\n", tv.kdf_id));
     output.push_str(&format!("aead_id: {}\n", tv.aead_id));
-    output.push_str(&format!("info: {}\n", hex::encode(&tv.info)));
+    output.push_str(&format!("info: {}\n", format_hex(&tv.info, "info: ")));
 
     if !tv.ikm_r.is_empty() {
         output.push_str(&format!("ikmR: {}\n", format_hex(&tv.ikm_r, "ikmR: ")));
@@ -151,9 +155,12 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
                 output.push_str("\n");
             }
             output.push_str(&format!("sequence number: {}\n", i));
-            output.push_str(&format!("pt: {}\n", hex::encode(&enc_vec.pt)));
-            output.push_str(&format!("aad: {}\n", hex::encode(&enc_vec.aad)));
-            output.push_str(&format!("nonce: {}\n", hex::encode(&enc_vec.nonce)));
+            output.push_str(&format!("pt: {}\n", format_hex(&enc_vec.pt, "pt: ")));
+            output.push_str(&format!("aad: {}\n", format_hex(&enc_vec.aad, "aad: ")));
+            output.push_str(&format!(
+                "nonce: {}\n",
+                format_hex(&enc_vec.nonce, "nonce: ")
+            ));
             output.push_str(&format!("ct: {}\n", format_hex(&enc_vec.ct, "ct: ")));
         }
 
