@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                            30 June 2025
-Expires: 1 January 2026
+Intended status: Standards Track                            10 July 2025
+Expires: 11 January 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 January 2026.
+   This Internet-Draft will expire on 11 January 2026.
 
 Copyright Notice
 
@@ -121,11 +121,11 @@ Table of Contents
    It is thus a high priority for many organizations right now to
    migrate key exchange technologies to use "post-quantum" (PQ)
    algorithms, which are resistant to attack by a quantum computer
-   [I-D.ietf-pquip-pqc-engineers].  Since these PQ algorithms are
-   relatively new, there is also interest in hybrid constructions
-   combining PQ algorithms with traditional KEMs, so that if the PQ
-   algorithm fails, then the traditional algorithm will still provide
-   security, at least against classical attacks.
+   [PQCE].  Since these PQ algorithms are relatively new, there is also
+   interest in hybrid constructions combining PQ algorithms with
+   traditional KEMs, so that if the PQ algorithm fails, then the
+   traditional algorithm will still provide security, at least against
+   classical attacks.
 
    Hybrid Public Key Encryption (HPKE) is a widely-used public key
    encryption scheme based on combining a Key Encapsulation Mechanism
@@ -133,7 +133,7 @@ Table of Contents
    Encryption with Associated Data (AEAD) scheme [HPKE].  It is the
    foundation of the Messaging Layer Security (MLS) protocol, the
    Oblivious HTTP protocol, and the TLS Encrypted ClientHello extension
-   [RFC9420] [RFC9458] [I-D.ietf-tls-esni].
+   [RFC9420] [RFC9458] [TLS-ECH].
 
    This document defines a collection of PQ and PQ/T KEM algorithms for
    HPKE, which allows HPKE to provide post-quantum security, as
@@ -269,7 +269,7 @@ Table of Contents
    QSF-X25519-MLKEM768-SHAKE256-SHA3256:  X25519 + ML-KEM-768
    QSF-P384-MLKEM1024-SHAKE256-SHA3256:  P-384 + ML-KEM-1024
 
-   These KEMs satisfy the KEM interface defined in [CONCRETE].  This
+   These KEMs satisfy the KEM interface defined in [GENERIC].  This
    interface is mostly the same as the KEM interface in Section 4 of
    [HPKE], with the following mapping:
 
@@ -331,12 +331,12 @@ Table of Contents
 
 6.  Selection of AEAD algorithms
 
-   As discussed in Section 2.1 of [I-D.ietf-pquip-pqc-engineers], the
-   advent of quantum computers does not necessarily require changes in
-   the AEAD algorithms used in HPKE.  However, some compliance regimes
-   call for the use of AEAD algorithms with longer key lengths, for
-   example, the AES-256-GCM or ChaCha20Poly1305 algorithms registered
-   for HPKE instead of AES-128-GCM.
+   As discussed in Section 2.1 of [PQCE], the advent of quantum
+   computers does not necessarily require changes in the AEAD algorithms
+   used in HPKE.  However, some compliance regimes call for the use of
+   AEAD algorithms with longer key lengths, for example, the AES-256-GCM
+   or ChaCha20Poly1305 algorithms registered for HPKE instead of AES-
+   128-GCM.
 
 7.  Security Considerations
 
@@ -367,7 +367,7 @@ Table of Contents
 
    DHKEM and ML-KEM meet these properties, as shown in [CDM23].  QSF-
    based hybrid KEMs also provide these properties, as discussed in
-   [CONCRETE].
+   [GENERIC].
 
 7.1.  PQ Hybrid vs. Pure PQ
 
@@ -376,8 +376,8 @@ Table of Contents
    security against a quantum attacker.  Hybrid KEMs can be used to
    provide security against a non-quantum attacker in the event of
    failures with regard to the PQ algorithm, including both
-   implementation flaws as well as new cryptanalysis.  See [CONCRETE]
-   for further analysis of hybrid security properties.
+   implementation flaws as well as new cryptanalysis.  See [GENERIC] for
+   further analysis of hybrid security properties.
 
 8.  IANA Considerations
 
@@ -442,11 +442,11 @@ Table of Contents
 
 9.1.  Normative References
 
-   [CONCRETE] Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
-              Work in Progress, Internet-Draft, draft-irtf-cfrg-hybrid-
-              kems-03, 25 February 2025,
+   [CONCRETE] Connolly, D. and R. Barnes, "Hybrid PQ/T Key Encapsulation
+              Mechanisms", Work in Progress, Internet-Draft, draft-irtf-
+              cfrg-hybrid-kems-04, 7 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              hybrid-kems-03>.
+              hybrid-kems-04>.
 
    [FIPS186]  "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
@@ -462,6 +462,12 @@ Table of Contents
               standard", National Institute of Standards and Technology
               (U.S.), DOI 10.6028/nist.fips.203, August 2024,
               <https://doi.org/10.6028/nist.fips.203>.
+
+   [GENERIC]  Connolly, D. and R. Barnes, "Hybrid PQ/T Key Encapsulation
+              Mechanisms", Work in Progress, Internet-Draft, draft-irtf-
+              cfrg-hybrid-kems-04, 7 July 2025,
+              <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
+              hybrid-kems-04>.
 
    [HPKE]     Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
@@ -496,20 +502,12 @@ Table of Contents
               analysis of KEM-based protocols", 2023,
               <https://eprint.iacr.org/2023/1933.pdf>.
 
-   [I-D.ietf-pquip-pqc-engineers]
-              Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
+   [PQCE]     Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
               Engineers", Work in Progress, Internet-Draft, draft-ietf-
-              pquip-pqc-engineers-12, 19 May 2025,
+              pquip-pqc-engineers-13, 1 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
-              pqc-engineers-12>.
-
-   [I-D.ietf-tls-esni]
-              Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
-              Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-25, 14 June 2025,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              esni-25>.
+              pqc-engineers-13>.
 
    [RFC9420]  Barnes, R., Beurdouche, B., Robert, R., Millican, J.,
               Omara, E., and K. Cohn-Gordon, "The Messaging Layer
@@ -524,6 +522,12 @@ Table of Contents
               "HPKE Test Vectors for Post-Quantum Algorithms", 2025,
               <https://github.com/hpkewg/hpke-pq/blob/main/test-
               vectors.json>.
+
+   [TLS-ECH]  Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
+              Encrypted Client Hello", Work in Progress, Internet-Draft,
+              draft-ietf-tls-esni-25, 14 June 2025,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
+              esni-25>.
 
 Appendix A.  Test Vectors
 
