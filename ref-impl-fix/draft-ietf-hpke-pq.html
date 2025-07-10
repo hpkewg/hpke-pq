@@ -1,0 +1,3570 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE</title>
+<meta content="Richard Barnes" name="author">
+<meta content='
+       Updating key exchange and public-key encryption protocols to resist attack by
+quantum computers is a high priority given the possibility of "harvest now,
+decrypt later" attacks.  Hybrid Public Key Encryption (HPKE) is a widely-used
+public key encryption scheme based on combining a Key Encapsulation Mechanism
+(KEM), a Key Derivation Function (KDF), and an Authenticated Encryption with
+Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
+HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
+KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
+use with these KEMs.  When used with these algorithms, HPKE is resilient with
+respect to attacks by a quantum computer. 
+    ' name="description">
+<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="hybrid public key encryption" name="keyword">
+<meta content="hpke" name="keyword">
+<meta content="post-quantum" name="keyword">
+<meta content="draft-ietf-hpke-pq-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.29.0
+    Python 3.12.11
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.6
+    lxml 5.3.1
+    platformdirs 4.3.8
+    pycountry 24.6.1
+    PyYAML 6.0.2
+    requests 2.32.4
+    setuptools 80.9.0
+    wcwidth 0.2.13
+-->
+<link href="draft-ietf-hpke-pq.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+}
+dl:not(.dlNewline) > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+}
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* Comments */
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:is(:link, :focus, :hover),
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin: 2px 0.5em 0;
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">PQ HPKE</td>
+<td class="right">July 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Barnes</td>
+<td class="center">Expires 11 January 2026</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HPKE Publication, Kept Efficient</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-hpke-pq-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-07-10" class="published">10 July 2025</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2026-01-11">11 January 2026</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">R. Barnes</div>
+<div class="org">Cisco</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">Updating key exchange and public-key encryption protocols to resist attack by
+quantum computers is a high priority given the possibility of "harvest now,
+decrypt later" attacks.  Hybrid Public Key Encryption (HPKE) is a widely-used
+public key encryption scheme based on combining a Key Encapsulation Mechanism
+(KEM), a Key Derivation Function (KDF), and an Authenticated Encryption with
+Associated Data (AEAD) scheme.  In this document, we define KEM algorithms for
+HPKE based on both post-quantum KEMs and hybrid constructions of post-quantum
+KEMs with traditional KEMs, as well as a KDF based on SHA-3 that is suitable for
+use with these KEMs.  When used with these algorithms, HPKE is resilient with
+respect to attacks by a quantum computer.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html">https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/">https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        HPKE Publication, Kept Efficient  mailing list (<span><a href="mailto:hpke@ietf.org">mailto:hpke@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/hpke">https://mailarchive.ietf.org/arch/browse/hpke</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/hpke/">https://www.ietf.org/mailman/listinfo/hpke/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/hpkewg/hpke-pq">https://github.com/hpkewg/hpke-pq</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 11 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-ml-kem" class="internal xref">ML-KEM</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-hybrid-kems-with-ecdh-and-m" class="internal xref">Hybrid KEMs with ECDH and ML-KEM</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-single-stage-kdfs" class="internal xref">Single-Stage KDFs</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-selection-of-aead-algorithm" class="internal xref">Selection of AEAD algorithms</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-pq-hybrid-vs-pure-pq" class="internal xref">PQ Hybrid vs. Pure PQ</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-updated-ml-kem-kem-entries" class="internal xref">Updated ML-KEM KEM Entries</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-pq-t-hybrid-kem-entries" class="internal xref">PQ/T Hybrid KEM Entries</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-sha-3-kdf-entries" class="internal xref">SHA-3 KDF Entries</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-test-vectors" class="internal xref">Test Vectors</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-ml-kem-768-hkdf-sha256-aes-" class="internal xref">ML-KEM-768, HKDF-SHA256, AES-128-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.1">
+                    <p id="section-toc.1-1.10.2.1.2.1.1"><a href="#appendix-A.1.1" class="auto internal xref">A.1.1</a>.  <a href="#name-base-setup-information" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-ml-kem-1024-hkdf-sha384-aes" class="internal xref">ML-KEM-1024, HKDF-SHA384, AES-256-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2.2.1">
+                    <p id="section-toc.1-1.10.2.2.2.1.1"><a href="#appendix-A.2.1" class="auto internal xref">A.2.1</a>.  <a href="#name-base-setup-information-2" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-qsf-p256-mlkem768-unknown-k" class="internal xref">QSF-P256-MLKEM768, Unknown KDF, AES-128-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3.2.1">
+                    <p id="section-toc.1-1.10.2.3.2.1.1"><a href="#appendix-A.3.1" class="auto internal xref">A.3.1</a>.  <a href="#name-base-setup-information-3" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4">
+                <p id="section-toc.1-1.10.2.4.1"><a href="#appendix-A.4" class="auto internal xref">A.4</a>.  <a href="#name-qsf-x25519-mlkem768-unknown" class="internal xref">QSF-X25519-MLKEM768, Unknown KDF, AES-128-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4.2.1">
+                    <p id="section-toc.1-1.10.2.4.2.1.1"><a href="#appendix-A.4.1" class="auto internal xref">A.4.1</a>.  <a href="#name-base-setup-information-4" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.5">
+                <p id="section-toc.1-1.10.2.5.1"><a href="#appendix-A.5" class="auto internal xref">A.5</a>.  <a href="#name-qsf-p384-mlkem1024-unknown-" class="internal xref">QSF-P384-MLKEM1024, Unknown KDF, AES-256-GCM</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.5.2.1">
+                    <p id="section-toc.1-1.10.2.5.2.1.1"><a href="#appendix-A.5.1" class="auto internal xref">A.5.1</a>.  <a href="#name-base-setup-information-5" class="internal xref">Base Setup Information</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">A cryptographically relevant quantum computer may or may not exist as of this
+writing.  The conventional wisdom, however, is that if one does not already,
+then it likely will within the lifetime of information that is cryptographically
+protected today.  Such a computer would have the ability to infer decapsulation
+keys from encapsulation keys used for traditional KEMs, e.g., KEMs based on
+Diffie-Hellman over finite fields or elliptic curves.  And it would be able to
+do this not just for data encrypted after the creation of the computer, but also
+for any information observed by the attacker previously, and stored for later
+decryption.  This is the so-called "harvest now, decrypt later" attack.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">It is thus a high priority for many organizations right now to migrate key
+exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
+to attack by a quantum computer <span>[<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>.  Since these PQ
+algorithms are relatively new, there is also interest in hybrid constructions
+combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
+fails, then the traditional algorithm will still provide security, at least
+against classical attacks.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Hybrid Public Key Encryption (HPKE) is a widely-used public key encryption
+scheme based on combining a Key Encapsulation Mechanism (KEM), a Key Derivation
+Function (KDF), and an Authenticated Encryption with Associated Data (AEAD)
+scheme <span>[<a href="#I-D.barnes-hpke-hpke" class="cite xref">I-D.barnes-hpke-hpke</a>]</span>.  It is the foundation of the Messaging Layer
+Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
+ClientHello extension <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span> <span>[<a href="#RFC9458" class="cite xref">RFC9458</a>]</span> <span>[<a href="#I-D.ietf-tls-esni" class="cite xref">I-D.ietf-tls-esni</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
+allows HPKE to provide post-quantum security, as discussed in
+<a href="#security-considerations" class="auto internal xref">Section 7</a>:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-5.1">
+          <p id="section-1-5.1.1">ML-KEM-512<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.2">
+          <p id="section-1-5.2.1">ML-KEM-768<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.3">
+          <p id="section-1-5.3.1">ML-KEM-1024<a href="#section-1-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.4">
+          <p id="section-1-5.4.1">X25519 + ML-KEM-768<a href="#section-1-5.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.5">
+          <p id="section-1-5.5.1">P-256 + ML-KEM-768<a href="#section-1-5.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-5.6">
+          <p id="section-1-5.6.1">P-384 + ML-KEM-1024<a href="#section-1-5.6.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-6">ML-KEM, X25519, and P-256/P-384 are defined in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, <span>[<a href="#RFC7748" class="cite xref">RFC7748</a>]</span>, and
+<span>[<a href="#FIPS186" class="cite xref">FIPS186</a>]</span>, respectively.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">This selection of KEM algorithms was chosen to provide a reasonably consolidated
+set of algorithms (in the interest of broad interoperability), while still
+allowing HPKE users flexibility along a few axes:<a href="#section-1-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1-8.1">
+          <p id="section-1-8.1.1">Pure PQ vs. PQ/T hybrid<a href="#section-1-8.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-8.2">
+          <p id="section-1-8.2.1">CFRG-defined vs. NIST-defined elliptic curves<a href="#section-1-8.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-1-8.3">
+          <p id="section-1-8.3.1">Different security levels (NIST category 3 vs. category 5)<a href="#section-1-8.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-1-9">We also define HPKE KDF algorithms based on the SHA-3 family of hash functions.
+SHA-3 is used internally to ML-KEM, and so it could be convenient for HPKE users
+using the KEM algorithms in this document to rely solely on SHA-3.<a href="#section-1-9" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">We generally use the terminology defined in the HPKE specification
+<span>[<a href="#I-D.barnes-hpke-hpke" class="cite xref">I-D.barnes-hpke-hpke</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">There are two meanings of "hybrid" in this document.  In the context of "hybrid
+public key encryption", it refers to the combination of an asymmetric KEM
+operaiton and a symmetric AEAD operation.  In the context of "PQ/T hybrid",
+refers to the combination of PQ and traditional KEMs.  For clarity, we always
+use "HPKE" for the former, and "PQ/T hybrid" for the latter.<a href="#section-2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ml-kem">
+<section id="section-3">
+      <h2 id="name-ml-kem">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-ml-kem" class="section-name selfRef">ML-KEM</a>
+      </h2>
+<p id="section-3-1">The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  In this section, we define how to implement the HPKE KEM interface
+using ML-KEM.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The HPKE <code>DeriveKeyPair</code> function corresponds to the function
+<code>ML-KEM.KeyGen_internal</code> in <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>.  The input <code>ikm</code> <span class="bcp14">MUST</span> be exactly
+<code>Nsk = 64</code> bytes long.  The <code>d</code> and <code>z</code> inputs to <code>ML-KEM.KeyGen_internal</code> are
+the first and last 32-byte segments of <code>ikm</code>, respectively.  The output <code>skX</code> is
+the generated decapsulation key and the output <code>pkX</code> is the generated
+encapsulation key.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-3">
+<pre>
+def DeriveKeyPair(ikm):
+    if len(ikm) != 64:
+        raise DeriveKeyPairError
+
+    d = ikm[:32]
+    z = ikm[32:]
+
+    dk = ikm
+    (ek, _) = ML-KEM.KeyGen_internal(d, z)
+    return (dk, ek)
+</pre><a href="#section-3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3-4">The <code>GenerateKeyPair</code> function is simply <code>DeriveKeyPair</code> with a pseudorandom
+<code>ikm</code> value.  As long as the bytes supplied by <code>random</code> meet the randomness
+requirements of <span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, this corresponds to the <code>ML-KEM.KeyGen</code> function,
+with the distinction that the decapsulation key is returned in seed format
+rather than the expanded form returned by <code>ML-KEM.KeyGen</code>.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-5">
+<pre>
+def GenerateKeyPair():
+    dz = random(64)
+    return DeriveKeyPair(dz)
+</pre><a href="#section-3-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3-6">The <code>SerializePublicKey</code> and <code>DeserializePublicKey</code> functions are both the
+identity function, since the ML-KEM already uses fixed-length byte strings for
+public encapsulation keys.  The length of the byte string is determined by the
+ML-KEM parameter set in use.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">The <code>Encap</code> function corresponds to the function <code>ML-KEM.Encaps</code> in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where an ML-KEM encapsulation key check failure causes an HPKE
+<code>EncapError</code>.<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">The <code>Decap</code> function corresponds to the function <code>ML-KEM.Decaps</code> in
+<span>[<a href="#FIPS203" class="cite xref">FIPS203</a>]</span>, where any of an ML-KEM ciphertext check failure, decapsulation key check failure,
+or hash check failure causes an HPKE <code>DecapError</code>. To be explicit, we derive the
+expanded decapsulation key from the 64-byte seed format and invoke
+<code>ML-KEM.Decaps</code> with it:<a href="#section-3-8" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-3-9">
+<pre>
+def Decap(enc, skR):
+    d = skR[:32]
+    z = skR[32:]
+    (_, dk) = ML-KEM.KeyGen_internal(d, z)
+    return ML-KEM.Decaps(dk, enc)
+</pre><a href="#section-3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3-10">The constants <code>Nsecret</code> and <code>Nsk</code> are always 32 and 64, respectively.  The
+constants <code>Nenc</code> and <code>Npk</code> depend on the ML-KEM parameter set in use; they are
+specified in <a href="#ml-kem-iana-table" class="auto internal xref">Table 2</a>.<a href="#section-3-10" class="pilcrow">¶</a></p>
+<aside id="section-3-11">
+        <p id="section-3-11.1">Note: While this document defines an HPKE KEM for ML-KEM-512 in the interest
+of completeness, implementors should generally prefer ML-KEM-768 or
+ML-KEM-1024, or the PQ/T hybrids described in <a href="#hybrids" class="auto internal xref">Section 4</a>.  According to
+current cryptanalysis, ML-KEM-512 provides security compatible with a 128-bit
+security level (or NIST security category 1).  Given the relative novelty of
+ML-KEM, however, there is some concern that new cryptanalysis might reduce the
+security level of ML-KEM-512.  Use of ML-KEM-768 or ML-KEM-1024 acts as a
+hedge against cryptanalysis of ML-KEM that removes some bits of security but
+is not catastrophic, at a modest performance penalty.<a href="#section-3-11.1" class="pilcrow">¶</a></p>
+</aside>
+</section>
+</div>
+<div id="hybrids">
+<section id="section-4">
+      <h2 id="name-hybrid-kems-with-ecdh-and-m">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-hybrid-kems-with-ecdh-and-m" class="section-name selfRef">Hybrid KEMs with ECDH and ML-KEM</a>
+      </h2>
+<p id="section-4-1"><span>[<a href="#CONCRETE" class="cite xref">CONCRETE</a>]</span> defines a collection of concrete PQ/T hybrid KEMs.  These KEMs
+combine a traditional ECDH group with ML-KEM:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-4-2">
+        <dt id="section-4-2.1">QSF-P256-MLKEM768-SHAKE256-SHA3256:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.2">
+          <p id="section-4-2.2.1">P-256 + ML-KEM-768<a href="#section-4-2.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-4-2.3">QSF-X25519-MLKEM768-SHAKE256-SHA3256:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.4">
+          <p id="section-4-2.4.1">X25519 + ML-KEM-768<a href="#section-4-2.4.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-4-2.5">QSF-P384-MLKEM1024-SHAKE256-SHA3256:</dt>
+        <dd style="margin-left: 1.5em" id="section-4-2.6">
+          <p id="section-4-2.6.1">P-384 + ML-KEM-1024<a href="#section-4-2.6.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-4-3">These KEMs satisfy the KEM interface defined in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.
+This interface is mostly the same as the KEM interface in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-01#section-4" class="relref">Section 4</a> of [<a href="#I-D.ietf-hpke-hpke" class="cite xref">I-D.ietf-hpke-hpke</a>]</span>, with the following mapping:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-4.1">
+          <p id="section-4-4.1.1">The <code>GenerateKeyPair</code>, <code>DeriveKeyPair</code>, and <code>Encap</code> and <code>Decap</code> algorithms
+are identical.<a href="#section-4-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-4.2">
+          <p id="section-4-4.2.1">The <code>SerializePublicKey</code> and <code>DeserializePublicKey</code> algorithms are the
+identity, since encapsulation keys are already fixed-length byte strings.<a href="#section-4-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-4.3">
+          <p id="section-4-4.3.1">The constants map as follows:<a href="#section-4-4.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-4.3.2.1">
+              <p id="section-4-4.3.2.1.1"><code>Nsecret = Nss</code><a href="#section-4-4.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.2">
+              <p id="section-4-4.3.2.2.1"><code>Nenc = Nct</code><a href="#section-4-4.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.3">
+              <p id="section-4-4.3.2.3.1"><code>Npk = Nek</code><a href="#section-4-4.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-4-4.3.2.4">
+              <p id="section-4-4.3.2.4.1"><code>Nsk = Ndk</code><a href="#section-4-4.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+</li>
+      </ul>
+</section>
+</div>
+<div id="single-stage-kdfs">
+<section id="section-5">
+      <h2 id="name-single-stage-kdfs">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-single-stage-kdfs" class="section-name selfRef">Single-Stage KDFs</a>
+      </h2>
+<p id="section-5-1">This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
+on Keccak.  SHAKE is defined as part of the SHA-3 specification <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>, and
+the related TurboSHAKE XOFs is defined in <span>[<a href="#I-D.irtf-cfrg-kangarootwelve" class="cite xref">I-D.irtf-cfrg-kangarootwelve</a>]</span>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The <code>Derive()</code> function for SHAKE is as follows,
+where <code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-2" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-5-3">
+<pre>
+def SHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return SHAKE&lt;SIZE&gt;(M = ikm, d = 8*L)
+</pre><a href="#section-5-3" class="pilcrow">¶</a>
+</div>
+<p id="section-5-4">The <code>Derive()</code> function for TurboSHAKE is as follows,
+where <code>&lt;SIZE&gt;</code> is either 128 or 256:<a href="#section-5-4" class="pilcrow">¶</a></p>
+<div class="lang-pseudocode sourcecode" id="section-5-5">
+<pre>
+def TurboSHAKE&lt;SIZE&gt;.Derive(ikm, L):
+    return TurboSHAKE&lt;SIZE&gt;(M = ikm, D = 0x1f, L)
+</pre><a href="#section-5-5" class="pilcrow">¶</a>
+</div>
+<p id="section-5-6">The <code>Nh</code> values for the KDFs defined in this section are listed in
+<a href="#kdfid-values" class="auto internal xref">Table 1</a>.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<span id="name-single-stage-kdf-ids"></span><div id="kdfid-values">
+<table class="center" id="table-1">
+        <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-single-stage-kdf-ids" class="selfRef">Single-Stage KDF IDs</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Value</th>
+            <th class="text-left" rowspan="1" colspan="1">KDF</th>
+            <th class="text-left" rowspan="1" colspan="1">Nh</th>
+            <th class="text-left" rowspan="1" colspan="1">Two-Stage</th>
+            <th class="text-left" rowspan="1" colspan="1">Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0010</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0011</td>
+            <td class="text-left" rowspan="1" colspan="1">SHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0012</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE128</td>
+            <td class="text-left" rowspan="1" colspan="1">32</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0x0013</td>
+            <td class="text-left" rowspan="1" colspan="1">TurboSHAKE256</td>
+            <td class="text-left" rowspan="1" colspan="1">64</td>
+            <td class="text-left" rowspan="1" colspan="1">N</td>
+            <td class="text-left" rowspan="1" colspan="1">RFC XXXX</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+<p id="section-5-8">[[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
+document. ]]<a href="#section-5-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="selection-of-aead-algorithms">
+<section id="section-6">
+      <h2 id="name-selection-of-aead-algorithm">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-selection-of-aead-algorithm" class="section-name selfRef">Selection of AEAD algorithms</a>
+      </h2>
+<p id="section-6-1">As discussed in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-13#section-2.1" class="relref">Section 2.1</a> of [<a href="#I-D.ietf-pquip-pqc-engineers" class="cite xref">I-D.ietf-pquip-pqc-engineers</a>]</span>, the advent of
+quantum computers does not necessarily require changes in the AEAD algorithms
+used in HPKE.  However, some compliance regimes call for the use of AEAD
+algorithms with longer key lengths, for example, the AES-256-GCM or
+ChaCha20Poly1305 algorithms registered for HPKE instead of AES-128-GCM.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-7-1">As discussed in the HPKE Security Considerations, HPKE is an IND-CCA2 secure
+public-key encryption scheme if the KEM it uses is IND-CCA secure.  It follows
+that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
+provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
+algorithms defined in this document provide this level of security.  ML-KEM
+itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
+used in this document is established in <span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">Another security property that is salient in some use cases is "key binding".
+In <span>[<a href="#CDM23" class="cite xref">CDM23</a>]</span>, these notions are referred to with the shorthand X-BIND-P-Q.
+The most salient for protocol design provide assurances similar to those
+provided by transcript hashing in protocols like TLS:<a href="#section-7-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-7-3">
+        <dt id="section-7-3.1">LEAK-BIND-K-PK:</dt>
+        <dd style="margin-left: 1.5em" id="section-7-3.2">
+          <p id="section-7-3.2.1">If the sender and receiver have the same key (<code>K</code>, <code>shared_secret</code> above),
+then there is only one encapsulation key (<code>PK</code>, <code>pk</code>) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.<a href="#section-7-3.2.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-7-3.3">LEAK-BIND-K-CT:</dt>
+        <dd style="margin-left: 1.5em" id="section-7-3.4">
+          <p id="section-7-3.4.1">If the sender and receiver have the same key (<code>K</code>, <code>shared_secret</code> above),
+then there is only one KEM ciphertext (<code>CT</code>, <code>enc</code>) that could have produced
+it, even if the decapsulation key is leaked to an attacker after the encryption
+has been done.<a href="#section-7-3.4.1" class="pilcrow">¶</a></p>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-7-4">DHKEM and ML-KEM meet these properties, as shown in <span>[<a href="#CDM23" class="cite xref">CDM23</a>]</span>.  QSF-based hybrid
+KEMs also provide these properties, as discussed in
+<span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span>.<a href="#section-7-4" class="pilcrow">¶</a></p>
+<div id="pq-hybrid-vs-pure-pq">
+<section id="section-7.1">
+        <h3 id="name-pq-hybrid-vs-pure-pq">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-pq-hybrid-vs-pure-pq" class="section-name selfRef">PQ Hybrid vs. Pure PQ</a>
+        </h3>
+<p id="section-7.1-1">Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
+<a href="#hybrids" class="auto internal xref">Section 4</a> or the pure PQ KEMs defined in <a href="#ml-kem" class="auto internal xref">Section 3</a> provide security against a
+quantum attacker.  Hybrid KEMs can be used to provide security against a
+non-quantum attacker in the event of failures with regard to the PQ algorithm,
+including both implementation flaws as well as new cryptanalysis. See
+<span>[<a href="#I-D.irtf-cfrg-hybrid-kems" class="cite xref">I-D.irtf-cfrg-hybrid-kems</a>]</span> for further analysis of hybrid security
+properties.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-8-1">This section requests that IANA perform three actions:<a href="#section-8-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-8-2">
+<li id="section-8-2.1">
+          <p id="section-8-2.1.1">Update the entries in HPKE KEM Identifiers registry corresponding to ML-KEM
+algorithms.<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.2">
+          <p id="section-8-2.2.1">Add entries to the HPKE KEM Identifiers registry for the PQ/T hybrid KEMs
+defined in this document.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-8-2.3">
+          <p id="section-8-2.3.1">Add entries to the HPKE KDF Identifiers registry for the SHA-3 KDFs defined
+in this document.<a href="#section-8-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<div id="updated-ml-kem-kem-entries">
+<section id="section-8.1">
+        <h3 id="name-updated-ml-kem-kem-entries">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-updated-ml-kem-kem-entries" class="section-name selfRef">Updated ML-KEM KEM Entries</a>
+        </h3>
+<p id="section-8.1-1">IANA is requested to replace the entries in the HPKE KEM Identifiers registry
+for values <code>0x0040</code>, <code>0x0041</code>, and <code>0x0042</code> with the following values:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<span id="name-updated-ml-kem-entries-for-"></span><div id="ml-kem-iana-table">
+<table class="center" id="table-2">
+          <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-updated-ml-kem-entries-for-" class="selfRef">Updated ML-KEM entries for the HPKE KEM Identifiers table</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">KEM</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsecret</th>
+              <th class="text-left" rowspan="1" colspan="1">Nenc</th>
+              <th class="text-left" rowspan="1" colspan="1">Npk</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsk</th>
+              <th class="text-left" rowspan="1" colspan="1">Auth</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0040</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-512</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">768</td>
+              <td class="text-left" rowspan="1" colspan="1">800</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0041</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-768</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1088</td>
+              <td class="text-left" rowspan="1" colspan="1">1184</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0042</td>
+              <td class="text-left" rowspan="1" colspan="1">ML-KEM-1024</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1568</td>
+              <td class="text-left" rowspan="1" colspan="1">1568</td>
+              <td class="text-left" rowspan="1" colspan="1">64</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-8.1-3">The only change being made is to update the "Reference" column to refer to this
+document.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="pqt-hybrid-kem-entries">
+<section id="section-8.2">
+        <h3 id="name-pq-t-hybrid-kem-entries">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-pq-t-hybrid-kem-entries" class="section-name selfRef">PQ/T Hybrid KEM Entries</a>
+        </h3>
+<p id="section-8.2-1">IANA is requested to add the following entries to the HPKE KEM Identifiers registry:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<span id="name-new-pq-t-for-the-hpke-kem-i"></span><div id="pqt-iana-table">
+<table class="center" id="table-3">
+          <caption>
+<a href="#table-3" class="selfRef">Table 3</a>:
+<a href="#name-new-pq-t-for-the-hpke-kem-i" class="selfRef">New PQ/T for the HPKE KEM Identifiers table</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">KEM</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsecret</th>
+              <th class="text-left" rowspan="1" colspan="1">Nenc</th>
+              <th class="text-left" rowspan="1" colspan="1">Npk</th>
+              <th class="text-left" rowspan="1" colspan="1">Nsk</th>
+              <th class="text-left" rowspan="1" colspan="1">Auth</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0050</td>
+              <td class="text-left" rowspan="1" colspan="1">QSF-P256-MLKEM768-SHAKE256-SHA3256</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1153</td>
+              <td class="text-left" rowspan="1" colspan="1">1249</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0051</td>
+              <td class="text-left" rowspan="1" colspan="1">QSF-X25519-MLKEM768-SHAKE256-SHA3256</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1221</td>
+              <td class="text-left" rowspan="1" colspan="1">1317</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0x0052</td>
+              <td class="text-left" rowspan="1" colspan="1">QSF-P384-MLKEM1024-SHAKE256-SHA3256</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">1120</td>
+              <td class="text-left" rowspan="1" colspan="1">1600</td>
+              <td class="text-left" rowspan="1" colspan="1">32</td>
+              <td class="text-left" rowspan="1" colspan="1">no</td>
+              <td class="text-left" rowspan="1" colspan="1">RFCXXXX</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+</section>
+</div>
+<div id="sha-3-kdf-entries">
+<section id="section-8.3">
+        <h3 id="name-sha-3-kdf-entries">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-sha-3-kdf-entries" class="section-name selfRef">SHA-3 KDF Entries</a>
+        </h3>
+<p id="section-8.3-1">IANA is requested to add the values listed in <a href="#kdfid-values" class="auto internal xref">Table 1</a> to the HPKE KDF
+Identifiers registry.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="CONCRETE">[CONCRETE]</dt>
+        <dd>
+<span class="refTitle">"TODO - CFRG Concrete hybrid KEMs"</span>, <time datetime="2001-06" class="refDate">June 2001</time>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS186">[FIPS186]</dt>
+        <dd>
+<span class="refTitle">"Digital Signature Standard (DSS)"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.186-5</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.186-5">https://doi.org/10.6028/nist.fips.186-5</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS202">[FIPS202]</dt>
+        <dd>
+<span class="refTitle">"SHA-3 standard :: permutation-based hash and extendable-output functions"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.202</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.202">https://doi.org/10.6028/nist.fips.202</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS203">[FIPS203]</dt>
+        <dd>
+<span class="refTitle">"Module-lattice-based key-encapsulation mechanism standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.203</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.203">https://doi.org/10.6028/nist.fips.203</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.barnes-hpke-hpke">[I-D.barnes-hpke-hpke]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-barnes-hpke-hpke-00</span>, <time datetime="2025-03-20" class="refDate">20 March 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00">https://datatracker.ietf.org/doc/html/draft-barnes-hpke-hpke-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-hpke-hpke">[I-D.ietf-hpke-hpke]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-hpke-hpke-01</span>, <time datetime="2025-06-24" class="refDate">24 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-01">https://datatracker.ietf.org/doc/html/draft-ietf-hpke-hpke-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-hybrid-kems">[I-D.irtf-cfrg-hybrid-kems]</dt>
+        <dd>
+<span class="refAuthor">Connolly, D.</span> and <span class="refAuthor">R. Barnes</span>, <span class="refTitle">"Hybrid PQ/T Key Encapsulation Mechanisms"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hybrid-kems-04</span>, <time datetime="2025-07-07" class="refDate">7 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-04">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.irtf-cfrg-kangarootwelve">[I-D.irtf-cfrg-kangarootwelve]</dt>
+        <dd>
+<span class="refAuthor">Viguier, B.</span>, <span class="refAuthor">Wong, D.</span>, <span class="refAuthor">Van Assche, G.</span>, <span class="refAuthor">Dang, Q.</span>, and <span class="refAuthor">J. Daemen</span>, <span class="refTitle">"KangarooTwelve and TurboSHAKE"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-kangarootwelve-17</span>, <time datetime="2025-02-21" class="refDate">21 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-kangarootwelve-17</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7748">[RFC7748]</dt>
+        <dd>
+<span class="refAuthor">Langley, A.</span>, <span class="refAuthor">Hamburg, M.</span>, and <span class="refAuthor">S. Turner</span>, <span class="refTitle">"Elliptic Curves for Security"</span>, <span class="seriesInfo">RFC 7748</span>, <span class="seriesInfo">DOI 10.17487/RFC7748</span>, <time datetime="2016-01" class="refDate">January 2016</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7748">https://www.rfc-editor.org/rfc/rfc7748</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="CDM23">[CDM23]</dt>
+        <dd>
+<span class="refAuthor">Cremers, C.</span>, <span class="refAuthor">Dax, A.</span>, and <span class="refAuthor">N. Medinger</span>, <span class="refTitle">"Keeping Up with the KEMs: Stronger Security Notions for KEMs and automated analysis of KEM-based protocols"</span>, <time datetime="2023" class="refDate">2023</time>, <span>&lt;<a href="https://eprint.iacr.org/2023/1933.pdf">https://eprint.iacr.org/2023/1933.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-pquip-pqc-engineers">[I-D.ietf-pquip-pqc-engineers]</dt>
+        <dd>
+<span class="refAuthor">Banerjee, A.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Schoinianakis, D.</span>, <span class="refAuthor">Hollebeek, T.</span>, and <span class="refAuthor">M. Ounsworth</span>, <span class="refTitle">"Post-Quantum Cryptography for Engineers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-pquip-pqc-engineers-13</span>, <time datetime="2025-07-01" class="refDate">1 July 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-13">https://datatracker.ietf.org/doc/html/draft-ietf-pquip-pqc-engineers-13</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Oku, K.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"TLS Encrypted Client Hello"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-esni-25</span>, <time datetime="2025-06-14" class="refDate">14 June 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-25">https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-25</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9420">[RFC9420]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Beurdouche, B.</span>, <span class="refAuthor">Robert, R.</span>, <span class="refAuthor">Millican, J.</span>, <span class="refAuthor">Omara, E.</span>, and <span class="refAuthor">K. Cohn-Gordon</span>, <span class="refTitle">"The Messaging Layer Security (MLS) Protocol"</span>, <span class="seriesInfo">RFC 9420</span>, <span class="seriesInfo">DOI 10.17487/RFC9420</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9420">https://www.rfc-editor.org/rfc/rfc9420</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9458">[RFC9458]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M.</span> and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Oblivious HTTP"</span>, <span class="seriesInfo">RFC 9458</span>, <span class="seriesInfo">DOI 10.17487/RFC9458</span>, <time datetime="2024-01" class="refDate">January 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9458">https://www.rfc-editor.org/rfc/rfc9458</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TestVectors">[TestVectors]</dt>
+      <dd>
+<span class="refTitle">"HPKE Test Vectors for Post-Quantum Algorithms"</span>, <time datetime="2025" class="refDate">2025</time>, <span>&lt;<a href="https://github.com/hpkewg/hpke-pq/blob/main/test-vectors.json">https://github.com/hpkewg/hpke-pq/blob/main/test-vectors.json</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="test-vectors">
+<section id="appendix-A">
+      <h2 id="name-test-vectors">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-test-vectors" class="section-name selfRef">Test Vectors</a>
+      </h2>
+<p id="appendix-A-1">Each section below contains test vectors for a single selection of HPKE
+algorithms and contains the following values:<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="appendix-A-2">
+<li id="appendix-A-2.1">
+          <p id="appendix-A-2.1.1">Configuration information and private key material: This includes the <code>mode</code>,
+<code>info</code> string, HPKE ciphersuite identifiers (<code>kem_id</code>, <code>kdf_id</code>, <code>aead_id</code>),
+and all sender and recipient key material. For each role S or R, (sender and
+recipient, respectively) key pairs are generated as <code>(skX, pkX) =
+DeriveKeyPair(ikmX)</code>.  Each key pair <code>(skX, pkX)</code> is written in its
+serialized form, where <code>skXm = SerializePrivateKey(skX)</code> and <code>pkXm =
+SerializePublicKey(pkX)</code>.  For the PSK mode, the shared PSK and PSK
+identifier are also included.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="appendix-A-2.2">
+          <p id="appendix-A-2.2.1">Context creation intermediate values: This includes the KEM outputs <code>enc</code> and
+<code>shared_secret</code> used to create the context, as well as the context values
+<code>key</code>, <code>base_nonce</code>, and <code>exporter_secret</code>.<a href="#appendix-A-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="appendix-A-2.3">
+          <p id="appendix-A-2.3.1">Encryption test vectors: A fixed plaintext message is encrypted using
+different sequence numbers and AAD values using the context computed in (2).
+Each test vector lists the sequence number and corresponding nonce computed
+with <code>base_nonce</code>, the plaintext message <code>pt</code>, AAD <code>aad</code>, and output
+ciphertext <code>ct</code>.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="appendix-A-2.4">
+          <p id="appendix-A-2.4.1">Export test vectors: Several exported values of the same length with differing
+context parameters are computed using the context computed in (2). Each test
+vector lists the <code>exporter_context</code>, output length <code>L</code>, and resulting export
+value.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+<p id="appendix-A-3">These test vectors are also available in JSON format at <span>[<a href="#TestVectors" class="cite xref">TestVectors</a>]</span>.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<div id="ml-kem-768-hkdf-sha256-aes-128-gcm">
+<section id="appendix-A.1">
+        <h3 id="name-ml-kem-768-hkdf-sha256-aes-">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-ml-kem-768-hkdf-sha256-aes-" class="section-name selfRef">ML-KEM-768, HKDF-SHA256, AES-128-GCM</a>
+        </h3>
+<div id="base-setup-information">
+<section id="appendix-A.1.1">
+          <h4 id="name-base-setup-information">
+<a href="#appendix-A.1.1" class="section-number selfRef">A.1.1. </a><a href="#name-base-setup-information" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-A.1.1-1">
+<pre>
+mode: 0
+kem_id: 65
+kdf_id: 1
+aead_id: 1
+info: 34663634363532303666366532303631323034373732363536333639363136653230353537323665
+ikmR: b019adbd5343e3da40bb6bac8922446a90f2256b1f21149ac4393aefdc83e150
+      36eaa396b9c07f2d2c962edaf3879deb71fb4bce9afc9d6a3ccd27433ee3c4ec
+pkRm: 63537d21c512229c8f1fda919ed10fdf91acdcb806dbac1e88c97f8301514215
+      0c89e2acbb2545662aacb7a45976549f3b0636f2445a41d73e3da727477ccdd9
+      02442580b283c5cfd889572d41ad450a4e9963189b869925f7bea7063a6613a0
+      aba6383f4536b3cc7f8df98ef5871a0331889d3954fe7b893f2175909a4a6dec
+      487df3161e091781f9a77f426a1bfbbe767735b2e2aee6fb6569c014bcc1645f
+      a00d8cfb55ac968adea22dc3c3af6ec05cdd2559a036887880aa899260e470b3
+      9fc94fe4b43c6145c581101c2cba6955014853756746b7c4cb55c48a0209c09b
+      981609740c3155a5d591a5795eb19485002a0c5c92894bc25cd93541603b3bab
+      d47905539acefb33b80332fc4cbf83c9a9efb7a8169a1a2616c75861b97a97a5
+      e6ebc9e9ba9072c7b719f97474f25b60b4b96d271b37f99b5bb2c563c21582c0
+      0ad1b33ae6ea62c856893cd5bc8c0557566acdba928436504511e33be413cbcf
+      b2431d05c0d6a60dfd6bb98e336f065a0cb9e58de3f9440374285298cbf25818
+      fa998010ea7032ab9ec5388532a719fa45361e71c069f29612987083f2209fa9
+      8045313edc1c5c97a500fc694c8dcc7d985a5f37d006996aa08ae9820ec8273e
+      17ad0a8623c7102d79112d7327215ec13d9848acad14c6d105cffed149ebc05f
+      65ab18dda4802d80ae515a75da694b791c624710c26ae600570b6544bb9ecb74
+      77e5b60da2b2825525a1dd847ff213080971873f365f5ec82f16865039d53c48
+      99bb6677812c3c50f8b88765604a03e9b54669c4619c0c1e84b533b79bb90141
+      96880e70c8984bf7998bf02a9417380088c675293d8250ae2db2679122cb04e6
+      b47e265e32babbca26a68ca9173953afbd836c35a423e16b3cd0c78f383741c4
+      f3a313d38305241f453a8b11926c30a65ea4e510793b0abffc32d52a6d16da0d
+      25438f88b8a424d4cc23c9bb6d5b5d388695d024a20128ad2a9c9e8a92773f13
+      5589aa6010207b6641cbca76c0d1d2618ea22600bd3acae556b53930a7ab9c24
+      1b792baa9dfa517b06222efa5b4d4b23aba4f7ab7dcb27ead4639f367ad021ba
+      559912829a05ee41950edc90f8576cc9816f9437cd4831c4bbb009d3205ccc14
+      9019c257b64c9ea7462a7ce26a145096bed67d94cc1ebbfc25b8301dd4c3baeb
+      e168e22b30a9104416b548c33b0f1a9b4245ac161d05b70ae727393458e211b6
+      c7635cfba5613a244934b15ebac6909636afeb0c0c16724fa7637ab6d1585a51
+      9c285a47020c6096ca7def8a0c6376b7b5a4c29a756056e12a3b5691ad19b72c
+      72a475e47396a08baba7a55b858d1aa11aeed21a36526a4161c1d6f354f7e914
+      e7aa9ccb11a77b44267752172963217a15a654d272a2712026b35e7ef18a111c
+      a7c7750c2053b01919c62b41593327185b2211df5067b24411e8d45387dbc4d9
+      051d78eb9cb1613c39736afba118c3d71244ac92b5851957e45e17fc4089a432
+      62c1877666c340984a7f942bfc19113d490bf99851fe3824d1584c30d58ac234
+      320dd969d2dc2ced81c6c0ba61dd30bf53186a10d09e080bb0ca50989159034f
+      067c34e5b0892326e15387faa7c7968a2fefc075559c75510b90664c7bc791b8
+      a57bcf8f6f3cf16abfef04460cd91b20286881423c08911fc73843dbc410b7a1
+skRm: 3d361693e0cb6437983e5cc8b4993851ba03e1981752765bfda665ffe651e863
+      4884a32cbfa4526fc72d83bc6e93e6189dd3bc8a61b630986d2d462e8620c1d8
+      cc90a2a88f5b6cad1190907fe4660912648812932b152878d7745087304e88ac
+      b5e5823580b7ad945635901b66c80647588d91aa5e3e937ad456c15943560160
+      365bba324ecb6a2b519fa5f3b3c2485b5a4195fb9b57993974665bc082128cf7
+      2797138c5074b5bc6e416c5ea13690d606a385bbbb14a81f985d073049e247c0
+      717b3ac468b6fca336cc13970331b5a3c77439e901caf8aaa24002f5d4c3ebfc
+      c8347b81c71c21ee6a247f626a5a9a094bd45a4c2a7e9af51c73e540214b5dc8
+      c65a2097c4e2150362416a41252611ea05275767934b20f5739191fa1dc53100
+      75900eb1505338fb29353420f6f20e390a869bc7865b3c745ec385ffbc527fa9
+      3b5dfc26fc93821f934748c69d737952812acd49d80e914a7af6ecc5065203a7
+      130d0fb73ba51613e7367ba8d381f19167b94559f6babbfd6532aab734e2fa85
+      3532453ed4b73848a6376186cae1672ae09b59d29506558c70817420c6bb0244
+      b745a3a582f7c97e8723ea9a00dd65829a56af157957dc612e5cc7b0befcc96e
+      c67e7682a8c1bb9aec49b390fb152f45622252a07cacb4ac1cace626b0b00b26
+      8bb75de6663e66203c2ca9622ff8c1754a48f5e65f52f6561ff72b2276958e19
+      0eaf69cc5f487f90490915a0783b2b915d29bfba2539d5db4b21284900a2009f
+      d8064394a00d5c39a3c95706c0c926a4cb4a470d40e99b9a59c635fc1dab176e
+      1af7a548e38031743cc42b2769b9bdc2590afa849319b94dac0b11d318487535
+      655fb503779c5b463926783ab793ecb26f61116a17907b1571654747f5810593
+      e79195cb76cd841339b50bd4b634d34c32ef8630b342b8221b32f2e53ec2463e
+      af7204af1c63b7e5995764b4bb889f999cc8a2480a5f1c68135a5a41f811904c
+      bec831cdf6dc579f7acba5445d94fb8e17abbca97b68e84156c9d88d8bc47a2d
+      1163bf84abad48462c90594a5085687b36ff73c86dd11741ab2e4f1b63d07603
+      fcb6c82b27623b438000dccf439a5c88d9437f89b66bdb378d687ab3b55670da
+      b7091aa8cf2c83bbf47f4887cd85534ef7d239820787eccb6062167c96965a3b
+      e72fcfe80cb6860de54264ac310ad3c3bd7c6961a3d145bda7b9d5cc444085b5
+      1a7789c1764a86b145aa768561111dd918c32fa9503991127ddc4fc779191a2a
+      0859db7ef3c7c9c9c710649ab965523b4d46a8cec6b9baa786d296b13c5216a4
+      3508c597cf04b895d751cc34bb656724928cfc8d2d6c48b389ae63f1ac517c9d
+      a52c6718c3ade11457de48453de25ae7b845a4fc6da1aa8a96139cdcd9761721
+      17ddb8ca72724b86e4a79427040dbbcd93873e40f5b4c4850dce94cf1e5c79c2
+      4957769017f19a654525a413805baba6b6737599ce49a988b6a22cf77842d895
+      19b2422c019be03980f1f494f9d67cf9611faa9c69cb2308a2572568a0cfdd9c
+      3513f5ba79794d928c0290c994a828cb858112baa59f13078e96416204828b56
+      51353de635356215836b374d8a0b9e17897e38a096a7bde72b213b0588853ac2
+      63537d21c512229c8f1fda919ed10fdf91acdcb806dbac1e88c97f8301514215
+      0c89e2acbb2545662aacb7a45976549f3b0636f2445a41d73e3da727477ccdd9
+      02442580b283c5cfd889572d41ad450a4e9963189b869925f7bea7063a6613a0
+      aba6383f4536b3cc7f8df98ef5871a0331889d3954fe7b893f2175909a4a6dec
+      487df3161e091781f9a77f426a1bfbbe767735b2e2aee6fb6569c014bcc1645f
+      a00d8cfb55ac968adea22dc3c3af6ec05cdd2559a036887880aa899260e470b3
+      9fc94fe4b43c6145c581101c2cba6955014853756746b7c4cb55c48a0209c09b
+      981609740c3155a5d591a5795eb19485002a0c5c92894bc25cd93541603b3bab
+      d47905539acefb33b80332fc4cbf83c9a9efb7a8169a1a2616c75861b97a97a5
+      e6ebc9e9ba9072c7b719f97474f25b60b4b96d271b37f99b5bb2c563c21582c0
+      0ad1b33ae6ea62c856893cd5bc8c0557566acdba928436504511e33be413cbcf
+      b2431d05c0d6a60dfd6bb98e336f065a0cb9e58de3f9440374285298cbf25818
+      fa998010ea7032ab9ec5388532a719fa45361e71c069f29612987083f2209fa9
+      8045313edc1c5c97a500fc694c8dcc7d985a5f37d006996aa08ae9820ec8273e
+      17ad0a8623c7102d79112d7327215ec13d9848acad14c6d105cffed149ebc05f
+      65ab18dda4802d80ae515a75da694b791c624710c26ae600570b6544bb9ecb74
+      77e5b60da2b2825525a1dd847ff213080971873f365f5ec82f16865039d53c48
+      99bb6677812c3c50f8b88765604a03e9b54669c4619c0c1e84b533b79bb90141
+      96880e70c8984bf7998bf02a9417380088c675293d8250ae2db2679122cb04e6
+      b47e265e32babbca26a68ca9173953afbd836c35a423e16b3cd0c78f383741c4
+      f3a313d38305241f453a8b11926c30a65ea4e510793b0abffc32d52a6d16da0d
+      25438f88b8a424d4cc23c9bb6d5b5d388695d024a20128ad2a9c9e8a92773f13
+      5589aa6010207b6641cbca76c0d1d2618ea22600bd3acae556b53930a7ab9c24
+      1b792baa9dfa517b06222efa5b4d4b23aba4f7ab7dcb27ead4639f367ad021ba
+      559912829a05ee41950edc90f8576cc9816f9437cd4831c4bbb009d3205ccc14
+      9019c257b64c9ea7462a7ce26a145096bed67d94cc1ebbfc25b8301dd4c3baeb
+      e168e22b30a9104416b548c33b0f1a9b4245ac161d05b70ae727393458e211b6
+      c7635cfba5613a244934b15ebac6909636afeb0c0c16724fa7637ab6d1585a51
+      9c285a47020c6096ca7def8a0c6376b7b5a4c29a756056e12a3b5691ad19b72c
+      72a475e47396a08baba7a55b858d1aa11aeed21a36526a4161c1d6f354f7e914
+      e7aa9ccb11a77b44267752172963217a15a654d272a2712026b35e7ef18a111c
+      a7c7750c2053b01919c62b41593327185b2211df5067b24411e8d45387dbc4d9
+      051d78eb9cb1613c39736afba118c3d71244ac92b5851957e45e17fc4089a432
+      62c1877666c340984a7f942bfc19113d490bf99851fe3824d1584c30d58ac234
+      320dd969d2dc2ced81c6c0ba61dd30bf53186a10d09e080bb0ca50989159034f
+      067c34e5b0892326e15387faa7c7968a2fefc075559c75510b90664c7bc791b8
+      a57bcf8f6f3cf16abfef04460cd91b20286881423c08911fc73843dbc410b7a1
+      fa5aa2608a1ab662ea30091494b52a11218595d8f0efb4a718e6f64083d2ec2b
+      36eaa396b9c07f2d2c962edaf3879deb71fb4bce9afc9d6a3ccd27433ee3c4ec
+enc: 64b7ef13c9117404a215c7753aa07a542d9dc161fff9805ed465242258e8f4587
+     1c908c8a326c6532f019d2216f31017c7033df84f5c91e5f191bd7bc2bc57b535
+     20df7133a16e2a62b564b099e3d331893c16960f3033605401672b3137e4c5dff
+     10911668b74351c0c8ad1e530b13f79f7c9541ba66c48b5da351d7f5b29230b0e
+     e4e791dfcca0e52195d3d900489e1b6caebce2e06c5e4ea6c35cb42297cdfae45
+     48f4644e657bde76d802ddc08c5b62cfc4ed5994733a480c5c973274e83c4f9c8
+     cda8b89142b96f4d4248d3c3ccb1badd49b6a84e8392e6a2ec1f0e0dbb5d98275
+     2f40127436e6b15605a119d5bd8fba6186903ac86a47521791569d9b7c8b7b11b
+     dca7b36712646741028f7dd9d2f5f2433c0d09aaee2c0abeea32de66e0bbdf0e3
+     aa281ae06a1f7c4710129079c00a2526d03e12e9d97e417127da5a579fa2f0b90
+     60edd1d7002002ba8a9f05e94e1b5066053ce2c947347d58359d0a5ba943fbeb0
+     41c0f957c7b8979e7d6bc930094b0e361eb16caed052151f4630391df9c0fc06a
+     15ffb96bb9b1dbd786d5f1da03ffb0958c317488ff6f8d5ea8687e669379c49c6
+     c0b2f6307fa9f544aa16fc3e4a1d3be06e147a8a01d42e833d05154704b0407ac
+     5a46e6b24b0a86b065479bb3be662889d8e37015229a7718888e685ddd2776f86
+     ee2b6f2b2de3795ee60262a71cc4d2f6d895e05ae44c177495a159cbe580bd438
+     47a865b88a405b73fbc83061050595662529dad1c4ea8b41762e5c0b0c40d6a01
+     0d5535ee4ef11711c624fce7e1f974ef9d30e5e62a0e59e9fdf59fa5b218eb27b
+     69522afa9bca6eca68d4a1369dd383f07ca7c453e1a12124668987d2684a835be
+     d68926df8780e399f297074e501e048c4dc4c460f08257cb48c5dbd0bafdfb0d1
+     41ca79bc9b0abee56a156d79730b929f1a9fda5214e7ad5071f8d6c3a52b4bb63
+     93c158e307f0916127b99112b64ee0cb612ed00cb598d5197732acc78398264f4
+     39af2d7a2ba43993ff76bd694d4f6b7724f2a6f5f77a75d40961fec0338145d2f
+     077f6999005b4d61f2efd8f25e3791506823d8dc7c323baf1ad59a9765b162b15
+     48ba300572c869d9fade2cbd1b7a4dffbd9cb36a398d796b610d9faeecf6deb74
+     5f9a8e5b2db1744b30d295f021a3b58bc15c1eb3863008ea3da7c878a73f627c5
+     53bf191049e57c06b842b4de2f453c4337fe372fc809aabce01f691e9095da748
+     a54072d9dac172eb5763bda42daffc7c3bd4587b468dee88d6a55407c62ae099a
+     3009035d60d8e281519df0604f99a2c2c89a9b18b182d7fbdc0ba080ad1614cc9
+     c7d42266e10046f8fd89b6186be1528b3165c7d2037a93d29e19ab4fcb086cab6
+     9e1437e11db8de063bb4658631a12a5e78731a5ce2ba856e0f2bf80c291e98b12
+     cafc27dbbc16d8892f2f0496b84272633010a4b216dad6a2f6186102c8940110b
+     eea6e96d54ced9234deaedd837e4f0c95a213dc64fa44e7abb257fe4de905cc98
+     c272750afafc3118112667b820603a1
+shared_secret: 12837b08836ce12d739bb54ae196b0d86b088d61147017be2edce7f
+               858e0080a
+key: 9fa78724cd484e487502524158584433
+base_nonce: dc98846a2b5076c91461cbf4
+exporter_secret: ec64fb085e164db606dc2c503210e4a2b13cd7620d18cff499d8a
+                 7a9e9918a15
+</pre><a href="#appendix-A.1.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions">
+<section id="appendix-A.1.1.1">
+            <h5 id="name-encryptions">
+<a href="#appendix-A.1.1.1" class="section-number selfRef">A.1.1.1. </a><a href="#name-encryptions" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.1.1.1-1">
+<pre>
+sequence number: 0
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d30
+nonce: dc98846a2b5076c91461cbf4
+ct: a1c7e0fcb343d4d1aa2679ee05d5af65728ff6d3db6ff11984d5b3da47365e6011
+    55755826d5a870d2f9887ef7e3a013881f6db6ed110f0868a092448cfbe220fc12
+    683f617e98a71efd
+
+sequence number: 1
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d31
+nonce: dc98846a2b5076c91461cbf5
+ct: 34bc7cde61f705975379e9bdb5277ffba38a81324f810a543c19fb6f0b098fff04
+    6bd8258a95f080d697e4f2cc965bd88365b32d283721041849dee0dc05e113277f
+    78401604f0042ab7
+
+sequence number: 2
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d32
+nonce: dc98846a2b5076c91461cbf6
+ct: 7add7d946173f226876069b24a121f22815cf403d4d94ad23ab7e2d1d7e9df1d73
+    b34b263d3ded6ad11a1f9486b6cd4e6843204b626282b66f7e981042fb662647c8
+    24600a63df142922
+
+sequence number: 3
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d33
+nonce: dc98846a2b5076c91461cbf7
+ct: cb0ee7e993839e068231276e6a37949aaac01609f0afaf0df4e38f974200ac52c5
+    cfdf28189f777d76086c7a0110f96160c0ff95835463204f52d992fe94585fb66c
+    b9813aba16c1a70e
+
+sequence number: 4
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d34
+nonce: dc98846a2b5076c91461cbf0
+ct: 1c734ebf0133faf2c67680185317647cc45108b104b58a1f5db847ee69f43fd45f
+    52af2e3f0ae6608d5bbb96aa52dbc9f6dcdc0d009d03c653bd6843ee02eb42845a
+    8263d4996900aebb
+
+sequence number: 5
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d35
+nonce: dc98846a2b5076c91461cbf1
+ct: 877b25dae49f6de059daccb5899d7563e4e96503a5913baa412509cf5d28fdfbb6
+    b343ccd486cfff1f62da9ad0d1b68d82cbad9dd1af1dea48dfa9c8523059aa268e
+    f6fd313a6c5faa6f
+
+sequence number: 6
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d36
+nonce: dc98846a2b5076c91461cbf2
+ct: 3902b9e7bc20fc7ebf21e5f412c36252f728f811e2da8a0fd528e965bdfdfe4149
+    eec3de03976da6805754af1795e76e997f0161ec1a3512843589e365e390d9ebe1
+    fe8706565ea03d6c
+
+sequence number: 7
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d37
+nonce: dc98846a2b5076c91461cbf3
+ct: fcba6344e633c56c68e77672f46d3abe743d6207f03538c37dfd4d6ed7981e9859
+    88faeca77f82352761700f531fd5e93a72a65c9cbcb8db041a7da77970a3ae61bf
+    4214e20b8ac2c78e
+
+sequence number: 8
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d38
+nonce: dc98846a2b5076c91461cbfc
+ct: 67ce719db40f07291accc7ebccd9a0bb066dcca6b6c16de1cb1c3254243642ee0c
+    8c2b9c4151fb33b4df237d847c7d0ceb79276fba08291ec2052a709fa52deb802a
+    b85cfbbbb28dfdf0
+
+sequence number: 9
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d39
+nonce: dc98846a2b5076c91461cbfd
+ct: c421b914366e12b5ea72db58a55d4a43645116314f4c25eae4a2ac789428756740
+    79798b6d6f485ac8997bb25a9ffb1e4fc5eefd7e2d27b7172be5854d041feffb1d
+    e5625505fd77cc6f
+</pre><a href="#appendix-A.1.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values">
+<section id="appendix-A.1.1.2">
+            <h5 id="name-exported-values">
+<a href="#appendix-A.1.1.2" class="section-number selfRef">A.1.1.2. </a><a href="#name-exported-values" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.1.1.2-1">
+<pre>
+exporter_context: 70736575646f72616e646f6d30
+L: 32
+exported_value: 8e1adae37ead5136975ea23d63527acb2cd9e8234d9676339c4147
+                5206502ee7
+
+exporter_context: 70736575646f72616e646f6d31
+L: 32
+exported_value: 459d5cb4e60abdc9853cf3219b1cef935eb9927e5ff2655a41fd25
+                e6c7717348
+
+exporter_context: 70736575646f72616e646f6d32
+L: 32
+exported_value: b706cbcbafd217dafd4539c8efca95a85756eda199f687f7ea8747
+                5c3e84dda4
+
+exporter_context: 70736575646f72616e646f6d33
+L: 32
+exported_value: 155d7ba9e05ed2fecfc34173e87487c108811e522cfdeef8a9044e
+                02bd79be96
+
+exporter_context: 70736575646f72616e646f6d34
+L: 32
+exported_value: 1188fcbb40fd7013dd0396b63242d46b98fa1f8b1db0b2c7933996
+                dffa0dfd2e
+</pre><a href="#appendix-A.1.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="ml-kem-1024-hkdf-sha384-aes-256-gcm">
+<section id="appendix-A.2">
+        <h3 id="name-ml-kem-1024-hkdf-sha384-aes">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-ml-kem-1024-hkdf-sha384-aes" class="section-name selfRef">ML-KEM-1024, HKDF-SHA384, AES-256-GCM</a>
+        </h3>
+<div id="base-setup-information-1">
+<section id="appendix-A.2.1">
+          <h4 id="name-base-setup-information-2">
+<a href="#appendix-A.2.1" class="section-number selfRef">A.2.1. </a><a href="#name-base-setup-information-2" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-A.2.1-1">
+<pre>
+mode: 0
+kem_id: 66
+kdf_id: 2
+aead_id: 2
+info: 34663634363532303666366532303631323034373732363536333639363136653230353537323665
+ikmR: 4a89477422c5e27ec1039b3f8d911f797f0f7c4512e109e7e9775df8a8daf71a
+      1e118f7f1af718b4b73223c0fb20ec3a44f7c62711e1b0f8449de4637d0b4289
+pkRm: 0dd52ebeab029f92ac62121816b9138b054844e971b249b2568c06a90b3c7e94
+      a85874393d920d0f1994971822f3e29069b5b5fa08cdfa029cb5945780b669c0
+      123141f7304b0c0bf5119e148390e08a493be57904e1655247877601bca247c0
+      c0f0818edabb3124254cda62a8f3593ee6ae83a249df6813a95071c1b9866f60
+      9df911190dbb919542314f785c407070cb5cba7f76a76cf7c9edc2c62023783e
+      cb1adf224432675afc322bd5a9c02254862993574981a10423a5b19048a78747
+      8c81c2ba2046aec34cfbf325774b04f076c7dc216f171cbf98464a9fe4a888d0
+      c53b5cca3fe0771a9b7548970d28bc6372f0131e9ba4e4107be745af2c637a25
+      64bf43d2761e597ebb02052f289d4cf5a859bb40806973d6754968f9842572bf
+      572c14dd188e132ccc247ccf83f614ce1842ec506e0bf857eb5699d0804036f9
+      4552c659df5b0bb71c641cd4a1566c80596109fa365bb6f7c98d94b9447217a7
+      20bdeec83ff0706cba760675e956b3e3a9d820c45375bf78e51db4a25a859494
+      1ac4b21e92928d778f46e630acd00ca0b0670e1082ee9c06bb64a035fa672c89
+      7f3367b2a997a00c5b653698946579b2c1869e6da7b35b536b3b25b45cf6b318
+      6620eeea398bb3873d6ab76c70ba47217a5d8568500563b05054348c4683031e
+      a1c19c2d008ee91c52b1c4261abb76a5d06116ab40a33682b474c745e4a6df48
+      ada5e7c161015422d3524e6a716d9a5b12a13dbf7c05b2a60f67c88a927350db
+      094449771a66875a2a5082d3248b91c9642fd86cf1a9b85307a60c73400b8731
+      5e709fa2759ad79171f2db4be6a1ba8b86943bd29ebd671475b423f6646847c6
+      bc4ce199930033c7ecc0c441b8dc8113fdac1d34cba38c4953b1616f47403f99
+      ea3ccba080c7548b58875eb65958b295c18ed9906b7500520705148341ceb141
+      e343173fa49ab61397680167168a9a200c50109b2e5be6100cc515117c20ba17
+      4e3551765cf671c268cf998a2263851f638779582c618db655ff88679cd78ec2
+      38a8e4b4c155b11e67592a34276630d5c7fa9b93e99854d8133b8b376198932d
+      2de452fc24999f750d2582160adac9c5ac91c9856590e2b04b701d20dc76b423
+      c0903c0b0f97ab15426586e9cbe54779024684b2d423c9f44c0686bf3c43606e
+      4984d9457f84a43201cccebe7a39c7e78750ac2685c582f43b6c3b2500308063
+      4635b750d65c2c5c08fb252dd83c229490810f8618a1c003eb4c1512c38a718c
+      a1059a8e2a0a91e9228a3fe7c974734fdd38b8c62625d8b231798974c7e95995
+      7c868d891b99163335f3c86db4b37e43b337052d88d76cfe70695974b71a9677
+      4fc55434190787875d97a81356ec5b1d6599b84793321bc0932b55b5629ba535
+      b33c60731663bbe0904c52f2aab7798845e5a52e7c3c781c76359977dec73ded
+      fa492c1965933296f47c82bdf6afd6bc8527811dfb3b7845566021024b8b7034
+      cef69884a00b3c09a979b40a61402f8e0242ca14b390963be1551e6fd062fef4
+      c9f1bb40b8510006b94941e3553fc73d7b832bfc050e87850faf00cbac35a96c
+      b86086f6229dcb553abc170487ac15a8714f8037c8d028aba9255659bdc68019
+      c515cd55da0b1153134b22790dda17afd9a2f67c629bdb7dba9ba15ab15ee324
+      43978441b6f46cb33b3022863fe6e272e5d23220549552723d5aa4ad35897934
+      501420208e0bf2ae293689fea50e8738590752484491554e299eadbc73f2682f
+      9b550db7897de58775169a6198707d67287a19c591ef5b28b7339878e8b1b729
+      2ff2916a1968878fab8639b30917d1ba7c84378bd3682b3809fdf4cc81b7393e
+      2b0409215af5c4a9cb368ab8a09a887568197380b70b4de6a872331ca0210153
+      190c584992882dc3c92120cb5646b1c377c4a76a897b89c3bbf554bfd8642c11
+      747856c01cf508aa77c24c7063b830381ce6b5399470c51c03d038bee2653222
+      9c722f278c94096fe9bab5ebc8287a117ec0f5b2b826b5a80a2b243713b179b8
+      20f2bef504a88973008dac6e19fa9148ab4805a61118290cae4a74aee634a583
+      a4af95abdf957ae373b3db9a910235817db249aaa03744343136296e55a4aadd
+      b0b5c1b86330cc59245212b857932000126a992aa10a16b992839069a064c785
+      d15398067b97796cc1594ec80d77f912748d7c818f54b0aa90dbc4e866773e23
+skRm: ccf30bba9a9919cc8b42609f18e79001387e1eea8c6d921bf13386af520f4419
+      0912cc0f34a05cb8c618e3e4cb4c4733524101cecc0d60d9bd14d72db39068b0
+      6346f4883c5e7bb6b8d55277a37a8c049ab4db9661710b1d4a24ed7c62f038a9
+      5343858219a5dab08b3ed0cdde20712af25f6ac271618556f39937270ba5c2eb
+      2fa8e80dc72c3e93bb2166d98d653041fa5345d6fb54e6e7a996534ee1055c41
+      93a5e17379ee1120de8330eb336d9a69a4a6eb61865580c2205d7c744c036549
+      f9623682423b9b889d1a55394f502c9aab10c7c7b5e3b43a30063086390a45fb
+      79ce2b2b6cd23ef8fcce638b7857474bacc31a13277a1ecc97cf99779f5cad97
+      4c20a687b861038fc11c99fb70b290857afb6c562b1b2a604111346c5d138c44
+      9449986b5597f0931d2ea50be2d93cf6c57833f81a77806b4b251178d199c0e7
+      2637ec6b5e5419fdd22f6cf98ea1079f171b50cdb126decc4f6a0a1009c054ff
+      6337e630377682859c8c8b20a4764f509aa4a68e682b3a5439cff2b1b0c98a98
+      d1c400818a25ab5922ee7063fe1657bf549f1c198375d1031d19cedd945fb226
+      92b5054b78ac98580295b3b02b29f06441da75978a910d6c74be6619c5e96705
+      f1b01a539bf85a7a10072025a60a64c30967bc4b2f4354370371f5bab157a90c
+      181cb567e95837629b6ac44dc244c3e2e0b2df9a9b0e3aac18a55974ab7c623c
+      3210e9b10655c043322d4a315850b598db2508ad20ae507c05eb892c8ef3b262
+      f4c1ce0127abfa4ea26789b2a663ee014636c90023a5996615125b06048f8778
+      04029d79d085e581b6a6735475c217197141379a9fe0ca2d9e40685ef78d227b
+      2d3fd3188de1cd74cc1c9b08277f7530f419564f57a946a7c238085308b075de
+      bccbe06b2dd17592b223638d7206f486aa4f154aad748d03c855e812bd113c72
+      20b6aeb93a5c21172f4e6c93f64c3e02e45a3da13dda8756a082831edb8eb2f4
+      94c3eb1ffb881b87f40d13450e2e77666d01ab1f6916bf5496390b7132ac84b6
+      30301c35914a64a2ca8673216b305240a7cb289d60861fc61094ad3b727eaa8d
+      37f2117f9471ae3803ef02a19078192aa5b3ee0a29c03141c5949d85d91335f9
+      8d9909c2ff57246beb392b040fb58289f3c184892744cd50a7d6b45316fa3d6d
+      500df871b651fa86b44c275570c767fa4c283b4db91618b5a59fcd54b77ea815
+      e0cc878a00c203bc3f0656044979cdf0228c4d2c59019296bab13647232f0c22
+      8d85143ef4f56d2cca236787984af3383e77558890600769b180047e54f5c0da
+      c91565111e57a9c6cd0c72e9ec11f7b344070352bd1ca091b226f2c1759f134e
+      b9558d8dab45e19a0b193c5f2920a106c273c8257af877b9fc148a59c6c8db6b
+      bd46e7c1f0668cbe2b337271c136b4b15efca28a332d5d1aa8ec97050a89011a
+      a3a41c512b5af40ae9a68ccc0760be5756b41a9766784905149828894c60b30d
+      da2a1a9ee517de4947c80bae1796bf79249c7351aa67a71ac3811414557e33b8
+      9487d0a8913381108a7d13dcc026997d47b59dd4a2404e86198b8128e9cca6cf
+      8b90553068823ca1230716131b83ce8c65411487e78ba67b51a6e9947bdb6873
+      bf286b81d5090a118fdd57cb24c5212fcb781d2bb914b940f2142a4ce8587244
+      18d3224003971a98ca7e5b193e612b6835c0c7c5fc32e721922f5c2baedb3418
+      84b130d7cc8322165b0118163c63f18c2f72e98437fb92d37a46cfc8b01a099f
+      3a2c9e1bf9461b89763ae077a29544f6d7398b1bbd577bb521487a69d1a4b06b
+      2d31e93b5ff3c463d75deeb43dccdc9456c633e240cefc887e4504bae0e621a3
+      e19793a0a4bb30b7983a9081751d9fa992fcba5c89038117f624c6aa2a622176
+      bd5b6c46168c82019cc276a2576c00f0903ce0bb9167474392083c6497c747d6
+      bbd3079b393a7908ccab95c4456b58bd3a9b5759ea780a14abdaa4971d628a97
+      1b86c451ceb961599ef3273398522b521ea51430f93b3bb8313fac2437126a8e
+      c3f222b30612c6bab0e842cd7a94199c982abc47ab67c01818e649c14a747361
+      9b6c0799fa5869cd35ab1ab10b49e6134f3394fe2c4f13298db35157fcc5b497
+      5842409c64af8c4a728a5404f5109b27a8dac8407b00b1081615d76c5d28c61d
+      0dd52ebeab029f92ac62121816b9138b054844e971b249b2568c06a90b3c7e94
+      a85874393d920d0f1994971822f3e29069b5b5fa08cdfa029cb5945780b669c0
+      123141f7304b0c0bf5119e148390e08a493be57904e1655247877601bca247c0
+      c0f0818edabb3124254cda62a8f3593ee6ae83a249df6813a95071c1b9866f60
+      9df911190dbb919542314f785c407070cb5cba7f76a76cf7c9edc2c62023783e
+      cb1adf224432675afc322bd5a9c02254862993574981a10423a5b19048a78747
+      8c81c2ba2046aec34cfbf325774b04f076c7dc216f171cbf98464a9fe4a888d0
+      c53b5cca3fe0771a9b7548970d28bc6372f0131e9ba4e4107be745af2c637a25
+      64bf43d2761e597ebb02052f289d4cf5a859bb40806973d6754968f9842572bf
+      572c14dd188e132ccc247ccf83f614ce1842ec506e0bf857eb5699d0804036f9
+      4552c659df5b0bb71c641cd4a1566c80596109fa365bb6f7c98d94b9447217a7
+      20bdeec83ff0706cba760675e956b3e3a9d820c45375bf78e51db4a25a859494
+      1ac4b21e92928d778f46e630acd00ca0b0670e1082ee9c06bb64a035fa672c89
+      7f3367b2a997a00c5b653698946579b2c1869e6da7b35b536b3b25b45cf6b318
+      6620eeea398bb3873d6ab76c70ba47217a5d8568500563b05054348c4683031e
+      a1c19c2d008ee91c52b1c4261abb76a5d06116ab40a33682b474c745e4a6df48
+      ada5e7c161015422d3524e6a716d9a5b12a13dbf7c05b2a60f67c88a927350db
+      094449771a66875a2a5082d3248b91c9642fd86cf1a9b85307a60c73400b8731
+      5e709fa2759ad79171f2db4be6a1ba8b86943bd29ebd671475b423f6646847c6
+      bc4ce199930033c7ecc0c441b8dc8113fdac1d34cba38c4953b1616f47403f99
+      ea3ccba080c7548b58875eb65958b295c18ed9906b7500520705148341ceb141
+      e343173fa49ab61397680167168a9a200c50109b2e5be6100cc515117c20ba17
+      4e3551765cf671c268cf998a2263851f638779582c618db655ff88679cd78ec2
+      38a8e4b4c155b11e67592a34276630d5c7fa9b93e99854d8133b8b376198932d
+      2de452fc24999f750d2582160adac9c5ac91c9856590e2b04b701d20dc76b423
+      c0903c0b0f97ab15426586e9cbe54779024684b2d423c9f44c0686bf3c43606e
+      4984d9457f84a43201cccebe7a39c7e78750ac2685c582f43b6c3b2500308063
+      4635b750d65c2c5c08fb252dd83c229490810f8618a1c003eb4c1512c38a718c
+      a1059a8e2a0a91e9228a3fe7c974734fdd38b8c62625d8b231798974c7e95995
+      7c868d891b99163335f3c86db4b37e43b337052d88d76cfe70695974b71a9677
+      4fc55434190787875d97a81356ec5b1d6599b84793321bc0932b55b5629ba535
+      b33c60731663bbe0904c52f2aab7798845e5a52e7c3c781c76359977dec73ded
+      fa492c1965933296f47c82bdf6afd6bc8527811dfb3b7845566021024b8b7034
+      cef69884a00b3c09a979b40a61402f8e0242ca14b390963be1551e6fd062fef4
+      c9f1bb40b8510006b94941e3553fc73d7b832bfc050e87850faf00cbac35a96c
+      b86086f6229dcb553abc170487ac15a8714f8037c8d028aba9255659bdc68019
+      c515cd55da0b1153134b22790dda17afd9a2f67c629bdb7dba9ba15ab15ee324
+      43978441b6f46cb33b3022863fe6e272e5d23220549552723d5aa4ad35897934
+      501420208e0bf2ae293689fea50e8738590752484491554e299eadbc73f2682f
+      9b550db7897de58775169a6198707d67287a19c591ef5b28b7339878e8b1b729
+      2ff2916a1968878fab8639b30917d1ba7c84378bd3682b3809fdf4cc81b7393e
+      2b0409215af5c4a9cb368ab8a09a887568197380b70b4de6a872331ca0210153
+      190c584992882dc3c92120cb5646b1c377c4a76a897b89c3bbf554bfd8642c11
+      747856c01cf508aa77c24c7063b830381ce6b5399470c51c03d038bee2653222
+      9c722f278c94096fe9bab5ebc8287a117ec0f5b2b826b5a80a2b243713b179b8
+      20f2bef504a88973008dac6e19fa9148ab4805a61118290cae4a74aee634a583
+      a4af95abdf957ae373b3db9a910235817db249aaa03744343136296e55a4aadd
+      b0b5c1b86330cc59245212b857932000126a992aa10a16b992839069a064c785
+      d15398067b97796cc1594ec80d77f912748d7c818f54b0aa90dbc4e866773e23
+      2c4382b7691f0b26be2971010d500b34093ab5d1375c63efdeadbabbdb800444
+      1e118f7f1af718b4b73223c0fb20ec3a44f7c62711e1b0f8449de4637d0b4289
+enc: 687e277d048ae43454c5c03c544ffa75778330568de7ed6079c1609c909034649
+     977d608b96f41a1a725d6b65624f9f4b4c19723930c0117a85f2619a7df5329b1
+     da9a4cc0ff37754229f6af71e20a08dc8c69bedf9ec2b72405b71b722f0427421
+     6a4d4d08f988e1ff33cab44f8c8f7e791ae1d2d5869e38937ed1b7113475cc73f
+     636727c9f29e5389a0ad36a496c57273902cf3db7c6027292a1b5333e42f272da
+     1ad35d82b9b1ed2f40a5e4b6ec86c34dfe328ecea5cf95151fd72a5754bbf6698
+     8a7bc09b9f8f8b046a84f9644178b81d76c9100d53b5f5a819d6fadd762b1b5d3
+     786deb2cd6072cd58b76030bd34398639b6ae60b79b57603762bebf26256ebbb9
+     1bf0808fd3b2467c796726f0aec40bf232d45dfcdd5e73e728e6785db576867a1
+     74e790e647765fd331a11d714ea66a8abc69718c699078b0ab392aaf1f0cfeef9
+     8a5e342def1fde3c2def800e6f735837cb2ff8c94cd022f51763ea6c9fe6f8ba6
+     2f1171c451002c412492ca0c6612b3ef5ba41c71755169743ac4d462c0c9d3502
+     b5e2705775b23774ac13f35ab7eee6dc65fc740a744930bc82cefa3a2ff7fa334
+     ec1ac8eae8c820356fde5e93666135cb402c632a1d8c13e52e86be1572cb48b0a
+     cd59424a7f7dbc1b6f7e2679e6623b6c3cd9651b2b24c82425276226c768cbcac
+     edf3659558945e3eb25d976f0ab183e514386c5bbe57655c879a5f152244d96a5
+     d027828e9fb138068a481d4edbfb2772a108783c4a5f40020a1e11129103b24a2
+     77a5e5fb287a96f48cc3bc8c305888fd2b0635925cbb563d1d717d887b1b62b54
+     edb2919e71cc6eddd8c33d3518932b418d58b29df9a771d413998320832c1e6ef
+     e4e8d1a613b23457997fc9091a169f71012af9028208dc40c6195242055fc5a7b
+     ca67314a7436ee357972993ca732ccd83ca332174300adc4a7a5e37a0eadbc55a
+     10ecbef614a076ab0fe666f271fd05a0799dd67511d9640fde3066cb2de3eab99
+     5604dff097b8be714b8634743a442c8f8e88f0f2497a2ad64758d1f5fdd975e67
+     e04fe97228493f6ae3e9257a02cc809b6a91d2fd5d70493d23c52ba9045ce16ba
+     a8137cbe791826b423c3531ff0d1fdc53226241c46532f7459ade8a76e84ea31d
+     6fffe4762a07459ed1aa06875d6555fdc8edd2e88e5a178ca58f803a4dfcdbb10
+     ebe691208e6b59737329bfc6ff8c29493c687e9c25cc733f0a080aa2ce24c087a
+     eeae2cf6fbe2e685e70ba863095d032a941590da9265e2107c83b3a2f29059cc0
+     0e66783109812b9b5e5325f117a5226b16b99a86488f5a118128e236aaee54694
+     f6dbb4a56b6f4e86caf25580147e449ab99dacd6b8fc3162b196053984d73ad0e
+     63fb55893f7943c533511cf2a8a7094c41ed07d45e4fd3d6c882a4e5703bf59e0
+     6142f66acbc74306adf82b84f950f6eedd0eeb518f81c400be5e090745c7c6cff
+     2c633121ec3c48cbf44a9d5d9fdaf7217e4c81219dfbff5963878cfbefc8f0b49
+     2590591c04294f76c2e4662a236dd6344829c670e85b831a63139fe0162bfafd4
+     5c5102478bed64e4f94fa5319c1abf1267f447bce4a7c1fb21fb17ccecd59c0cd
+     33d0f82b710be8400e1a0ddf79561059c30ba2b6433b94265029bbcbd4a8365ac
+     5fb076d49971ad85eceeec884f7f50923e07a645c52379ad6ccc514eb8e387612
+     b4c9eb031d10c59df9efbc5eab4549632562b32c323cdbe862fcc3549545a764a
+     92b35f2ba7aa5f6a49ae604780be07d567b54f000ee7b345cd531fe2983cd0d11
+     954263e73e418566534ce46c6ef028e24af8291f1207ae273d4380f713d2c0ac5
+     839acc59c18659f8749fcff4c4f635d2eea1c8b6943f99f2a83446cad6481f95d
+     e6718d8ced93a305e46f5ae7eee3ffe06bfd472e6c2c32087c308f9ab1b9dd3cd
+     f23ecabe61bb8dc0863f6487dce115377385dc3ca94b0d64d303fa826b55271a6
+     6f4a67392dd52053676e70a92eb174306b189bd583e3dd5079db083445c6fc2d0
+     58cdc8cc8174c7f66918233ddefa037ee922f8c697d1afb6c11b088493b309674
+     07d5c057725123bb762d2e2850a79bb82b0fef7fbd42310b7afe0ca96f1317c17
+     71304f2d7dbd13b1edd579039f90677e5df62d5d999481ccdc8880e9ab2288a0d
+     62b47777dce78228234fd2039225387a9d57f41b3f4c7a26be509fee698765ed2
+     910b62ebbd7d7144
+shared_secret: bea8bd074059b81fe0423203d5f0dc07eef3ad35f2567c184972723
+               f6eca0873
+key: 9513e14bf3be17c04b28ccf7cda83ab387e89aa5409048eec0df2cfbc454f07a
+base_nonce: ffe91ad494d67c3290fc8b4d
+exporter_secret: 699ffd917ba61ba36d28bd43cd727bfc5e781aa000140688daec5
+                 12e663f6048fce4ac6627d1d0dc6e0d49984bada99c
+</pre><a href="#appendix-A.2.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions-1">
+<section id="appendix-A.2.1.1">
+            <h5 id="name-encryptions-2">
+<a href="#appendix-A.2.1.1" class="section-number selfRef">A.2.1.1. </a><a href="#name-encryptions-2" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.2.1.1-1">
+<pre>
+sequence number: 0
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d30
+nonce: ffe91ad494d67c3290fc8b4d
+ct: 1872aca444bd206f300787e22c12c07a1b30035b294292dcc2f64433df116a970c
+    ccce187f9059b51d9d0bfc5a24e6b2102161df7ba1744c26ec22275a2b40e8d875
+    de5fa041be8beb10
+
+sequence number: 1
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d31
+nonce: ffe91ad494d67c3290fc8b4c
+ct: 0f77034dd07a97eea699176cc178961d7946ee09f58e5c88f3402765d8c954c3f4
+    296aa2039163ccb60085a879a584f252a56ca04bcb6a495632be765d932658c716
+    144d669a908e0699
+
+sequence number: 2
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d32
+nonce: ffe91ad494d67c3290fc8b4f
+ct: e4758bd5ef3237df12347b8bacc4aa11ade829b9804c50d9df7877c873c82cc7e4
+    6879882332b68ffc5b00c5b1e0c14d30bd9b2396aa9aa0f6e1bd3fd9d77a581715
+    8320778941e8fbf5
+
+sequence number: 3
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d33
+nonce: ffe91ad494d67c3290fc8b4e
+ct: 7098c5d9a55a65e9f90551d0bc9874436cc332eea94c24ed3f67218d0345440bd5
+    185325250b4b6df474859b382c70a863c3f37c007a0413a93bdd1c278377066524
+    fc96ec84ca2dda72
+
+sequence number: 4
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d34
+nonce: ffe91ad494d67c3290fc8b49
+ct: aa00867483286eef68d3c7c279993b58d000ede9c6cb0fc89a4283028a3eff7e23
+    8a94e915878833629a5979e8ee6a491430e229a28287428ff346641938fe99fa2b
+    04a6b2a3d291cf4a
+
+sequence number: 5
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d35
+nonce: ffe91ad494d67c3290fc8b48
+ct: 6ea8a007bbf5762b84f825467aa4cabc5ad3764a21741d70152e93e06d107c6620
+    689b70641c0932262531dc394a3d25ca806cff4f4ed6a2aa6fa2ce2fd9a38dbb14
+    300eb5a7b859d084
+
+sequence number: 6
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d36
+nonce: ffe91ad494d67c3290fc8b4b
+ct: 7832a3f2fb0b4510386a1a11020a963213948de6a08e117178b32124fe97afb407
+    62344b993466bbd7b465257ff9c28c95c01a6b6cd8338320ddcd75e4cb09ee2840
+    e36d2d52036fa693
+
+sequence number: 7
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d37
+nonce: ffe91ad494d67c3290fc8b4a
+ct: a8bdfa49d34410d8e5b01f03fd31d7b87c726505a4a4f8065afc661b71ef7e03a8
+    3e085f3179c28acf52988d8e165cd0389b025aa6268227c1dd693b5a181e8132c8
+    1cf8fb441bf3fdec
+
+sequence number: 8
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d38
+nonce: ffe91ad494d67c3290fc8b45
+ct: 9c265b0ae0050cfd400f2b04637430ac3831058b7753a8ec6439cf986ac2de932e
+    3ffe03fe8fc471d83f76706dbdda65423203aed7d1bede555b05b2bfaa5d1397cc
+    cd86a14baa8b12a7
+
+sequence number: 9
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d39
+nonce: ffe91ad494d67c3290fc8b44
+ct: 8430bd7f1d5ec37dc670eec95ed361b245a07ffabcaea6409f1ff93e28dcded60f
+    e4183b85610f7b6962939dc5926614608138f00b4993ef1613990ea5586a0fd42a
+    8eb776c7a5f40742
+</pre><a href="#appendix-A.2.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values-1">
+<section id="appendix-A.2.1.2">
+            <h5 id="name-exported-values-2">
+<a href="#appendix-A.2.1.2" class="section-number selfRef">A.2.1.2. </a><a href="#name-exported-values-2" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.2.1.2-1">
+<pre>
+exporter_context: 70736575646f72616e646f6d30
+L: 32
+exported_value: b78f5c13ad8199b1ee24317fd4717d493a057845f3585428464ab7
+                179a35322f
+
+exporter_context: 70736575646f72616e646f6d31
+L: 32
+exported_value: 526690d98bc3e877abba512e9631a079a86aa92a8e5080082e14a6
+                7d9258274c
+
+exporter_context: 70736575646f72616e646f6d32
+L: 32
+exported_value: 5d8b639fc56cf94eb5fbc7c53c27f3b19911dc764e58d79e846ce1
+                5fc10d224a
+
+exporter_context: 70736575646f72616e646f6d33
+L: 32
+exported_value: 14791778cb466f0b3fc6b3123e5957e7a7e4aeac7b61a305452ce4
+                de750f5f88
+
+exporter_context: 70736575646f72616e646f6d34
+L: 32
+exported_value: 2fb03ce950842a96fc389bbd5ebac6045e7230a26a8cfc76c71f22
+                c34a86fff4
+</pre><a href="#appendix-A.2.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="qsf-p256-mlkem768-unknown-kdf-aes-128-gcm">
+<section id="appendix-A.3">
+        <h3 id="name-qsf-p256-mlkem768-unknown-k">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-qsf-p256-mlkem768-unknown-k" class="section-name selfRef">QSF-P256-MLKEM768, Unknown KDF, AES-128-GCM</a>
+        </h3>
+<div id="base-setup-information-2">
+<section id="appendix-A.3.1">
+          <h4 id="name-base-setup-information-3">
+<a href="#appendix-A.3.1" class="section-number selfRef">A.3.1. </a><a href="#name-base-setup-information-3" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-A.3.1-1">
+<pre>
+mode: 0
+kem_id: 80
+kdf_id: 17
+aead_id: 1
+info: 34663634363532303666366532303631323034373732363536333639363136653230353537323665
+ikmR: e9c9efe589de5204025aecc0f4842189c6f5880c4da7f7af9680ef447dda12fb
+      669eef46bdd2f1f649c5d7d34b473116bb2898cb3b386cf7216173d8f3d23cf0
+pkRm: 02c5915ac96615ad2e101be72c35476f1deeb649655e74e1aedb28e43b76374d
+      fd638cbc02b16812836522d44d0e8b4a48380a93875bc101808d356264da9429
+      708c53f169e705887d42b8904354ca34a1b08253a7b1451c13c0d788ca242a19
+      29266499c696f69366efa3125591a486230db050955c6b6c09a7288ec6b10f40
+      59b6670d67f172cef4c4838c40ebe00125b919f1c1551969452350218880bc64
+      12ccb58615dab670e6ea52bb4127f9dcb2eb3230b0c9020751374a6080054352
+      ae3c1065c627c9a3b87372500759a6afba2a26a820505a3486e507747a53bee9
+      88d455cdeb7741ee5516ae60c75aa448951c2dc9ac3700852f82440218576c2b
+      528b42242bade8c1bfa9af132aac7eb542d00635c00a0ef4142e2e0335e3d65e
+      92d713e0b1c5223539d172158a45848e43693dd538459712c573b11b798cb5a4
+      4c3dc826d230a829710ab6d660d10cb2ed3722693702c8b4911caccbc82819ee
+      f2678b530a3a6bb01a01b774a529ea06b6869337a8ba9f4aa4951b20a3b48bab
+      a9b462588a84da841c4bf07216d9b4443149b9c66a2fe56de02bc32685104ce8
+      0cf71119b75b1570e88673d69c9a4bcb2af223beda58d4d518c07b1f947c668e
+      a9a440ab1dce392939329849530fdb0636b6417f3cd4c00e31c87e786a274bcb
+      a340858e71c797a1889039c6c34853b2390a819c899aa19ad272ba92f40f5cea
+      0f684126bf351c2300085be577259b507e0983b78bc237ac7732f339dd50a8c4
+      64b51fc703c62c25f89a6e33d21c55e905a4f45c9d3994a55212a2f1c32c3844
+      dce3b02886c7aca32e2d12a596430be33b3200a69a81ec44b072b6970b33941a
+      5e71f55bf47aa8cfd71d34f920ebac6620525ece00ad60191244588c0dc681a1
+      0c7b04a6b9d7131b3fe5afe56114aa9900e8a51f5c72cf6b2399aa6132395056
+      81b08a25dc865ea959365837894a7e2a7615966230d4a18c0cea2097b155f866
+      4c2c82068a44af59580d66a66a9370afe409460532a4f7b06c9de093cd441d3a
+      977fc4f188b77109cd97b06f0a1958aabc4d34a7a369a8ba11ba4cfc2bf0b683
+      cc024065f15b93f62293a3004ed878e790c020c3b896c8373b7c6a296c00ebd7
+      7718b864b53c69f2c03e82d07a68e36f07a042fa45a059224c2bf129e7256442
+      68ca71f28461176fca2c556b9372007d2351202ef6995473075070669f3581c6
+      bb11385ff550db30abd3028bf9f3b2c594849d58a3d650cb9dac8b6c4079ebb7
+      0e3785be86f2a97dc05b384ac8e39a43a3c151e5f373891a4bfbdbab9afc22e4
+      9777ca64066cdc18f8d90baa672a8b77582a7995c75cc12cb32343348698b954
+      3f2b70ead9822f3474bbca62846b9394eb6d94151137641cb0731a76c220b75a
+      aa7de58e3d982d4d57b6a7258544e82b2d653c8b6cc65da58d7976bd5f94abc1
+      d26d4ee5b59369798a691d68787a8a56159fe0885e6735d8269d3341bbfe803f
+      18e7b921fcb8161a8770d7037e6279e70b59e717287ce9b1961238891111ba92
+      63d3737dc063978e434243d6026f569de978b76954bb4a8a4ad96a47820c3668
+      65a9d7450486076a6b50317a80430fcac3c9488e11166f2fd458875821c3b02b
+      1287c80d575f6f4ac419286a0a984a0a971f5a205515567c8405bc7d9b011c1c
+      4385a584d97c0ae4ebc2fbae05b11cb340a746b849e1d5a61684be98327aa59b
+      5c
+skRm: b82ae8c15908e393121ff4643b8cf7017a47826a4831a3f3a7be8c1f8de802d0
+      3e3244c5a59cae9b3e1df3b9cfe631877a6d501871e9a7cbfc855986c051a916
+      33ed3cbbe0b8a24c6196a814cf29b79c817746942181aef0691bbc5cc85c7914
+      2891d8e53b36830303e59e7d981fe67b2f66a8199a2801aee31dad5361ce99af
+      ff21921dccacc0b6a3664b5b46186f194aa5cad1244d8925860bab6a102f87db
+      98caeac81a52872e72c62397bb71bac8eff4684f37824f793434a6ca9a823798
+      fc8612f0927016a6ee7019d713a688e37221aacaec4701090a54428c41aaaa53
+      8ad7784f086468ec6847c486f7225a32369648cc9d1eea4b99199c7934215bb4
+      01eb4234e4db8499e21774292adf3c1cf33c3b75448e9c66ab0ec2463b4cc732
+      49c636fb1654330bb0e8651d2c2b182c93c2fb6905010e8271aa0e134847a7bc
+      30a776edf7a117b42493673d2be4bdf40437c486c671735b8fcba9a5d76ef7c2
+      66083bbce5d23c6f07764be666998b8bad5638d9135f339b1204d07269b2c732
+      216943214957296df7fb004da646796cbd37c603667ba8bd9876f7dc8e12a0a6
+      5b492010395fdc56aa92f18eb8e573130b34654c2628a9a81c371f6106668e95
+      1049f272eb9ba2bf96b00dd32e1ba59706832f5fea4d385c397df5a793201233
+      03196ac45b15529423836259dc69f003c6454b3432975a109278d3fb91b4e6b7
+      d2acce35612006f142ddb4910e8ca082c140833a6f21f86ce5b7424fd9aedfa4
+      467ebc517303a5aecc910ba30920821d7862c464fa95ae31499b183d30c3169e
+      012b8f2b38a2e1b96f10cf72e12095211dc9e2342c487e74f317d1f7b35fe275
+      d68c829b488c07994d8971cab11874471c1336e619ca7978fba5cd8f175a70e3
+      a1e15b11043283f6b3535ac97c86d073993b962a05c838c133f597b4db3969d1
+      20261e7c86735a16794391cf4c9dcf2a540706b67f954defa7cce7e4bd7ddc0f
+      0149aad199232e342b0d3112c8b27f232a30fab2a9d3fb17534b1e2929487749
+      62a0881f026ac44b7b85f5233b01115adf83875a3baf72e90996f26fabd69a4f
+      107a8b6bb5a747b4af86b5429b09f31814d05b4ed0c5676aca6c52bca052274f
+      8387482341ab65c689ee332f7480cdccf5318cc622cef55657a788f352083b9b
+      acfb74bb98a8815737bc2933ae5f24a94e130a2107921dcc7b6576a413cc7000
+      174a3b7673cd599ae7294bc6da1b615aacf9a0062a0bc3805215a80c7912b821
+      b250675c4ca5ff1a4d77f998e91674ffb13fd4c3a90d9a55a2e89c7a65791ea5
+      4083001956d64d7fb4b8eaa09421e0709248091f2cccd06bc122fb9d995146c3
+      3140e29122317867b8c90147e4b0ced803c5174741c81dba64aa7ad900fe897b
+      6c354008893f8381bdefd24e6bc32522e35ac1f3abfbc48543542b33b1c64fc3
+      787bd391f650b8474a84be0b42b1b9704e2087dc96266566c357884e02119e5e
+      669a26f2c82fb461517b3c6d4cb6fdc47411c253eeb0672e99c28f916a88e90f
+      a16355dd58874d647591e523ace51c18f6107334b8f853a9653528232ac27824
+      3fda44c7c5350397937cb81c18eca397d1b62f7645c3a360172285b7806bc5fa
+      117ae425837063493211c448e85d3f6a58927557ebe13a37f128836aa7555189
+      638cbc02b16812836522d44d0e8b4a48380a93875bc101808d356264da942970
+      8c53f169e705887d42b8904354ca34a1b08253a7b1451c13c0d788ca242a1929
+      266499c696f69366efa3125591a486230db050955c6b6c09a7288ec6b10f4059
+      b6670d67f172cef4c4838c40ebe00125b919f1c1551969452350218880bc6412
+      ccb58615dab670e6ea52bb4127f9dcb2eb3230b0c9020751374a6080054352ae
+      3c1065c627c9a3b87372500759a6afba2a26a820505a3486e507747a53bee988
+      d455cdeb7741ee5516ae60c75aa448951c2dc9ac3700852f82440218576c2b52
+      8b42242bade8c1bfa9af132aac7eb542d00635c00a0ef4142e2e0335e3d65e92
+      d713e0b1c5223539d172158a45848e43693dd538459712c573b11b798cb5a44c
+      3dc826d230a829710ab6d660d10cb2ed3722693702c8b4911caccbc82819eef2
+      678b530a3a6bb01a01b774a529ea06b6869337a8ba9f4aa4951b20a3b48baba9
+      b462588a84da841c4bf07216d9b4443149b9c66a2fe56de02bc32685104ce80c
+      f71119b75b1570e88673d69c9a4bcb2af223beda58d4d518c07b1f947c668ea9
+      a440ab1dce392939329849530fdb0636b6417f3cd4c00e31c87e786a274bcba3
+      40858e71c797a1889039c6c34853b2390a819c899aa19ad272ba92f40f5cea0f
+      684126bf351c2300085be577259b507e0983b78bc237ac7732f339dd50a8c464
+      b51fc703c62c25f89a6e33d21c55e905a4f45c9d3994a55212a2f1c32c3844dc
+      e3b02886c7aca32e2d12a596430be33b3200a69a81ec44b072b6970b33941a5e
+      71f55bf47aa8cfd71d34f920ebac6620525ece00ad60191244588c0dc681a10c
+      7b04a6b9d7131b3fe5afe56114aa9900e8a51f5c72cf6b2399aa613239505681
+      b08a25dc865ea959365837894a7e2a7615966230d4a18c0cea2097b155f8664c
+      2c82068a44af59580d66a66a9370afe409460532a4f7b06c9de093cd441d3a97
+      7fc4f188b77109cd97b06f0a1958aabc4d34a7a369a8ba11ba4cfc2bf0b683cc
+      024065f15b93f62293a3004ed878e790c020c3b896c8373b7c6a296c00ebd777
+      18b864b53c69f2c03e82d07a68e36f07a042fa45a059224c2bf129e725644268
+      ca71f28461176fca2c556b9372007d2351202ef6995473075070669f3581c6bb
+      11385ff550db30abd3028bf9f3b2c594849d58a3d650cb9dac8b6c4079ebb70e
+      3785be86f2a97dc05b384ac8e39a43a3c151e5f373891a4bfbdbab9afc22e497
+      77ca64066cdc18f8d90baa672a8b77582a7995c75cc12cb32343348698b9543f
+      2b70ead9822f3474bbca62846b9394eb6d94151137641cb0731a76c220b75aaa
+      7de58e3d982d4d57b6a7258544e82b2d653c8b6cc65da58d7976bd5f94abc1d2
+      6d4ee5b59369798a691d68787a8a56159fe0885e6735d8269d3341bbfe803f18
+      e7b921fcb8161a8770d7037e6279e70b59e717287ce9b1961238891111ba9263
+      d3737dc063978e434243d6026f569de978b76954bb4a8a4ad96a47820c366865
+      a9d7450486076a6b50317a80430fcac3c9488e11166f2fd458875821c3b02b12
+      87c80d575f6f4ac419286a0a984a0a971f5a205515567c8405bc7d9b011c1c43
+      85a584d97c0ae4ebc2fbae05b11cb340a746b849e1d5a61684be98327aa59b5c
+      da4c70c733c0b5005965ec0d92ceeee9bbd19ac67e30cc1916dac5d6efe69701
+      55215ebcac40a5e962893d07aeabe7be1c6a59a5e4ccf9de5e96e4780e0e5ed6
+enc: 02b1b24e3572bcb9ac6486f9b7d7c7221c9137f37c60b07fb60d3846c6c5a63f5
+     cd7229c65199564b28a47f5ef9afdcd54ba2cb501c2d741b39ce77904408293ee
+     dae9452eea2270385f76ec34bdc90f074e35021e541725e56c7306b42cbb78d05
+     228f9851b6e51570fc3a5de05846fea40c306b1ee460dc9b0debffdb5099e186e
+     51c9261703252c4ca1e49c5a724b5cae7b38cb46c58c19740e7cd288fc7590fbc
+     770514d03d90b3c6a79bee1be03787e83a8f8d3ac0a85cbc2e3788e597ac576d2
+     602c3b31b512f483b0fd74e83ab937d5e5260d0c6b92668d99fd4fe8c6185227e
+     ac6c66770572007ce4d376f4499337495b552b9c494e9f63b867c3e52871759c9
+     ef5adb98b389221a40135c90eaaf43214e78ea9ff5cdc5fb46d08f6bdd0f44f8f
+     e354d6aa1c0754f6f5f6d228367112fe033b03ce204c4d46ba5cf0aa3ef6acc18
+     27474697a00dabc80b2d114135db9af8a88e3f6825c12d275fafd847c25b67fd0
+     7f35039ea6bc1ccd33e9870e78f92e2b216adedb6a4afbfcda571f3e17aa2c97e
+     a467753468028828d4526fc20d826f4986cd10b1890621bff4a0e75acf631a4fe
+     ea75c178a698d8f5f5447c63ad9f04e5e159024b2aa53b9d45c33db6524f93daa
+     0835a1031e1fb04502cdf88eca4df8868edfcf3924c4f6d78bf6146f50edf00d3
+     ce00f91a6f4c9fc2dc6da958b2a15b54bd8a7d5a0fae99f309f33c3461da8dea6
+     f85707a6bb03880d08186b6cc75c1d2c2ed53a3cca1e65aa39683f63cf3beeb1f
+     e71441a3bd58dfac6251b5a651080a88f25166a5693ee743d6b4d66e902c26690
+     b90489e2382bc4f709b1b4ba232a3df0d04517a086ed10a5b6e35ca3cdaec7105
+     36b3dee731897d3369239e02b33b519ac9d1be049b96a77fba0b5f881fdceda07
+     5c3b2434e46c440cadc7e782746d4c6e7bd7b733705e9c518d226f577f635d7d2
+     dbba6990d847943415593afaf6540d9cf1f7edcc62e4c502bb924840a997ba671
+     de166dc1c17ccea88c7ccd3deac32490f690dd4c843fd84fd00ebba88fb0f02bd
+     cd4f664972bea2ba073995096173dd41e12c11ac32e437f7501f8303d0a5ddadd
+     696c74eb26353e1451b15911062deaadd226d87668981befd4d187aa4049925cf
+     c897b703b80cac010ebd0404f87e743c724ca277616ce863da33b7b0f8ed85e78
+     227c9072efc4b2a2b823fb706adf16c4e88ce84c0c26fe8ad81f5e709f42c88bd
+     61e1d093c120bff5246267b7b3320e3ad0a607f046d9a5bb7e36775875f2fa456
+     96082e4bd3824b730fd13d7c25213134ade43ef88c9b71d0384f7d52179e16987
+     d1026e0a454c5e9cdcd49cfc2f286e2ee856e42179ecefa27e67e43c830293f49
+     461b560ad46fa18b3511f55d4028b7be911ed6fbe5b653a21b7ae5aa9d2b1649b
+     2791a8fc416e47fe7e9d9a6fb0c88a110dfc7332a6fcf334f1992a5b96fa6213b
+     2170f3a2b52da546d251e233419dd825a1e7d837f10992c42c3469b2e5d4eed61
+     f8d65382fa024c2f1d1bea1b525ab34f3f39020f792365f20aec30d75e2978700
+     5c427af97895657b153580a100835613
+shared_secret: 64889acfb29dbe2922473359fb17dc344206bfc4eec53c91f8d987b
+               3d5e42baf
+key: cae85fc68281c92929a787cff69f5888
+base_nonce: bdb335f8ebf8bff9e165f4b5
+exporter_secret: 41493ea7b0510fd401ce6b4ba3d34b56d34a2823fa30e81a8bd0a
+                 1104a647811
+</pre><a href="#appendix-A.3.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions-2">
+<section id="appendix-A.3.1.1">
+            <h5 id="name-encryptions-3">
+<a href="#appendix-A.3.1.1" class="section-number selfRef">A.3.1.1. </a><a href="#name-encryptions-3" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.3.1.1-1">
+<pre>
+sequence number: 0
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d30
+nonce: bdb335f8ebf8bff9e165f4b5
+ct: c89dea8f423f9fa50589754f93af1148260307e9c1d4a28589b8bef8b0bdb83547
+    f1d7b225a5827503961e3cff58bc2566a5add7840c126dc89907d2a0bc2d08fb18
+    432dbf9e7b206baa
+
+sequence number: 1
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d31
+nonce: bdb335f8ebf8bff9e165f4b4
+ct: c7d016b2457d75de8e25144d17bb1fbae8ef887dff7739122802b4cc98a8aeaadd
+    0743162d035b56122f7cccc5c913d43cee1fd9c8c2775115a42f448e718876db58
+    a2c772d3a9ee33a8
+
+sequence number: 2
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d32
+nonce: bdb335f8ebf8bff9e165f4b7
+ct: 862a62db7356dfdec127a952f23f4e432091d6322ee1ac1b4bf324c189dd7bd428
+    57c29baef6613ed3cd5f77526cc6023df2cfe37cac38fb743928a50a439b827716
+    d5178af309f3d2d9
+
+sequence number: 3
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d33
+nonce: bdb335f8ebf8bff9e165f4b6
+ct: 22a033bc9d05829190b0b3ee1e1e24a536c7bb5b1aeb52033caba7dde6109f10e1
+    dfc28dd452c3df7ebf65b53785e2a471ad2640cc471034be86280dfebd64500083
+    745a8410d80ebc59
+
+sequence number: 4
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d34
+nonce: bdb335f8ebf8bff9e165f4b1
+ct: c62a96b37ffbdd3c5209e3188b4cbcdd34df9798280abbf3a520fe9e93f3e54309
+    68967a923085bb14d94d6bf04ab9526e663edb0fc511ecb3142d027e5116aac86c
+    83a5faa5669d204d
+
+sequence number: 5
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d35
+nonce: bdb335f8ebf8bff9e165f4b0
+ct: 267b53bffd5a0fc2dba7e0aa01b58cfbff3e9630ab7c059d0f87e9e21548278811
+    acb6eb3a4ec6cab1a0d687dd3670004a56bbdf36c19fe816f8592022122e940a69
+    f766d35180b2ea95
+
+sequence number: 6
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d36
+nonce: bdb335f8ebf8bff9e165f4b3
+ct: 74563d2bd004896f6afcd43db5f86349344925d8bde8d029930ce16bf2045f98a8
+    00087f41b10500a9d123ff1865d7e9a6143791a1a4e0d60a905d772eb1e7879ba6
+    f175311e06708a5d
+
+sequence number: 7
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d37
+nonce: bdb335f8ebf8bff9e165f4b2
+ct: 43f9d7c1acd061391a742a3d95a74e9d5558bb878f2472b07674996b3ac3717c5b
+    ce6e3a9598d11b223eeeb0d2b76c23c0ead8fb7e405e518dfc9b47cb4b44570f72
+    726d128c06ccae35
+
+sequence number: 8
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d38
+nonce: bdb335f8ebf8bff9e165f4bd
+ct: 68422b5b7e85ad21deab2dcaf9709f5a9cf1bf689ff0e257d13c3a96c1c432416d
+    4a14bc84cb190f6307fc3521b0721159ba37b10dd61b16b700adcefedf906d1353
+    094cfbfc1738a6e0
+
+sequence number: 9
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d39
+nonce: bdb335f8ebf8bff9e165f4bc
+ct: 08e7b3effbc7de40ad4590c785f24bc0ca68f5da1b4d3615ef42fa00f40dd13b34
+    13c5267c1edc181ff117146e34c31c78c7614f951a4027e94332dd3f7c662e1362
+    15c8cf21e1f1dfd5
+</pre><a href="#appendix-A.3.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values-2">
+<section id="appendix-A.3.1.2">
+            <h5 id="name-exported-values-3">
+<a href="#appendix-A.3.1.2" class="section-number selfRef">A.3.1.2. </a><a href="#name-exported-values-3" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.3.1.2-1">
+<pre>
+exporter_context: 70736575646f72616e646f6d30
+L: 32
+exported_value: f55578a61fbdc64ea091e7b24d5c2f5c6c22999ccf15dc30aabc36
+                fe6d3cb594
+
+exporter_context: 70736575646f72616e646f6d31
+L: 32
+exported_value: ab5d56c9d02c63ff32eb7b3b3bff58e5119eeba838af2d829bede3
+                f7050916fd
+
+exporter_context: 70736575646f72616e646f6d32
+L: 32
+exported_value: ed73bf03d5058b1a8fd8890f485f8382e8a5bdfd2ae3d4eb79995e
+                23a667be87
+
+exporter_context: 70736575646f72616e646f6d33
+L: 32
+exported_value: f3a94e90c9e6304fb0a6e6358821d5b0e5f7a06d6855d0180ae58d
+                8570d3bb68
+
+exporter_context: 70736575646f72616e646f6d34
+L: 32
+exported_value: 80bcb30c4f00844027139ab6fe2e2f4fab7512211ea67665d2a900
+                010d24bbd5
+</pre><a href="#appendix-A.3.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="qsf-x25519-mlkem768-unknown-kdf-aes-128-gcm">
+<section id="appendix-A.4">
+        <h3 id="name-qsf-x25519-mlkem768-unknown">
+<a href="#appendix-A.4" class="section-number selfRef">A.4. </a><a href="#name-qsf-x25519-mlkem768-unknown" class="section-name selfRef">QSF-X25519-MLKEM768, Unknown KDF, AES-128-GCM</a>
+        </h3>
+<div id="base-setup-information-3">
+<section id="appendix-A.4.1">
+          <h4 id="name-base-setup-information-4">
+<a href="#appendix-A.4.1" class="section-number selfRef">A.4.1. </a><a href="#name-base-setup-information-4" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-A.4.1-1">
+<pre>
+mode: 0
+kem_id: 81
+kdf_id: 17
+aead_id: 1
+info: 34663634363532303666366532303631323034373732363536333639363136653230353537323665
+ikmR: 3a8321aeffce8fa2ecc8778d9484e96c391aaac1e343992b8c7de287f47c5520
+      0ac5e24a0c500e5ab20e4c71d48138b995f2cd82d748782b8e13980cf9d7b4c8
+pkRm: 8969f37b4acd9369b5a42bb24eec58025e5053d9534237101311fe1eb56bd20b
+      959b388afc892d562a4c9b4126d284217526c8699879643ea8cb2a21daca79fb
+      3d1d65ca42abaa47b0aeffb692860b800e4c086ee14093754858d71d2830c882
+      e8cf3a199282c45de5e921772930c0b740e20578d5a65cbbe671fe495bfac8c7
+      1db4ae02386ede1520b9215a6a1232e22b63e9388ac7bb8c7745332253389265
+      9e3d5331838681f4873085a80e90d883b437366e523b31d226b2d68fd7a84c09
+      d13002a371ae287650d0371dd64bbd0a856166bc6e0827fe73b685e90811c224
+      c53151e0255102fa8e825aba753ab21be47a3c66976f63c1efc94dd15ca0c653
+      999b977145749cde955cd12327c98c262898b9dd9293ffd0c115272739bbadea
+      3019f13a6a3ac186c0d072889c7d0195b7e257446c256f8e9b9d7b34ccce741c
+      fab6b135e7ce5f498961b48f6b982bcff3becd2106bd5376219453bed3043bd5
+      6301c524c7f3be3874156a4154476b10de37351e3c4e1dc5431af80631a35e9e
+      b121d42671fe5a40c22a10b3195280eb9a7669a5790cb421604f97a58a525576
+      3ff6577835532f33cf0a81692c22ce9e96450f7b5a9644184d35c7d3d58b1ea4
+      a9fa4203da60b4a5b037488610f0ec08c482523f95655063582aea04870b4321
+      66457f17c80ed61db44a9e34000e77a13d0ee40eceb90b5d737bc132025e7baf
+      3c257c76610056f50055f524dbe37530578da0c2b138ab1ab4dc39f6927e6c78
+      4af130b9ed850a410525b8d09d7fa63ed91626299b8cb3e517bd497e9e045107
+      915a8bb574dac8304488310ac4bf6775c860d55979271e94613acb57bc09956c
+      60995c0aeb4ebb2b53d3858258329315cb8e746cca1fc4278eec3216c857ccf7
+      8b428a5a0f7a13eb2007101047c1e6242795964a50a81c5220551843ba32864b
+      128231d5bdc444021faa9169f76e10974b8148b9c75aab471696f9eb49e9a7be
+      6e644f4d0067bd62774cca2ecb5013c009179193456d1a9d06658391fcb03dca
+      0890e701d76060458ab518b1cd065615a80c96cb4825dd004bfa907640a34871
+      866535d40ec5c7a3576b29197c27f27a4cbae6215c291d44c0582a21431a06ca
+      e25b297af6c71ea4a54cb25866226c788904ebe77285ec75b8679cade34261a3
+      5ab3447c170270f7d47b094a836aa75d3e37b62f924f5c483dd40abf937a1896
+      5958c7a58ad7105d79a2c703d139c2c18f99cc48fc0470a2276044d41ec97348
+      31b91da7ea8af1f06d9f2c071a8a86cba0c414b847c88aca3a950dafb97b8797
+      049647a6e0491b9ce935238b88f34c61c97190d4a2a6a8a42fe1659c9a76544e
+      93ae68ab341670264fb073a0ac8afec76a561090a78c318bc4528841a0dc1205
+      1c8a951af2247d385d0c405f5d7caa47b6bf04792b3a6257dfa6a9092228de45
+      c32e55cde42a7ecc4928119007c9cb400fc350342b76a0f09c9008b39d1bb220
+      f41d066c85043802e9d21c04287881e68950e884806485b01493feb659c46abc
+      d500522d45bdd47c5b48cc7f6b28a70a06643d5c075f423b712728c75884f735
+      522bdc3f06c5a0bff3055eb052d5bb36ee6831ca7a3aee09669b2aae50c89798
+      d9793af304da23cd1f3216abc9a01091b52a357a15a60517ba1f96a94d9b7210
+      cc1e5d4046bf69bb9df4ad40e50fb1bcab630d99b2d8f8ef433c6bf97aeba133
+skRm: aa5b147e03bebd03e305075727c4538c7dca715176010af7dd9adac51165ebe6
+      3d191aebc82a190ba6470abbc00331dfe49ec6a7b850439d46545ca24a2ace84
+      84eaea6715e8732feca56fc5b6b8e22e946946342b653b926bf815a4802c512b
+      8c243d5202e05198ca09cb180c970f8a8876fc6e007c6d77f43c3eaa0e665535
+      d0566fc380133fccafdb731a9dd802aac98218e3b85721b240cc1b95298ada89
+      28e8641d70706f58a70908da3e2ce147e6c6ad3e5776e05c9b4bd494b6e2aac1
+      d609abd46ac09ba38b21b5e2a99ea0c84da359891a0c6c5a0b1afc437f11ac40
+      a1a8beb425119a1b8f4467096dd270af2b64931982a3e686176463514906f5a7
+      4e1a842515fa927795970d844152230bdff24564ca91aa496ecc4672b1d94f53
+      980672319468c2cb1e9956f679560f14a6967c23351c80398561930c69880490
+      a70a0f5432292a7c3df663a3475082523692de5b1ae1456e7cfbbf72f309a223
+      3f6561564d8386aae84be1810ffa7aac7e3422018510f3cb2a5f9a4b9eb562a1
+      f3680870a5197849dfd04a52bc0b5be3881ab47f76577bd9b40bb918c708f682
+      32195428a6ac77e9a6a0f5476125b858788c64b1633b498f1f51bf5338b82e47
+      a1a9632179375e9a3ccfb9dc29ccb4b514219cd76617be143416d11c3ba65087
+      297840594aea5a2823957fbfd47b2fdbc2c739bf77a09ef8e6be3a507a6cc74a
+      e4218821eaa3886bcea3bbce7777a3a392423fd0a09e96ab6416cae07763d99a
+      71e69217624ab6d1d70d39b381390511db8a9ec40c4cb328c291f2835d798238
+      741a524bbd1075c95e2c606d1805fb4aab48f2894a9b2b849b827e7c9cdec588
+      fdf1b7cc365487521cfe60694874568d519bc8f946f845533bd8572c478d5312
+      48a8298f7d95c51efb881ca1ba3537142d8c5e13d846344b58018b8ee9b42376
+      b29c0cf9b1cf3122dbbcc99a615ccdb0856b5770cec5b331b538fc8755ed302c
+      44482d4bb13a4f32be51c76869fbaa23e85b046bce117b4bca43805cf6bf1c3c
+      0864b49e80459949cc2323802826fb3ca0d536ed2630cb191e95d6315ba63c2e
+      31b277750b30a022561a41ad84c14bc0a621b096d053b6175043d6105fd7a80c
+      2d964f37053aacb39b301802c5d43a80c87bb0a889c45b25fe559eb8b29737b1
+      be8ec7a1b0b11721d037a674b144d52856dcbc6e66b810e562d79004cd460ec5
+      20c7fd96824fda8b0abb3b0043490e61cd46cb0109595aab4cbe09ec608449c0
+      004a1743b05bfcea5091f8650d490759879a0c876a6bb6c3c11363e84407fe03
+      35e171933c3b6b93008e1ad255dff8b78bd10a988b2b44988ae5b0804af1417a
+      933719147fb726693fe145143465df859c73a70600744a7c9556c56675c3d1bf
+      57961aaf18bfd017b61219958c196aa9e0892eaa518d8013cefa9efb1cc2da97
+      1fe5787efff035b8a54b3828100f52aa80a289e0049dfb654388ea118be40263
+      089f57c8311fa640eab096535432856243a6a036c4895875cbbe921cc819bcc3
+      2b7abdd050c530756e730b0a01e33182b447eadc4b05d0524e672ee22a766701
+      84f9445308f6b873ea0e7bd26315f8a7acd8a0b71627f498ae6c67621f651e94
+      d7466903c3481baf7b27ad56874d64fa182d24564a2279502694dfa0c342b2b1
+      959b388afc892d562a4c9b4126d284217526c8699879643ea8cb2a21daca79fb
+      3d1d65ca42abaa47b0aeffb692860b800e4c086ee14093754858d71d2830c882
+      e8cf3a199282c45de5e921772930c0b740e20578d5a65cbbe671fe495bfac8c7
+      1db4ae02386ede1520b9215a6a1232e22b63e9388ac7bb8c7745332253389265
+      9e3d5331838681f4873085a80e90d883b437366e523b31d226b2d68fd7a84c09
+      d13002a371ae287650d0371dd64bbd0a856166bc6e0827fe73b685e90811c224
+      c53151e0255102fa8e825aba753ab21be47a3c66976f63c1efc94dd15ca0c653
+      999b977145749cde955cd12327c98c262898b9dd9293ffd0c115272739bbadea
+      3019f13a6a3ac186c0d072889c7d0195b7e257446c256f8e9b9d7b34ccce741c
+      fab6b135e7ce5f498961b48f6b982bcff3becd2106bd5376219453bed3043bd5
+      6301c524c7f3be3874156a4154476b10de37351e3c4e1dc5431af80631a35e9e
+      b121d42671fe5a40c22a10b3195280eb9a7669a5790cb421604f97a58a525576
+      3ff6577835532f33cf0a81692c22ce9e96450f7b5a9644184d35c7d3d58b1ea4
+      a9fa4203da60b4a5b037488610f0ec08c482523f95655063582aea04870b4321
+      66457f17c80ed61db44a9e34000e77a13d0ee40eceb90b5d737bc132025e7baf
+      3c257c76610056f50055f524dbe37530578da0c2b138ab1ab4dc39f6927e6c78
+      4af130b9ed850a410525b8d09d7fa63ed91626299b8cb3e517bd497e9e045107
+      915a8bb574dac8304488310ac4bf6775c860d55979271e94613acb57bc09956c
+      60995c0aeb4ebb2b53d3858258329315cb8e746cca1fc4278eec3216c857ccf7
+      8b428a5a0f7a13eb2007101047c1e6242795964a50a81c5220551843ba32864b
+      128231d5bdc444021faa9169f76e10974b8148b9c75aab471696f9eb49e9a7be
+      6e644f4d0067bd62774cca2ecb5013c009179193456d1a9d06658391fcb03dca
+      0890e701d76060458ab518b1cd065615a80c96cb4825dd004bfa907640a34871
+      866535d40ec5c7a3576b29197c27f27a4cbae6215c291d44c0582a21431a06ca
+      e25b297af6c71ea4a54cb25866226c788904ebe77285ec75b8679cade34261a3
+      5ab3447c170270f7d47b094a836aa75d3e37b62f924f5c483dd40abf937a1896
+      5958c7a58ad7105d79a2c703d139c2c18f99cc48fc0470a2276044d41ec97348
+      31b91da7ea8af1f06d9f2c071a8a86cba0c414b847c88aca3a950dafb97b8797
+      049647a6e0491b9ce935238b88f34c61c97190d4a2a6a8a42fe1659c9a76544e
+      93ae68ab341670264fb073a0ac8afec76a561090a78c318bc4528841a0dc1205
+      1c8a951af2247d385d0c405f5d7caa47b6bf04792b3a6257dfa6a9092228de45
+      c32e55cde42a7ecc4928119007c9cb400fc350342b76a0f09c9008b39d1bb220
+      f41d066c85043802e9d21c04287881e68950e884806485b01493feb659c46abc
+      d500522d45bdd47c5b48cc7f6b28a70a06643d5c075f423b712728c75884f735
+      522bdc3f06c5a0bff3055eb052d5bb36ee6831ca7a3aee09669b2aae50c89798
+      d9793af304da23cd1f3216abc9a01091b52a357a15a60517ba1f96a94d9b7210
+      cc1e5d4046bf69bb9df4ad40e50fb1bcab630d99b2d8f8ef433c6bf97aeba133
+      a062b7ebe5282ae0f0a26da31cd3481750ee921925b842fe65e18fb1c1c4b7be
+      03d1ee4d914542edb39e719e094ec94d9988bf8368cb6eb8c1629481f920dccd
+enc: 37f33e4b63dce4f7a255142867696ee722fc6164e0b788db48b0d71c9ca6854b0
+     5904cdd409b6c7a511dc0f2032efe744ea4a8e56e09ad3f1044d45e7db9286789
+     d3311c55016ab1536a0fedb36fbbac06df4d4e69ecd170a25b60dec3c5f57faea
+     685a9fd4f9b7cd4360121352c687428058d3cbf1dcaea8bbd488a4a73b39cd37b
+     636e2752b7449ef895bd9f06823d7e677d9a26a0640e16f5874826aaa08d1a05d
+     c17de914bafd060f9d3a9abe2b537f3d6ba8f362f92917e1b7dea50d698760fc8
+     4b071c8891cd0f73c2f4b21f0502b6b6d5b604efdbff412e8377c6c68391c0471
+     677a2f81c8dd1f35fd113d3467a6013bd5644bf1b97695e4f9333ba910cc0f3a7
+     792619cf28d71ba158047f661d65777379a1bcdcfddbb96b7741af39a2a864ce8
+     e263162552ff3fabb39cfa16a790c6bb14535513031b397a63a92ea13cbc6f313
+     a7215885642925f6bc4d416dd945374ac87765e198f63e1190e0d32ab8f07fb2a
+     7dc1ea47371f27f76a5186a8debf7de3f8ad457a20442e7ab4199238e171baad3
+     cf83e41cc17d7c200177b32fb8d508c6c8fd7c96dbdfaae42242b700c97eabfcd
+     159eef9a24c821f3d484fe65850760fc7c41aad36fbe7085c048391dc3ddbae70
+     ebcaeeadae864e666088febb61056b34eec6b17821d7000f424d4e4469c22cf09
+     13b4fe4ddf13ec7a8a8f657fc078772ecff0ea776be00329657f463c7b7f104d3
+     4d3b567aac1472840abd0b6c3a1fa575442bc16e6e30e902d154121a7959eaa92
+     02ae69cf1d36d8a394a7ce745887a020b0b12fb7de424ae3016202dc1f175e7ab
+     6c4910baace2a00aecb69bab65f082ef5d88663594fa165891fee71dca4486ff2
+     0f0d44ad3b86413065926484908b528fb3be192dfd115f6a934265085b5818dcb
+     67a5de620e97cc6819530acb9cbfb460c7e019e2c1ce0a196bf38472617946e98
+     076415244a206fbf778410c910efeeb7bf41f52ab155a654b1e555af1352e4e30
+     72ac48d474504532a10571ca1de9c3ae0a6746348d0b09c8dd37dfa097d3dadf2
+     1c08d371af1ec084c60ab943e326eea02bd47b09a091015c3ba043ef3b4e12fdb
+     bc31a8e798815c4cd2822041a6255020eca4f532268dcf3de0f224cdf81073309
+     f7c711d99d9d05fdaa68a7c629b295a4f92ccd5c45c2fb6179887de32820b4fce
+     8f5d552a73f79e9ece777505e09e81aa374560836f88958a33af4294672b00288
+     4505883aadae9a9e3d8f56dd4cbfa19c8725703c7d294f34ea36ae1913b06e747
+     9f461a3a0cd0b6daa17444bbf4fb10582f1ace6a9d705477a5180391a86d21e6d
+     1ed0c65c515d5ee85cee683e7319a7e47ae6ed86a6f09e030478077e6f8d0f9f7
+     eb1afc90cd34cc941f09ddbf27f0b8741ae9193cfd87dad06f409c9973d8d4761
+     4f7b67c53087689a799031c4415b0678089856c1a683a4bea35579f83c61035dc
+     345bc2ccb42c96e94245d33768ae137f866c65443a8d6f321b3bdcc5e38e69395
+     bdee4b57463ddc86009b178c01561a860b7704391178a94869ceed57e91e5e848
+     9e58d2e12975f2a7c02055a242f7b5
+shared_secret: 24423253b4b77e10ec4ce1201ed36656fb9824daa1ab4861f2d2860
+               e1a55406f
+key: 8c3e45e3b7faf4f62440348737a37e77
+base_nonce: 15afc8a60a317966583771ad
+exporter_secret: e8f09d6e23f44856ab6a95ae70dedecc112b38cc1bf0623fbc76e
+                 355ce568d7a
+</pre><a href="#appendix-A.4.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions-3">
+<section id="appendix-A.4.1.1">
+            <h5 id="name-encryptions-4">
+<a href="#appendix-A.4.1.1" class="section-number selfRef">A.4.1.1. </a><a href="#name-encryptions-4" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.4.1.1-1">
+<pre>
+sequence number: 0
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d30
+nonce: 15afc8a60a317966583771ad
+ct: 105af47818242b9b8e5e1314a72bf8c7df3d6246094fa2e520991c6a10cd490466
+    ca86c9dfff6fa755af09492d59738d6a9689dde1c1718c7d957adfb5ee283922af
+    a5a15052d310e97e
+
+sequence number: 1
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d31
+nonce: 15afc8a60a317966583771ac
+ct: 7f9f8286f019199e93458050b7ff9b8c8e0d584e2efab3d92eb26633c5d578622b
+    c95a5ebbfa0842176f20ccb4624e8818456b4f864c5b07ca8424c7e7e103df3552
+    da1be229f3de0210
+
+sequence number: 2
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d32
+nonce: 15afc8a60a317966583771af
+ct: 92e870fc670da7dca2e66b69c592e0dbfd313341c473a452409b9b263a6111e40a
+    a92369c19a8a2e1c96a69045a67f9a9649773a0403a63d9ddfe0e1c55ef3d6e4f6
+    9677a177ad574a64
+
+sequence number: 3
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d33
+nonce: 15afc8a60a317966583771ae
+ct: 506fd5535951a254cd1cd6c614c931b33757e971b5c1e55fac74c9a47f4f1469f1
+    c940371d4339d6bb91299b98b9ce02e689a0979227729dc0ecdda199fb532f9091
+    ae40dc8404246024
+
+sequence number: 4
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d34
+nonce: 15afc8a60a317966583771a9
+ct: 70c7ba7c78531de3dffcf1f7187989c295fadd7a84d19b700ec221eee6987d70ee
+    67b767ea64a54bdab3c3a350589037b1233155706c0830593c1e01fb1861e35d6a
+    d266f30cbb21235b
+
+sequence number: 5
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d35
+nonce: 15afc8a60a317966583771a8
+ct: a13d5db43912cb9fddb29a6855169e86f7f12c7a4a5ce6573294859876e12b092d
+    9123f7ef5b3fea223cd0b9198f699f78fe8c0be102bb69c0e06fc09733522df6ef
+    80d73acd604663c6
+
+sequence number: 6
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d36
+nonce: 15afc8a60a317966583771ab
+ct: 40fe8a3a69e11a5ac01521ed2af7e314cd4a0db6c0368dfcc0c1f84c87d16cd059
+    39c574bce8f90c261019bcddf73c62dd24f49edc4cb16ee768fd6f8a67c59bbc7f
+    53363cd00b37faa8
+
+sequence number: 7
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d37
+nonce: 15afc8a60a317966583771aa
+ct: 995861a08bf1a4d3228849470132c80302014045ee1ec279a80fdc2d7307bc9377
+    74c5ba4f037a680dc46ae53ee3a96d8436361232e84477d5326a58d2238bf6cee9
+    fad3956ac8a9e029
+
+sequence number: 8
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d38
+nonce: 15afc8a60a317966583771a5
+ct: 36c40db93df129413b1641ec0cfa82fcfda250a3ed5a3c692baa5699307cf1c901
+    df99c079e7552786223bf48c3f6edc99dde763ff1294fceb73c97186fc10ad3503
+    d8986201ef4b7e23
+
+sequence number: 9
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d39
+nonce: 15afc8a60a317966583771a4
+ct: 84e91cc895375a56a6a2e3276f5f46383039ca0ca9136425dcedf98cbca985a98b
+    9b4164cdaaa60323046dadcce868e63321e6ac8e734c72bb4ca666dce24d9af433
+    6701bbd08b19928c
+</pre><a href="#appendix-A.4.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values-3">
+<section id="appendix-A.4.1.2">
+            <h5 id="name-exported-values-4">
+<a href="#appendix-A.4.1.2" class="section-number selfRef">A.4.1.2. </a><a href="#name-exported-values-4" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.4.1.2-1">
+<pre>
+exporter_context: 70736575646f72616e646f6d30
+L: 32
+exported_value: 4d044a01375a9f3878534f67da60ac1dc9240a177f79bd93e9f5ed
+                b367a3c8fa
+
+exporter_context: 70736575646f72616e646f6d31
+L: 32
+exported_value: d7f42a8b3aceccfd52a878451cc4de4ff747c1ad82042e941da4f7
+                0c29bb2041
+
+exporter_context: 70736575646f72616e646f6d32
+L: 32
+exported_value: 8df5357df73c54b87434cdf974e22d574aea76a2993dd7332922f2
+                d6c96cec52
+
+exporter_context: 70736575646f72616e646f6d33
+L: 32
+exported_value: 2d15b15f03b802e87e97849547e2a9ac7cdee021ee27215426a72a
+                39a363235f
+
+exporter_context: 70736575646f72616e646f6d34
+L: 32
+exported_value: 2e26d49b74c363270134ed47f4b62a56e7dbee91fbe7d634c9d97e
+                473a7f622e
+</pre><a href="#appendix-A.4.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="qsf-p384-mlkem1024-unknown-kdf-aes-256-gcm">
+<section id="appendix-A.5">
+        <h3 id="name-qsf-p384-mlkem1024-unknown-">
+<a href="#appendix-A.5" class="section-number selfRef">A.5. </a><a href="#name-qsf-p384-mlkem1024-unknown-" class="section-name selfRef">QSF-P384-MLKEM1024, Unknown KDF, AES-256-GCM</a>
+        </h3>
+<div id="base-setup-information-4">
+<section id="appendix-A.5.1">
+          <h4 id="name-base-setup-information-5">
+<a href="#appendix-A.5.1" class="section-number selfRef">A.5.1. </a><a href="#name-base-setup-information-5" class="section-name selfRef">Base Setup Information</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="appendix-A.5.1-1">
+<pre>
+mode: 0
+kem_id: 82
+kdf_id: 17
+aead_id: 2
+info: 34663634363532303666366532303631323034373732363536333639363136653230353537323665
+ikmR: c1bd4420dfd271e16af663bea7237025ef84b2596bfa0cac2ea0eae3d68a8de7
+      ca72b8f3f8cb797f2e843c518931cdc174546d29b0071b343d2b89662296f05d
+      187c5c16c2806150
+pkRm: 03202f69a2fd20be8d453c82a09a1c8a4f2a04e36899d17cc0272344a30ef741
+      8ddd3f36007952bf36db78a19fadd72788ea2b7e6492baa3b80ec9e7c808f17f
+      957493f5d39458d85c6f20728b771e141a7e02e0ac69dc55b63b41b9079c50b5
+      373364bb9b509950bb4bb87cb831bb9e98882f4ea1ca2a660d5d14c03372b553
+      9114d1ba58342c80e6c1ba49acc181a79e82778132656743856bf95c3e5aea53
+      082ab28c38ae126205f8791eeea9a3b9c29ef626a15379cc7098668de6aa4f07
+      908a7642d9472757354f11c11567971e10a81a07268e7cc98ad8c0b25a591978
+      22b21d2856258499379507012cb4db691ba6546bf170c7cb4626c6009f5fd73d
+      1e7296ac5c3731f982977a02afb89f0aa2049fe702f7650ee3b151be15714aca
+      306cc828dbe73ef1689dade4a8e2700a1e601723ca411cf3c0a5d8c569e48223
+      307685468ee8c164d2c547480c8ce736c0d228a34d88bf1cd49b2df3c491a348
+      20d532f5859cf14b7c4279b8a10a4df056220569ac6ff80c7a23919acba35516
+      b9afb115f533b4cb619e30fb397b41a523a034288593edea0a10334a86f0b294
+      f559d6e45e16fa2b73585b6441c43530258a33ac4945c314c216f4361dcb3b2b
+      4a7770eed10a294c9f55d60de17347de29ca0a038fc5b29e7b362334924e9c9a
+      b4314398e3886ea2fb283a80822f3928f75337b7319ea5a7445781018a3477e2
+      688a3ccb482da98153a4c50111663e871bcbec0f9d7840abd39feb083a01f25c
+      ce1712ce7742b84945a4a5a65bc54f68b709629a9919dc7dfe39a75f4ba1776a
+      456c19a0c6e50042122be927b8e99747ddb54174e43757365371ebb46dc6c102
+      f0b29c1008fad2724a44a1f0f00f7af17ec0bbbf1ef30de9793597d0c743f136
+      f3dcababc84b3a97bcaa45566ba486bf1c15d42491226679c1b8904f38cc3946
+      1a433208e6b3ad0ae527437ca5a6e370c3b03d012054f1771f8ea2213b17a8a4
+      97a13ba7358fa6bd75527b98646c47f36b17fc3c1893643dd117cba057a05341
+      0cc83c3b83402492c6ba3b443c615e3fdc2a6e22299b08aeb1e1121d6b152b5a
+      4de39218f5882dddf7368753bbdc8468cac54a92e54e467b2bf70a985db8168f
+      44049849c1cc5bb75a6aa2ba828cfba5b1e2e72ce8bc1309db9718e530486304
+      5bf5a148e82eef4c6d7dbbaea3f9a5563c45c78330d923bf8cc08aaa066bff12
+      ad3de62e879c9dbc7b3db97132b9cccb9144c5eda8ca763ac3b44ccfb75a85ec
+      5ba65b37cb054b7cc9932b17793038d55407b989a3f45b6b65aada303636b74a
+      0e77994278cc73018b18393cc8fa02fd9325ac52869117cedc1852fddc26d303
+      a6cd8c4018173233034dc9f6747875198f7a1252a41a312634dd1b36fc730d2d
+      65b0d1563879c9753100c40aa91e4ca0032af2638926b2038cab8d735d11421b
+      14d510f47b3ee338303e0c8bc9e99603a820466489d1e64580e3362e5cb6c2fc
+      33daa91db5763783e331445a740366bab5ca9d25995c5d46cf5037900aa05b3b
+      525391c68f12a925a88617c9b480f3b5008ec373d7b374b5b0455a53bf68d514
+      d836a802c5963f57ce5062c1f21c2c1f2b06558b2a24e288b50061f82c219883
+      cb139385389091113c50ee32abd1429a5cebb4a5457473e6bbb1c23ad908c037
+      6604fd4157e60ab0d6f48ca3c50a93da728e79c98a65705097bd7ad623f8a2c3
+      eecb468b7bcf17378f2ae14ef96649c0499f2eecadec81cd5fa5a9b841c18637
+      cc9bc32af02972e635b1ad9542b8382d3a6aafd9005ba6f234723254c1010c15
+      fc8f409137cedbb0c725cfdf15856e864ce4b129d42a27d1e94daa198e5eec03
+      b0ab2f6de068c9da8b16437a42d9bd7d5bb176d7373b347b066382d46735bc3b
+      08fb331797925d187bc3eda68ce6414dd509b88055b970225ec3194e75f485a0
+      d580ebe33a16f0063a0b64f302c0d2b3781e190a8eb534009c48206c596465a8
+      4e897df790c6f81324d3d2607ec6ba709113c4e182d71618594445e4682b6a85
+      7acd7630573c46273c4e3f9687bec280253951d69b428d1a97dfcb2890fa6064
+      37b492cc87caa93db94a3d2031432760a3e4b30fd85c2f81b843d9340d3ef771
+      3e7c50b5a027c93229494a679207050f8b114d8a3eefd61d09004aa784707f92
+      0cf232916a396cea471770e90932c501cc62c9e426a83b2565d35590f7560fcd
+      f5bb87627cf5a6925b19a36776bb46a76568b281cfb6f2a74d7e03cef260e367
+      3385a51127a475dc7e946f3d8d9d971609
+skRm: 7547c638ad15767567788471d7d05da1b7546216d0aa33022edb9d04c2851335
+      46388c31f065cd3b86b660ddb42f5841863695ccc265f4407c6cb5cb25e91801
+      74452a08907b3502c148cf7cbc7fdf5b99cca07ccfe6a19282716b28afb33823
+      ee4acb1be9cc88aa062c53496a040a85e51261cab8aaaccf205458fcb3728cc1
+      79af801df0cc8fad969a76810fc9d976d343a05eac13dbf067c59ca1d9a89385
+      b14c375206b48b95ebb8b217a7521ce55b44da7159468dedc22aecfa9d608418
+      7797b83bf460fe425a01b2639c9802a22a2bc3814e38f54372d41b7c853c8ae3
+      9750d45e0bc796c678893b50cb6408314b1866cf62b860605ef2a51315937224
+      47630e9a69585b144cd9cb66468d3840174150564f65aca8f07c6e37030bdcac
+      070468e94190d185a7f59cbe5dac387cb92482bc4ce78936a38813ec368f90f1
+      1626c5738c9209ce07abcb864bd9a3bf9a10b78a31b6c7c56a4f169723642d5e
+      92b32438766458ce2759cd4245862d15705a5001f5a05666bccef28774fe13ce
+      69530481e7c417320bb5c49e689101bfcaa948a80b3d0a754ec06a9401011334
+      8bce0306bcd0c2b2444c2207a6a9b43d65426a9b766434065a2da7ab49042ef1
+      7c635ed4cbbfa43e2d46b3d3e0acfba842fca11520d830b0a6c230d17ece4362
+      d02788ea6635eb470d0de909aa670cb94bbd4d49c4ee911cc46a97d1c83098b8
+      a4c0702f07f857b26b6dc6243b86d8be222a319ac9042a36ac7ae515c74b72cd
+      db7e97337e7a138117003e41571e041346859118a7439a02f448b8277363744e
+      5f920af27a283dd337df9346c8e77dca6bcc6104351004c207e11b88d65abffa
+      887cd9a80537481f50144de205cbec3e66813f117516a6f777f75996dffc7794
+      bc4527259d4172c42858290cd147634a000c3c53b9c5cd16745fbbc10069f590
+      119b77d65466be1bb5416553bd198556079f85f49535ec0a365b830a090159fb
+      73353a8d3f957446d569b1622e1ea768860442536c882702444deb924e085689
+      cc85d0461e2193a9c8c15a46c2c4089b9108543a1f68c1b2c046368754168244
+      c514c669aa5a0931674cc9123b75bfd47ca6e825788eb13fd0e43e2fe091bdc6
+      a226665eacb60b6610b9411161f9d5012a1a2dafe353218034140838ba904324
+      d15b24d78ccbc976d8257d937a21ad049d50ec24ef03b4f35812b750b669708a
+      cac632025a4aa87bbafb917f33b330c4b9ce1f9a80e616bf874a56e211272095
+      784b0ab5bc0447c0665e1080405579526635b3c1a747e14944f9ab6893418d18
+      ab3c1c9a15aff2043b66a50135a8ad0305c016366ef17c1eec6f581b4e26348b
+      7a38b84922c794037050775ddcd85fc18742d27b79b33265547a297b4c33d742
+      cb1110b7dba209ff8b3029d917ed875168c98c8abb0d5807be75e7aaaa46177e
+      fcc7f664a2c76c7172f8ba6115598b3722d31569b2aa899ea601ada034c0b95a
+      02d94128935edec984464c2c164a34ad7b6e4179abcf324c2c48469674322427
+      38b5cb61fdd4bff5d60070c182663b8eb864babe412e72a012af4758a81a49d5
+      b81b567c8d09a03cd1a07242943d21181af8b4196dd1a7c913bc57ca89a6570e
+      e6e725c4e7afac19896c57780c052bf083af14572f875b826fe4a29548cdc97c
+      49ab2121c20154a52a258b2cac1a9c4a49c1bba1f40f6a4aa7de22935590b1c0
+      53538bf9b0c5f86be46ab55095b8dde74b3628bad1c765cac9365796c3c77523
+      3a189213fa3d049b10455caf154b9d2cf194cbca91fe812f75cbb5254c45fa46
+      06ccf28c3af713f054a0f3c5c55df4a09f680a55ac679686a779d084db1b7727
+      485b13315a8f3c449e790b1f5996f5954e698c34d358a9b7912f40e19ae1454c
+      64dc4ba0a0c1bd1930712aa1ea9a8ee88c70e575773a0b4b9cd1187dec083dec
+      10109721a4e8c8dd3a7f6d389d3013bbb2b3004616b41c8243060c259a48a4e7
+      83610c854454028ccbc86113235f343a3337c9c890c00c93b0b9c9613387d95f
+      e9707c3107802a197211000f28156730079f680a32df15b1a6bc674bfc8a3633
+      7881fc44d750836dfa6d411981d0623dfda1cc559250b5508ff7cb4c7a870081
+      49295d3c6d76c65613e262c53b2f331653389094bc52be30119f1ef4be315c24
+      11ac941078896931a7c24b8dfa523817f9b41700a77f2061c015178333c8ea98
+      990482cbafecc474c70e2d1b13b8118cea2b7e6492baa3b80ec9e7c808f17f95
+      7493f5d39458d85c6f20728b771e141a7e02e0ac69dc55b63b41b9079c50b537
+      3364bb9b509950bb4bb87cb831bb9e98882f4ea1ca2a660d5d14c03372b55391
+      14d1ba58342c80e6c1ba49acc181a79e82778132656743856bf95c3e5aea5308
+      2ab28c38ae126205f8791eeea9a3b9c29ef626a15379cc7098668de6aa4f0790
+      8a7642d9472757354f11c11567971e10a81a07268e7cc98ad8c0b25a59197822
+      b21d2856258499379507012cb4db691ba6546bf170c7cb4626c6009f5fd73d1e
+      7296ac5c3731f982977a02afb89f0aa2049fe702f7650ee3b151be15714aca30
+      6cc828dbe73ef1689dade4a8e2700a1e601723ca411cf3c0a5d8c569e4822330
+      7685468ee8c164d2c547480c8ce736c0d228a34d88bf1cd49b2df3c491a34820
+      d532f5859cf14b7c4279b8a10a4df056220569ac6ff80c7a23919acba35516b9
+      afb115f533b4cb619e30fb397b41a523a034288593edea0a10334a86f0b294f5
+      59d6e45e16fa2b73585b6441c43530258a33ac4945c314c216f4361dcb3b2b4a
+      7770eed10a294c9f55d60de17347de29ca0a038fc5b29e7b362334924e9c9ab4
+      314398e3886ea2fb283a80822f3928f75337b7319ea5a7445781018a3477e268
+      8a3ccb482da98153a4c50111663e871bcbec0f9d7840abd39feb083a01f25cce
+      1712ce7742b84945a4a5a65bc54f68b709629a9919dc7dfe39a75f4ba1776a45
+      6c19a0c6e50042122be927b8e99747ddb54174e43757365371ebb46dc6c102f0
+      b29c1008fad2724a44a1f0f00f7af17ec0bbbf1ef30de9793597d0c743f136f3
+      dcababc84b3a97bcaa45566ba486bf1c15d42491226679c1b8904f38cc39461a
+      433208e6b3ad0ae527437ca5a6e370c3b03d012054f1771f8ea2213b17a8a497
+      a13ba7358fa6bd75527b98646c47f36b17fc3c1893643dd117cba057a053410c
+      c83c3b83402492c6ba3b443c615e3fdc2a6e22299b08aeb1e1121d6b152b5a4d
+      e39218f5882dddf7368753bbdc8468cac54a92e54e467b2bf70a985db8168f44
+      049849c1cc5bb75a6aa2ba828cfba5b1e2e72ce8bc1309db9718e5304863045b
+      f5a148e82eef4c6d7dbbaea3f9a5563c45c78330d923bf8cc08aaa066bff12ad
+      3de62e879c9dbc7b3db97132b9cccb9144c5eda8ca763ac3b44ccfb75a85ec5b
+      a65b37cb054b7cc9932b17793038d55407b989a3f45b6b65aada303636b74a0e
+      77994278cc73018b18393cc8fa02fd9325ac52869117cedc1852fddc26d303a6
+      cd8c4018173233034dc9f6747875198f7a1252a41a312634dd1b36fc730d2d65
+      b0d1563879c9753100c40aa91e4ca0032af2638926b2038cab8d735d11421b14
+      d510f47b3ee338303e0c8bc9e99603a820466489d1e64580e3362e5cb6c2fc33
+      daa91db5763783e331445a740366bab5ca9d25995c5d46cf5037900aa05b3b52
+      5391c68f12a925a88617c9b480f3b5008ec373d7b374b5b0455a53bf68d514d8
+      36a802c5963f57ce5062c1f21c2c1f2b06558b2a24e288b50061f82c219883cb
+      139385389091113c50ee32abd1429a5cebb4a5457473e6bbb1c23ad908c03766
+      04fd4157e60ab0d6f48ca3c50a93da728e79c98a65705097bd7ad623f8a2c3ee
+      cb468b7bcf17378f2ae14ef96649c0499f2eecadec81cd5fa5a9b841c18637cc
+      9bc32af02972e635b1ad9542b8382d3a6aafd9005ba6f234723254c1010c15fc
+      8f409137cedbb0c725cfdf15856e864ce4b129d42a27d1e94daa198e5eec03b0
+      ab2f6de068c9da8b16437a42d9bd7d5bb176d7373b347b066382d46735bc3b08
+      fb331797925d187bc3eda68ce6414dd509b88055b970225ec3194e75f485a0d5
+      80ebe33a16f0063a0b64f302c0d2b3781e190a8eb534009c48206c596465a84e
+      897df790c6f81324d3d2607ec6ba709113c4e182d71618594445e4682b6a857a
+      cd7630573c46273c4e3f9687bec280253951d69b428d1a97dfcb2890fa606437
+      b492cc87caa93db94a3d2031432760a3e4b30fd85c2f81b843d9340d3ef7713e
+      7c50b5a027c93229494a679207050f8b114d8a3eefd61d09004aa784707f920c
+      f232916a396cea471770e90932c501cc62c9e426a83b2565d35590f7560fcdf5
+      bb87627cf5a6925b19a36776bb46a76568b281cfb6f2a74d7e03cef260e36733
+      85a51127a475dc7e946f3d8d9d971609c742212b461b2d8b8ba70bf81fc4eac1
+      4218cc391ee97e6999cf90076bf989074754cbb1fd8303501fc3f7a1d0ecf95a
+      789881cb8b09adfda6d8d13336304714
+enc: 033df19a9929a3157a923ffd17aab90101115a6b40f7b8ee38cf27db67d47ffaa
+     b2c8c21db62a02a98c38a1187644af37457dd78d19618f26cf33ee724ca853218
+     9d22df7fb6295bd28ea2c038dd5e74d4ffb5e821310b49593e0ccab739e12d554
+     67601d0daf11960802f1d04c3f5791b616662337e66b33f27853e41f1a2cb72f6
+     d0262f5a036bc13af8febf499b4b14d6d30ba5489d5c2fe04beaa5c8d870ec1a0
+     aa9f9c79ecd4ca19f1ffbbaf98e9979cfdf391b5ec0fb78f6b6a63f8a8ecd795a
+     79aa6ac554c9d56b38beb44c09af22a6e7542155ec116a6b5d70b51533dcf9f18
+     b198bd4d685dd02fdbb5be611acba4b759503b59b95cc01ea13b55048aca06afa
+     f7c40a1dda59a94e52b32fd0e8ca8ddf16eebd13828f944dd310170baf3362de2
+     6931883f9084c7d54d377908906a762928feb8de054b6e3636105ce832ba40989
+     d81e439b788c4b17b56582910cd8be866efb4430b5447a0dd3685052b63546508
+     8ba3df440d71ed4e8862a86c7d0e2aad9a31f7c036f7ac09337d9d0b091bf9526
+     ee67ddaf62ecc3ec1f1a84f43e27fe2eff502a1fef037c420dda357eae069ec30
+     6e26096dad81114682c833fbfa2aef1a0b8e60f58fa305330d64e293bad7315c2
+     cac8e5cfb6f37fa4184b3646672c52d80963fcc335d5e7fc3ece6e94c48676a6a
+     3c0452af3f9e3d7c5ac7fea9f4ad877793b2f65426c50a39c6d58491a19846d67
+     fbd82b1d036278e5c353094e1d31e94f21a05345d9c2ec5ae9e551f84763f9d7b
+     c40ae941ec8f4b7f8002154fffbaea0f354f36c4f32bc6485a0ccedd12c075440
+     2d5a6b60e438328195594a925d6e10720be2cf64a8c8e38139f504ed4222494c6
+     6294bd720a93af1b5a5f92b3d22c906841d2be4afd409264b088683e50c64a658
+     fd63f670c98a2e43aceef6fdd1404ed4fd425b39d22e01d03cb74303196e8d345
+     de3f7a67743f42143d0d9742ef812b157fcec8dbafa466280ce1b58703dcc5bce
+     443801b86360726028ed3b69cc066e88c7eccbb3d6fd23a11d129f9ca420b0a7b
+     2efd95650d3bb4589a90a858ba97120dc4157f3c2fbf93028692cf66d03493771
+     957f1b8474d78bf1a8b8f4f7358c5de7fc7cabd065900f5a1462785c6b40930c0
+     7b84957694a27aa43291830adb4e8b28ed60b148572cceff743d3c2dc8dfb10a8
+     2a266788cdcde8c7517cc9a5cb0882145c8eb3bd4d47c48f1cd9d3b2170d108f1
+     e45e6c9dc72262b9230143fbd3760156244a9f06b3e992cabb8c5638b30d97203
+     aa01a8513c21d378302740f58b76f369e853d758543285f76da9de225884a02a2
+     63a6571a01c56f3872335086e4e158e8f08cecf59189916ef7f4f2178ba968904
+     556a61d2f20da47b845fb1ddcdcf2e46bc38be83be5dc873984d0f1c671d13259
+     3044e4486e96ff5dd098bdd137084785cc10c5b040a8a1367c369fbac546b2c4f
+     9a9d279956d09aa22947c5c3aaf8a2a03422154ca2a5dbaadbb1c37e53085a581
+     49cf3d46c98996b5ce9d88063ff696c1ba7ac6820930e677b63c7dc12f7b5167a
+     26bc78cb121cebc90941f9b28313b8c22c8391b9b5ef2a40f2ae19287785e41d4
+     b2b2c5937e0aa67afd2981d92954b77f0ec5385b49050e5bcfa040277b548029a
+     3da417ec92e95bf6f889c17c2e96820355f6cdb9096516669fd5ae086edb6b71d
+     1d710323b2f9db92c5e75c4869e8e3494ac59a06200ed1deaf02f58b14a7b6b05
+     5d8fabca8a65316994e2fc371bc9b526cef2454c37a0b4cda65155853d0109e2c
+     f1d4b7dace97b64a899d76e976a47b4df5e35ab209e3e607904c1505c8aaab39e
+     e9c0c481ad1ef1f4975bcf1634abf60e0bc72512845a5427dc2118e8b6d7e31fe
+     aaaac8d0be9e1f96b42e25e65372ef8d5d8627b11e083a842aedf737e5b766ae4
+     a4e3076191d8aaf2cef79362a9f7e35e6554d6cd05d58368667fb4eaf8d103e35
+     92c0a5433fabe3a765b8224e340a87e64136f15c42b8cdce2a88b467edb15ea02
+     461372f01f009f1e97367d603d7415751d335022a7c4ec8a525b2c7be1f4e001a
+     6bf5000ccf87efe40e5c8a9092628adc9a13858e9206cab2e6280c72957af54a4
+     71ba9a9ecc3d46ec15a2059a6553f73a51c6e255b893472fe54a5dbbea0068528
+     bdd49ee742b4bf60b0b3b32d300c39def6d1d0703524d5e0ae299b5130bdce878
+     47bb6229dff867d37b2a77bd834dcd86ad644dfe716af41374956e15460b2a63f
+     29c33bf226b673f84885f9a47d3aa34be140ce2f8922c83be
+shared_secret: 96775a4864d87902eb639bde48d426d39a2ea666f419db553cfae4c
+               215ed2d2b
+key: 30499d4723aab37f25dda170954b697784ee06a5d9e7e869a9c260632aa49ac4
+base_nonce: 0d273d53450e70e9c948767e
+exporter_secret: 542167d2f65af46ab44464327ee0882d8bb4a64823a9d2787e059
+                 bf90b7121d8
+</pre><a href="#appendix-A.5.1-1" class="pilcrow">¶</a>
+</div>
+<div id="encryptions-4">
+<section id="appendix-A.5.1.1">
+            <h5 id="name-encryptions-5">
+<a href="#appendix-A.5.1.1" class="section-number selfRef">A.5.1.1. </a><a href="#name-encryptions-5" class="section-name selfRef">Encryptions</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.5.1.1-1">
+<pre>
+sequence number: 0
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d30
+nonce: 0d273d53450e70e9c948767e
+ct: 1d0646e895cc6fed7da1d5b447da016477a60bed4afa47f1d7cedd1c77fb452834
+    7e9fa3fb7fd93a97c6a5817c6d8b29cb91877f94fee68236118925c189ae0175f5
+    a0e3e0ddec2ffa10
+
+sequence number: 1
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d31
+nonce: 0d273d53450e70e9c948767f
+ct: 52fb3bb6aeea5b7b6d54d309af7ffdb6ae026c0075fd6d37164a4db909c7169e89
+    244a70d1dc2b7ba976d38ad2beb535aa4090fa1fffecd6d9b2a172343162e1e580
+    91c2ff89bfbe4308
+
+sequence number: 2
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d32
+nonce: 0d273d53450e70e9c948767c
+ct: c6da515279be9bbe1ecff0198cefa9187c6b9028c495171acf17ba253057407684
+    9134fed0c6b39dd2f8e9f45e7981388fe3b3d0392713d7af878b3a38a74e3fd824
+    2f97d42234b275b8
+
+sequence number: 3
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d33
+nonce: 0d273d53450e70e9c948767d
+ct: b884a5ee9ee9e679dd415135f8e40243ad984bd66ad3a23f5f9a011d10ea2f4935
+    52be230e09d097688071ad81d11b260733954ec20ed84508df5ebd9fd7419ca046
+    158004160b638a6b
+
+sequence number: 4
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d34
+nonce: 0d273d53450e70e9c948767a
+ct: 237dd8a766ea006442ffd5fd608cb7655aa8eaa6b11a272c4729301a262b667c02
+    35f2330653dcd81963951575bc86360a21a87a0dedd7b5c2f120a32845d5cfce32
+    f582af723f5f0233
+
+sequence number: 5
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d35
+nonce: 0d273d53450e70e9c948767b
+ct: 7f9acebdf4f2f259a2e436884a4b7166f4a7469110f09483cbf73b744fdcd56576
+    5c2aec84c2fa4f11190eea2d02ab9a0f13f74c796ec826669f6e2c33bfea3c50d3
+    14557a3f10734d7b
+
+sequence number: 6
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d36
+nonce: 0d273d53450e70e9c9487678
+ct: fdef3a30ef5e6ac57dc975f11a551f6881457fbe51022d20cf4fe3d5c840e735ec
+    e38ef224bd3f7293350ffa176be8b08389b952ccdd9eed411cb45e8567f73f85c2
+    69c8d6f88e2ded3a
+
+sequence number: 7
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d37
+nonce: 0d273d53450e70e9c9487679
+ct: 69cbc72d98a63313fe50c38167b72ecda677690b886b1d5f53189c7a5941a42f71
+    ed0cc90561d4a79a9ec4df0fc431880ce4ecd19b132141c1387dddc0c06d3dfca0
+    acfb3abd7f097d12
+
+sequence number: 8
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d38
+nonce: 0d273d53450e70e9c9487676
+ct: 50137e8097c0bf24ace934f1e641de96bacc9c1d763c48c99057449e16e3e95f81
+    005b1eb4ee610608b45381b219d467b3904b0aef62f32d25625252229636444a16
+    30b6bf73ba8c1e46
+
+sequence number: 9
+pt: 34323635363137353734373932303639373332303734373237353734363832633230373437323735373436383230363236353631373537343739
+aad: 436f756e742d39
+nonce: 0d273d53450e70e9c9487677
+ct: 8fd7afd76280cccfb34c84e9b5f1fe1c668c46758f7f2848c44eae2eee8ff807af
+    20cdc48527fb63bb985e1be7c9bd5a3c52c29c145c1c686c7aba4b7b06e8ff74d0
+    37d2d063cb0f555e
+</pre><a href="#appendix-A.5.1.1-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="exported-values-4">
+<section id="appendix-A.5.1.2">
+            <h5 id="name-exported-values-5">
+<a href="#appendix-A.5.1.2" class="section-number selfRef">A.5.1.2. </a><a href="#name-exported-values-5" class="section-name selfRef">Exported Values</a>
+            </h5>
+<div class="alignLeft art-text artwork" id="appendix-A.5.1.2-1">
+<pre>
+exporter_context: 70736575646f72616e646f6d30
+L: 32
+exported_value: 877344a6b63a4cf0397aeb1d040e993cf2d3dad155461bb98f0f14
+                11e057f0c5
+
+exporter_context: 70736575646f72616e646f6d31
+L: 32
+exported_value: 4f75d732f3cb26b03a584ef9df337155fb45fa8d8329d8c185a3f9
+                2cd81153b4
+
+exporter_context: 70736575646f72616e646f6d32
+L: 32
+exported_value: 3c12a7abb1f6a1f985d60a20726a555fc334a83e3140607ed61997
+                e00eca2661
+
+exporter_context: 70736575646f72616e646f6d33
+L: 32
+exported_value: 186894c47f6928b86bf2ef99e4ac9c938eeefae59df5ea9bf529c3
+                731db2fb49
+
+exporter_context: 70736575646f72616e646f6d34
+L: 32
+exported_value: 2190f12bb7b95b0b9acd5310442c8458ccd5b192aab753e29748e6
+                06c2ff1706
+</pre><a href="#appendix-A.5.1.2-1" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Richard Barnes</span></div>
+<div dir="auto" class="left"><span class="org">Cisco</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:rlb@ipv.sx" class="email">rlb@ipv.sx</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
