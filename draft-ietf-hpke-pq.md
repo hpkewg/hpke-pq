@@ -287,7 +287,7 @@ document. ]]
 
 # Selection of AEAD algorithms
 
-As discussed in {{Section 2.1 of I-D.ietf-pquip-pqc-engineers}}, the advent of
+As discussed in {{Section 2.1 of PQCE}}, the advent of
 quantum computers does not necessarily require changes in the AEAD algorithms
 used in HPKE.  However, some compliance regimes call for the use of AEAD
 algorithms with longer key lengths, for example, the AES-256-GCM or
