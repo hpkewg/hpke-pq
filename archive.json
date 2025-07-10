@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T00:57:14.071275+00:00",
+  "timestamp": "2025-07-10T00:58:00.246626+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -114,7 +114,7 @@
       "labels": [],
       "body": "The general framework for referencing PQ/T hybrid KEMs was set up in #5.  Those documents are still stabilizing, so we will need to update this document as they firm up.",
       "createdAt": "2025-06-09T20:03:22Z",
-      "updatedAt": "2025-07-07T20:59:44Z",
+      "updatedAt": "2025-07-08T04:28:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -123,6 +123,13 @@
           "body": "Should we use XWing or KitchenSink or QSF for ML-KEM768 + X25519?\n",
           "createdAt": "2025-07-07T20:08:44Z",
           "updatedAt": "2025-07-07T20:59:44Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The draft presently says QSF (which means XWing).  That matches the feedback that we received on the list.\n\nMy understanding is that the reason this issue remains open is to serve as a reminder that any updates to the CFRG drafts need to be properly caught and reflected in the draft.",
+          "createdAt": "2025-07-08T04:28:50Z",
+          "updatedAt": "2025-07-08T04:28:50Z"
         }
       ]
     },
@@ -227,6 +234,38 @@
       "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHA256 sufficiently unambiguous?",
       "createdAt": "2025-07-07T20:07:50Z",
       "updatedAt": "2025-07-07T20:07:50Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOOXfHTc6_bF1S",
+      "title": "Add hybrid KEM: X448 + ML-KEM-1024",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/25",
+      "state": "OPEN",
+      "author": "jiep",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hi!\n\nCompared to the current proposal of P-384 + ML-KEM-1024, X448 provides stronger security margins for elliptic curve cryptography, better resistance to side-channel attacks, and improved performance in certain implementations, making it a more robust choice for post-quantum hybrid encryption. \n\nFurthermore, it accelerates the migration to post-quantum cryptography by introducing a secure and streamlined path for current DHKEM(X448, HKDF-SHA512) implementations.\n\nRegards.",
+      "createdAt": "2025-07-08T08:25:30Z",
+      "updatedAt": "2025-07-08T08:25:30Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOOXfHTc6_cQ_h",
+      "title": "Missing dependency `concrete-hybrid-kem`",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/26",
+      "state": "OPEN",
+      "author": "jiep",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Steps to reproduce:\n\n1. Clone this repository.\n2. Run `cargo build`. The output shows that `concrete-hybrid-kem` has not been found:\n\n```\nerror: failed to get `concrete-hybrid-kem` as a dependency of package `hpke-ref v0.1.0 (/workspaces/hpke-pq/reference-implementation)`\n\nCaused by:\n  failed to load source for dependency `concrete-hybrid-kem`\n\nCaused by:\n  Unable to update /workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation\n\nCaused by:\n  failed to read `/workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\n```\n\nWhere can I find the dependency `concrete-hybrid-kem`?\n\nThanks in advance. \n\nBest regards.\n",
+      "createdAt": "2025-07-08T09:58:30Z",
+      "updatedAt": "2025-07-08T09:58:30Z",
       "closedAt": null,
       "comments": []
     }
