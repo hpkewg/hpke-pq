@@ -1,5 +1,3 @@
-use std::fs;
-use std::path::PathBuf;
 use std::process;
 
 use hpke_ref::test_vectors::{TestVector, TestVectors};
@@ -29,19 +27,10 @@ fn generate_test_vectors() -> TestVectors {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-
-    if args.len() != 2 {
-        eprintln!("Usage: {} <output.json>", args[0]);
-        process::exit(1);
-    }
-
-    let output_path = PathBuf::from(&args[1]);
-
     // Generate test vectors
     let vectors = generate_test_vectors();
 
-    // Serialize to JSON
+    // Serialize to JSON and output to stdout
     let json = match serde_json::to_string_pretty(&vectors) {
         Ok(j) => j,
         Err(e) => {
@@ -50,15 +39,5 @@ fn main() {
         }
     };
 
-    // Write to file
-    if let Err(e) = fs::write(&output_path, json) {
-        eprintln!("Error writing to {}: {}", output_path.display(), e);
-        process::exit(1);
-    }
-
-    println!(
-        "Generated {} test vectors to {}",
-        vectors.len(),
-        output_path.display()
-    );
+    println!("{}", json);
 }
