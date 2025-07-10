@@ -222,7 +222,7 @@ impl OneStageKdf for Shake128Core {
 pub struct Shake256Core;
 
 impl OneStageKdf for Shake256Core {
-    const ID: [u8; 2] = [0x00, 0x10];
+    const ID: [u8; 2] = [0x00, 0x11];
     const N_H: usize = 32;
 
     fn derive(ikm: &[u8], len: usize) -> Vec<u8> {
@@ -239,7 +239,7 @@ impl OneStageKdf for Shake256Core {
 pub struct TurboShake128Core;
 
 impl OneStageKdf for TurboShake128Core {
-    const ID: [u8; 2] = [0x00, 0x10];
+    const ID: [u8; 2] = [0x00, 0x12];
     const N_H: usize = 32;
 
     fn derive(ikm: &[u8], len: usize) -> Vec<u8> {
@@ -258,7 +258,7 @@ impl OneStageKdf for TurboShake128Core {
 pub struct TurboShake256Core;
 
 impl OneStageKdf for TurboShake256Core {
-    const ID: [u8; 2] = [0x00, 0x10];
+    const ID: [u8; 2] = [0x00, 0x13];
     const N_H: usize = 32;
 
     fn derive(ikm: &[u8], len: usize) -> Vec<u8> {
