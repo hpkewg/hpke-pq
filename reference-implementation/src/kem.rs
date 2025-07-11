@@ -520,9 +520,9 @@ pub type MlKem768 = KemWithId<concrete_hybrid_kem::MlKem768Kem, 0x0041>;
 pub type MlKem1024 = KemWithId<concrete_hybrid_kem::MlKem1024Kem, 0x0042>;
 
 pub type QsfP256MlKem768 = KemWithId<concrete_hybrid_kem::QsfP256MlKem768Shake256Sha3256, 0x0050>;
+pub type QsfP384MlKem1024 = KemWithId<concrete_hybrid_kem::QsfP384MlKem1024Shake256Sha3256, 0x0051>;
 pub type QsfX25519MlKem768 =
-    KemWithId<concrete_hybrid_kem::QsfX25519MlKem768Shake256Sha3256, 0x0051>;
-pub type QsfP384MlKem1024 = KemWithId<concrete_hybrid_kem::QsfP384MlKem1024Shake256Sha3256, 0x0052>;
+    KemWithId<concrete_hybrid_kem::QsfX25519MlKem768Shake256Sha3256, 0x647a>;
 
 #[cfg(test)]
 mod test {
