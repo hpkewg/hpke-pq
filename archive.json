@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-10T00:58:00.246626+00:00",
+  "timestamp": "2025-07-13T01:04:13.899460+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -47,6 +47,11 @@
       "name": "wontfix",
       "description": "This will not be worked on",
       "color": "ffffff"
+    },
+    {
+      "name": "ref-impl",
+      "description": "Issues related to the reference implementation, not the spec",
+      "color": "2b4eb4"
     }
   ],
   "issues": [
@@ -114,7 +119,7 @@
       "labels": [],
       "body": "The general framework for referencing PQ/T hybrid KEMs was set up in #5.  Those documents are still stabilizing, so we will need to update this document as they firm up.",
       "createdAt": "2025-06-09T20:03:22Z",
-      "updatedAt": "2025-07-08T04:28:50Z",
+      "updatedAt": "2025-07-10T12:25:00Z",
       "closedAt": null,
       "comments": [
         {
@@ -130,6 +135,13 @@
           "body": "The draft presently says QSF (which means XWing).  That matches the feedback that we received on the list.\n\nMy understanding is that the reason this issue remains open is to serve as a reminder that any updates to the CFRG drafts need to be properly caught and reflected in the draft.",
           "createdAt": "2025-07-08T04:28:50Z",
           "updatedAt": "2025-07-08T04:28:50Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson is on the right track here. \n\n* QSF(X25519 + ML-KEM-768) is intended to be identical to X-Wing\n* We should use the \"QSF\" terminology",
+          "createdAt": "2025-07-10T12:25:00Z",
+          "updatedAt": "2025-07-10T12:25:00Z"
         }
       ]
     },
@@ -214,28 +226,53 @@
       "author": "ilaril",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "ref-impl"
+      ],
       "body": "The reference implementation seems to have some KDF identifiers set incorrectly:\n\n* SHAKE256 seems to have ID 0x10, should presumably be 0x11.\n  - Line 225 of reference-implementation/src/kdf.rs\n* TurboSHAKE128 seems to have ID 0x10, should presumably be 0x12.\n  - Line 242 of reference-implementation/src/kdf.rs\n* TurboSHAKE256 seems to have ID 0x10, should presumably be 0x13.\n  - Line 261 of reference-implementation/src/kdf.rs\n\n(Took me a while to find this while trying to debug why the KDF part of test vectors do not verify against my own HPKE implementation.)\n",
       "createdAt": "2025-07-07T06:55:15Z",
-      "updatedAt": "2025-07-07T06:55:15Z",
+      "updatedAt": "2025-07-10T22:53:02Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Good catch @ilaril.  Posted a fix in #28.  Maybe you could verify that the updated test vectors work with your implementation?",
+          "createdAt": "2025-07-10T22:53:02Z",
+          "updatedAt": "2025-07-10T22:53:02Z"
+        }
+      ]
     },
     {
       "number": 24,
       "id": "I_kwDOOXfHTc6_Vpth",
-      "title": "Should the KDFs include XOF() in the them?",
+      "title": "Should the KDFs include XOF() in them?",
       "url": "https://github.com/hpkewg/hpke-pq/issues/24",
       "state": "OPEN",
       "author": "rohanmahy",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
-      "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHA256 sufficiently unambiguous?",
+      "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHAKE256 sufficiently unambiguous?",
       "createdAt": "2025-07-07T20:07:50Z",
-      "updatedAt": "2025-07-07T20:07:50Z",
+      "updatedAt": "2025-07-10T12:48:21Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "The QSF algorithm names are taken from [draft-irtf-cfrg-concrete-hybrid-kems](https://datatracker.ietf.org/doc/draft-irtf-cfrg-concrete-hybrid-kems/).  This issue should be [over there](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/issues).\n\nPreviewing what I'll say there, though:\n* The issue title doesn't make sense.  XOFs aren't being used KDFs here, but instead for seed expansion.\n* XOF(SHAKE256) is redundant.  SHAKE is an XOF.\n* Not sure what your point is about SHA-256.  There is no SHA-2 in this document.",
+          "createdAt": "2025-07-10T12:38:41Z",
+          "updatedAt": "2025-07-10T12:38:41Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Reopening because I misread the issue.\n\nBut like I said, XOF(SHAKE256) is redundant. SHAKE is an XOF.",
+          "createdAt": "2025-07-10T12:48:21Z",
+          "updatedAt": "2025-07-10T12:48:21Z"
+        }
+      ]
     },
     {
       "number": 25,
@@ -249,9 +286,17 @@
       "labels": [],
       "body": "Hi!\n\nCompared to the current proposal of P-384 + ML-KEM-1024, X448 provides stronger security margins for elliptic curve cryptography, better resistance to side-channel attacks, and improved performance in certain implementations, making it a more robust choice for post-quantum hybrid encryption. \n\nFurthermore, it accelerates the migration to post-quantum cryptography by introducing a secure and streamlined path for current DHKEM(X448, HKDF-SHA512) implementations.\n\nRegards.",
       "createdAt": "2025-07-08T08:25:30Z",
-      "updatedAt": "2025-07-08T08:25:30Z",
+      "updatedAt": "2025-07-10T12:33:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Hi @jiep - Could you please raise this on the [hpke working group mailing list](https://datatracker.ietf.org/group/hpke/email/)?  My impression so far has been that there is not demand for an X448 combination.",
+          "createdAt": "2025-07-10T12:33:06Z",
+          "updatedAt": "2025-07-10T12:33:06Z"
+        }
+      ]
     },
     {
       "number": 26,
@@ -262,10 +307,36 @@
       "author": "jiep",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "ref-impl"
+      ],
       "body": "Steps to reproduce:\n\n1. Clone this repository.\n2. Run `cargo build`. The output shows that `concrete-hybrid-kem` has not been found:\n\n```\nerror: failed to get `concrete-hybrid-kem` as a dependency of package `hpke-ref v0.1.0 (/workspaces/hpke-pq/reference-implementation)`\n\nCaused by:\n  failed to load source for dependency `concrete-hybrid-kem`\n\nCaused by:\n  Unable to update /workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation\n\nCaused by:\n  failed to read `/workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\n```\n\nWhere can I find the dependency `concrete-hybrid-kem`?\n\nThanks in advance. \n\nBest regards.\n",
       "createdAt": "2025-07-08T09:58:30Z",
-      "updatedAt": "2025-07-08T09:58:30Z",
+      "updatedAt": "2025-07-10T12:34:14Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Hi @jiep -- The `concrete-hybrid-kems` crate is here: https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/8.  You'll need to clone that repo/branch yourself and adjust the `path` field in Cargo.toml.\n\nIf you have time to file a PR improving the documentation, that would be helpful!",
+          "createdAt": "2025-07-10T12:30:51Z",
+          "updatedAt": "2025-07-10T12:30:51Z"
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "I_kwDOOXfHTc7AHJrg",
+      "title": "Use deterministic encapsulation for the test vectors",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/29",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The CFRG concrete KEMs draft defines an optional [EncapsDerand](https://www.ietf.org/archive/id/draft-irtf-cfrg-hybrid-kems-04.html#appendix-A) algorithm that performs deterministic encapsulation.  This is implemented by the hybrid KEMs defined there, and thus by the concrete hybrid KEMs used by this document.\n\nUsing EncapsDerand for the test vectors could help implementations verify that their `Setup<Mode>S` implementations are correct as well as their `Setup<Mode>R` implementations.  It would be consistent with the inclusion of `skE` / `pkE` values in the RFC 9180 test vectors.",
+      "createdAt": "2025-07-11T14:18:37Z",
+      "updatedAt": "2025-07-11T14:18:37Z",
       "closedAt": null,
       "comments": []
     }
@@ -950,18 +1021,33 @@
       "labels": [],
       "body": "draft-barnes-hpke-hpke is easy.\r\n\r\nThe \\[CONCRETE] reference isn't so obvious.  I think that the intent was to reference the hybrid-kems draft, from context.",
       "createdAt": "2025-06-30T23:05:36Z",
-      "updatedAt": "2025-07-01T22:51:07Z",
+      "updatedAt": "2025-07-10T23:12:17Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "barnes",
-      "headRefOid": "9ef553b81cbd8313646f1c0858a15313e22fa4f3",
+      "headRefOid": "c20e0412624ff677bdee2dc11d74e5a4da2f07c0",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@martinthomson - For some reason, the build is broken here.  Not obvious to me why.  Thoughts?",
+          "createdAt": "2025-07-10T23:02:34Z",
+          "updatedAt": "2025-07-10T23:02:34Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "My bad.  I missed a PQC for engineers reference",
+          "createdAt": "2025-07-10T23:08:47Z",
+          "updatedAt": "2025-07-10T23:08:47Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOOXfHTc6xYWpm",
@@ -1026,6 +1112,19 @@
               "updatedAt": "2025-07-01T22:51:02Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zRedS",
+          "commit": {
+            "abbreviatedOid": "c20e041"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-10T23:12:17Z",
+          "updatedAt": "2025-07-10T23:12:17Z",
+          "comments": []
         }
       ]
     },
@@ -1041,13 +1140,13 @@
       "labels": [],
       "body": "Security considerations seemed to make sense, but this section could also go into the introduction.\r\n\r\nI did not get too technical (\"DH is a NIKE, KEMs are not NIKE\"), but if we want that is an option.\r\n\r\nIf there's a better way to link to a paragraph in another draft, that'd be a great improvement over my hard-coded section number.",
       "createdAt": "2025-07-01T13:14:52Z",
-      "updatedAt": "2025-07-03T07:42:01Z",
+      "updatedAt": "2025-07-11T07:21:03Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "thomwiggers/hpke-pq",
       "headRefName": "no-auth-mode",
-      "headRefOid": "567e152b0dd0607e4d66677969e66102680c9538",
+      "headRefOid": "7e2ca630f12f55ad71d2a3c5f2f725f34a2131aa",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1153,6 +1252,66 @@
               "updatedAt": "2025-07-03T07:42:01Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zQ-OQ",
+          "commit": {
+            "abbreviatedOid": "567e152"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-10T22:18:30Z",
+          "updatedAt": "2025-07-10T22:18:31Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "```suggestion\r\nPSK-authenticated HPKE ({{Section 5.1.2 of I-D.barnes-hpke-hpke}})\r\n```",
+              "createdAt": "2025-07-10T22:18:30Z",
+              "updatedAt": "2025-07-10T22:18:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zRV5u",
+          "commit": {
+            "abbreviatedOid": "7e2ca63"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-10T22:54:20Z",
+          "updatedAt": "2025-07-10T22:54:20Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "```suggestion\r\nPSK-authenticated HPKE ({{Section 5.1.2 of I-D.ietf-hpke-hpke}})\r\n```\r\n\r\nOr are you looking to reference the draft explicitly?",
+              "createdAt": "2025-07-10T22:54:20Z",
+              "updatedAt": "2025-07-10T22:54:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zWUvU",
+          "commit": {
+            "abbreviatedOid": "7e2ca63"
+          },
+          "author": "thomwiggers",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-11T07:21:02Z",
+          "updatedAt": "2025-07-11T07:21:03Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "@bifurcation committed this change so I'm not sure why this got changed to the draft version.",
+              "createdAt": "2025-07-11T07:21:02Z",
+              "updatedAt": "2025-07-11T07:21:03Z"
+            }
+          ]
         }
       ]
     },
@@ -1161,26 +1320,212 @@
       "id": "PR_kwDOOXfHTc6dYoX7",
       "title": "Wrap the test vectors",
       "url": "https://github.com/hpkewg/hpke-pq/pull/22",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This makes them harder to process; and maybe this would be better in the original script, but one step at a time.",
       "createdAt": "2025-07-04T07:03:35Z",
-      "updatedAt": "2025-07-04T07:03:35Z",
+      "updatedAt": "2025-07-10T22:59:17Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "rapping",
       "headRefOid": "4f556fe8b49607a7f467755c2978b70b0391a802",
+      "closedAt": "2025-07-10T22:59:17Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing in favor of fixing the problem upstream in #28 ",
+          "createdAt": "2025-07-10T22:59:14Z",
+          "updatedAt": "2025-07-10T22:59:14Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 27,
+      "id": "PR_kwDOOXfHTc6eYyZS",
+      "title": "Re-use the existing X-Wing code point",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/27",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "https://mailarchive.ietf.org/arch/msg/hpke/r4_lx0mtSy6wZjT62ldxYUzqQcU/",
+      "createdAt": "2025-07-10T22:15:08Z",
+      "updatedAt": "2025-07-11T20:49:28Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "xwing-iana",
+      "headRefOid": "d34af5d13a87c13afb163ba81f7af19c23b6d85f",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Actually, this is interesting, which one 'wins'? They are interoperable and identical but (this is a purely procedural / IANA question)\r\n\r\nI ask because people are using X-Wing as defined in the other document using this codepoint, it shouldn't matter for interop I'm mostly curious, I wonder if that results in confusion",
+          "createdAt": "2025-07-10T22:19:06Z",
+          "updatedAt": "2025-07-10T22:19:06Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "NONE",
+          "body": "Is it any different from what would happen had draft-connolly-cfrg-xwing-kem-06 been adopted by hpkewg and then eventually morphed into this document, while staying compatible? We'd presumably update the reference to the final RFC in that case.\r\n\r\nI guess the name of the construction has changed. Although with ridiculous names like `DHKEM(P-256, HKDF-SHA256)` and `QSF-X25519-MLKEM768-SHAKE256-SHA3256`, I doubt people were using them as-is anyway. (Why do we keep doing this to ourselves?)",
+          "createdAt": "2025-07-10T22:29:22Z",
+          "updatedAt": "2025-07-10T22:30:01Z"
+        },
+        {
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Is it any different from what would happen had draft-connolly-cfrg-xwing-kem-06 been adopted by hpkewg and then eventually morphed into this document, while staying compatible? We'd presumably update the reference to the final RFC in that case.\r\n> \r\n> I guess it's the name of the construction has changed. Although with ridiculous names like `DHKEM(P-256, HKDF-SHA256)` and `QSF-X25519-MLKEM768-SHAKE256-SHA3256`, I doubt people were using them as-is anyway.\r\n\r\nGood point, ok",
+          "createdAt": "2025-07-10T22:30:02Z",
+          "updatedAt": "2025-07-10T22:30:02Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "NONE",
+          "body": "> ridiculous names\r\n\r\n2 cents: I know HPKE's convention is to write in every parameter, but I might suggest names like \"P256-MLKEM768\", \"P384-MLKEM1024\", and \"X25519-MLKEM768\" would have been slightly more practical, and more likely to end up with implementations aligning on names. It's okay if some parameters aren't represented. One hopes we're not going to define another version of these. If we do, it can always add a short suffix like \"X25519-MLKEM768-v2\" or \"X25519-MLKEM768-SHA4\" or something.\r\n\r\nAfter all, it's ML-KEM-768, not ML-KEM-768-SHAKE256-SHA3256-SHAKE256-SHA3512-SHAKE128. :-)",
+          "createdAt": "2025-07-10T22:36:16Z",
+          "updatedAt": "2025-07-10T22:36:16Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@davidben - I agree with you, but @dconnolly pushed for more stuff.  And in any case, that's an issue for https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/",
+          "createdAt": "2025-07-10T23:05:08Z",
+          "updatedAt": "2025-07-10T23:05:08Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "> > ridiculous names\r\n> \r\n> 2 cents: I know HPKE's convention is to write in every parameter, but I might suggest names like \"P256-MLKEM768\", \"P384-MLKEM1024\", and \"X25519-MLKEM768\" would have been slightly more practical, and more likely to end up with implementations aligning on names. It's okay if some parameters aren't represented. One hopes we're not going to define another version of these. If we do, it can always add a short suffix like \"X25519-MLKEM768-v2\" or \"X25519-MLKEM768-SHA4\" or something.\r\n> \r\n> After all, it's ML-KEM-768, not ML-KEM-768-SHAKE256-SHA3256-SHAKE256-SHA3512-SHAKE128. :-)\r\n\r\nI used:\r\n\r\n`QSF-KEM(ML-KEM-768,X25519)` for the KEM name inside the MLS ciphersuite names in draft-mahy-mls-pq. The resulting MLS cipher suite names are already quite long. For example:\r\n\r\n`MLS_128_QSF-KEM(ML-KEM-768,X25519)_AES256GCM_SHA384_Ed25519`\r\n\r\nI realize that parentheses and commas have not been used to date in KEM names, but I couldn't find anything preventing use of these characters. I think the parentheses make it very clear that QSF is combining those two things.\r\n\r\nAs suggested above, we could use QSF-KEM(ML-KEM-768,X25519)v2 of -2 if we need to change one of the support algorithms inside.\r\n",
+          "createdAt": "2025-07-11T08:59:54Z",
+          "updatedAt": "2025-07-11T08:59:54Z"
+        },
+        {
+          "author": "richsalz",
+          "authorAssociation": "NONE",
+          "body": "Commas and parens might be problematic when you start to configure these things as a list. Emphasis on *might*\r\n\r\nPerhaps we can look to other IETF specs for short names, like JOSE?",
+          "createdAt": "2025-07-11T13:02:50Z",
+          "updatedAt": "2025-07-11T13:02:50Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "> Commas and parens might be problematic when you start to configure these things as a list. Emphasis on _might_\r\n\r\nTo speak specifically for MLS, the ciphersuite in the protocol is identified by an integer. The label is for consistent identification. \r\n\r\nAnd certainly if someone wants a list of labels, they should be able to put the ciphersuite labels or HPKE labels in quotes. \r\n\r\n> Perhaps we can look to other IETF specs for short names, like JOSE?\r\n\r\nThe algorithms in JOSE are JSON strings, so as long as they don't have double quotes or backslashes, they should be ok.",
+          "createdAt": "2025-07-11T15:02:25Z",
+          "updatedAt": "2025-07-11T15:02:25Z"
+        },
+        {
+          "author": "richsalz",
+          "authorAssociation": "NONE",
+          "body": "Most TLS stacks (derived from OpenSSL), and therefore many applications, use text strings to configure ciphers. That is what I was thinking of. Not the protocol-level.\n",
+          "createdAt": "2025-07-11T15:22:28Z",
+          "updatedAt": "2025-07-11T15:22:28Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6zQ9Z0",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-10T22:16:14Z",
+          "updatedAt": "2025-07-10T22:16:14Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zQ-Ac",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Actually, this is interesting, which one 'wins'? They are interoperable and identical but (this is a purely procedural / IANA question)",
+          "createdAt": "2025-07-10T22:17:51Z",
+          "updatedAt": "2025-07-10T22:17:51Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc6zho-9",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "OR13",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-07-11T20:49:28Z",
+          "updatedAt": "2025-07-11T20:49:28Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOOXfHTc6eZBP9",
+      "title": "Fix some minor issues with the reference implementation",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/28",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
+      "createdAt": "2025-07-10T22:52:18Z",
+      "updatedAt": "2025-07-12T13:59:32Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ref-impl-fix",
+      "headRefOid": "9f152592378e884c49d5834a560999d9c83d5a45",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * I have not debugged this further to discover exactly where things go wrong.\r\n* All (Turbo)Shake256 tests fail with wrong key error.\r\n  * (Turbo)Shake128 looks fine.\r\n  * exporter_secret in test vectors does not look sane.\r\n  * Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n",
+          "createdAt": "2025-07-12T13:59:32Z",
+          "updatedAt": "2025-07-12T13:59:32Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc6zRcO7",
+          "commit": {
+            "abbreviatedOid": "955aff9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I had something slightly more sophisticated in mind, but this works.",
+          "createdAt": "2025-07-10T23:05:58Z",
+          "updatedAt": "2025-07-10T23:05:58Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
