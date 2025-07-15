@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-13T01:04:13.899460+00:00",
+  "timestamp": "2025-07-15T01:00:41.582717+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1491,7 +1491,7 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-12T13:59:32Z",
+      "updatedAt": "2025-07-13T19:31:15Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
@@ -1506,9 +1506,9 @@
         {
           "author": "ilaril",
           "authorAssociation": "NONE",
-          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * I have not debugged this further to discover exactly where things go wrong.\r\n* All (Turbo)Shake256 tests fail with wrong key error.\r\n  * (Turbo)Shake128 looks fine.\r\n  * exporter_secret in test vectors does not look sane.\r\n  * Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n",
+          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * ~~I have not debugged this further to discover exactly where things go wrong.~~\r\n* All (Turbo)Shake256 tests fail with wrong key error.\r\n  * (Turbo)Shake128 looks fine.\r\n  * exporter_secret in test vectors does not look sane.\r\n  * Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n\r\nEdit:\r\n* The ML-KEM failures seem to come from cfrg/draft-irtf-cfrg-concrete-hybrid-kems ML-KEM code using dk instead of ikm as the private key  \u2014 this would explain why hacking the code to use ikmr worked.\r\n* And the X-Wing failure seems to come from cfrg/draft-irtf-cfrg-hybrid-kems reference-implementation/src/qsf.rs incorrectly setting the seed length \u2014 this would explain why hacking the code to use ikmr would still fail \u2014 and using dk_hybrid instead of seed as the private key.",
           "createdAt": "2025-07-12T13:59:32Z",
-          "updatedAt": "2025-07-12T13:59:32Z"
+          "updatedAt": "2025-07-13T19:31:15Z"
         }
       ],
       "reviews": [
