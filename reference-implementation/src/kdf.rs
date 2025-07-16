@@ -15,7 +15,7 @@ pub trait OneStageKdf {
 
         let labeled_ikm = concat(&[
             ikm,
-            b"HPKE_v1",
+            b"HPKE-v1",
             suite_id,
             &length_prefixed(label),
             &i2osp(len, 2),

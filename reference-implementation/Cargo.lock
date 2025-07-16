@@ -110,7 +110,6 @@ name = "concrete-hybrid-kem"
 version = "0.1.0"
 dependencies = [
  "hex",
- "hybrid-kem-ref",
  "ml-kem 0.3.0-pre",
  "p256",
  "p384",
@@ -407,13 +406,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2d35805454dc9f8662a98d6d61886ffe26bd465f5960e0e55345c70d5c0d2a9"
 dependencies = [
  "typenum",
-]
-
-[[package]]
-name = "hybrid-kem-ref"
-version = "0.1.0"
-dependencies = [
- "rand",
 ]
 
 [[package]]
