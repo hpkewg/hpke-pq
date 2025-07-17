@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-15T01:00:41.582717+00:00",
+  "timestamp": "2025-07-17T00:59:54.587707+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1491,13 +1491,13 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-13T19:31:15Z",
+      "updatedAt": "2025-07-16T19:15:12Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "9f152592378e884c49d5834a560999d9c83d5a45",
+      "headRefOid": "6da2d8cf5996cc7caa26f6b00cf0a298563888b6",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
