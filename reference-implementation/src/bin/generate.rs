@@ -7,7 +7,7 @@ fn generate_test_vectors() -> TestVectors {
     let mut vectors = TestVectors::new();
 
     // Only generate the specified combinations:
-    
+
     // 1. ML-KEM-768 + HKDF-SHA256 + AES-128-GCM
     vectors.push(TestVector::new::<MlKem768, HkdfSha256, Aes128Gcm>());
 
@@ -16,6 +16,9 @@ fn generate_test_vectors() -> TestVectors {
 
     // 3. QSF-P256-MLKEM768 + SHAKE256 + AES-128-GCM
     vectors.push(TestVector::new::<QsfP256MlKem768, Shake256, Aes128Gcm>());
+
+    // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
+    vectors.push(TestVector::new::<QsfX25519MlKem768, HkdfSha256, Aes128Gcm>());
 
     // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
     vectors.push(TestVector::new::<QsfX25519MlKem768, Shake256, Aes128Gcm>());
