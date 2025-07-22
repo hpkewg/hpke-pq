@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-17T00:59:54.587707+00:00",
+  "timestamp": "2025-07-22T00:59:42.412777+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -255,7 +255,7 @@
       "labels": [],
       "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHAKE256 sufficiently unambiguous?",
       "createdAt": "2025-07-07T20:07:50Z",
-      "updatedAt": "2025-07-10T12:48:21Z",
+      "updatedAt": "2025-07-21T10:21:32Z",
       "closedAt": null,
       "comments": [
         {
@@ -271,6 +271,34 @@
           "body": "Reopening because I misread the issue.\n\nBut like I said, XOF(SHAKE256) is redundant. SHAKE is an XOF.",
           "createdAt": "2025-07-10T12:48:21Z",
           "updatedAt": "2025-07-10T12:48:21Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "> The QSF algorithm names are taken from [draft-irtf-cfrg-concrete-hybrid-kems](https://datatracker.ietf.org/doc/draft-irtf-cfrg-concrete-hybrid-kems/). This issue should be [over there](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/issues).\n> \n> Previewing what I'll say there, though:\n> \n>     * The issue title doesn't make sense.  XOFs aren't being used KDFs here, but instead for seed expansion.\n> \n>     * XOF(SHAKE256) is redundant.  SHAKE is an XOF.\n\nRawSHAKE128 in Section 6.3 of https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf??\n\n> \n>     * Not sure what your point is about SHA-256.  There is no SHA-2 in this document.\n\n",
+          "createdAt": "2025-07-21T09:26:34Z",
+          "updatedAt": "2025-07-21T09:26:34Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> > * XOF(SHAKE256) is redundant.  SHAKE is an XOF.\n> \n> RawSHAKE128 in Section 6.3 of https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf??\n\nNot sure what your point is.  RawSHAKE128 is an intermediate function, not what we're relying on.\n\nAnd to reiterate, this is an issue for the concrete KEM combiners draft.",
+          "createdAt": "2025-07-21T10:00:47Z",
+          "updatedAt": "2025-07-21T10:00:47Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "> > > * XOF(SHAKE256) is redundant.  SHAKE is an XOF.\n> > \n> > \n> > RawSHAKE128 in Section 6.3 of https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf??\n> \n> Not sure what your point is. RawSHAKE128 is an intermediate function, not what we're relying on.\n> \n> And to reiterate, this is an issue for the concrete KEM combiners draft.\n\nNO, this has nothing to do with KEMs! It is the HPKE registered KDFs which are used outside of KEMs. ",
+          "createdAt": "2025-07-21T10:11:55Z",
+          "updatedAt": "2025-07-21T10:11:55Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Oh, I see.  Well, in that case, XOF is still not relevant.  So you're saying that the names in the [KDF table](https://www.ietf.org/archive/id/draft-ietf-hpke-pq-01.html#table-1) should have XOF?  That still seems redundant to me.  HPKE doesn't have a notion of XOF, only single-stage KDF.  That's already indicated in the \"Two-Stage\" column.",
+          "createdAt": "2025-07-21T10:21:32Z",
+          "updatedAt": "2025-07-21T10:21:32Z"
         }
       ]
     },
@@ -1491,13 +1519,13 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-16T19:15:12Z",
+      "updatedAt": "2025-07-21T19:19:18Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "6da2d8cf5996cc7caa26f6b00cf0a298563888b6",
+      "headRefOid": "3b5baeefc075305fb30bf874bb1c137cc5cf1ffb",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1506,9 +1534,9 @@
         {
           "author": "ilaril",
           "authorAssociation": "NONE",
-          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * ~~I have not debugged this further to discover exactly where things go wrong.~~\r\n* All (Turbo)Shake256 tests fail with wrong key error.\r\n  * (Turbo)Shake128 looks fine.\r\n  * exporter_secret in test vectors does not look sane.\r\n  * Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n\r\nEdit:\r\n* The ML-KEM failures seem to come from cfrg/draft-irtf-cfrg-concrete-hybrid-kems ML-KEM code using dk instead of ikm as the private key  \u2014 this would explain why hacking the code to use ikmr worked.\r\n* And the X-Wing failure seems to come from cfrg/draft-irtf-cfrg-hybrid-kems reference-implementation/src/qsf.rs incorrectly setting the seed length \u2014 this would explain why hacking the code to use ikmr would still fail \u2014 and using dk_hybrid instead of seed as the private key.",
+          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * ~~I have not debugged this further to discover exactly where things go wrong.~~\r\n* ~~All (Turbo)Shake256 tests fail with wrong key error.~~\r\n  * ~~(Turbo)Shake128 looks fine.~~\r\n  * ~~exporter_secret in test vectors does not look sane.~~\r\n  * ~~Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.~~\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n\r\nEdit:\r\n* The ML-KEM failures seem to come from cfrg/draft-irtf-cfrg-concrete-hybrid-kems ML-KEM code using dk instead of ikm as the private key  \u2014 this would explain why hacking the code to use ikmr worked.\r\n* And the X-Wing failure seems to come from cfrg/draft-irtf-cfrg-hybrid-kems reference-implementation/src/qsf.rs incorrectly setting the seed length \u2014 this would explain why hacking the code to use ikmr would still fail \u2014 and using dk_hybrid instead of seed as the private key.\r\n* Tested that the \"Fix Nh for SHAKE256\" commit fixes the SHAKE256 failures.",
           "createdAt": "2025-07-12T13:59:32Z",
-          "updatedAt": "2025-07-13T19:31:15Z"
+          "updatedAt": "2025-07-21T19:19:18Z"
         }
       ],
       "reviews": [
