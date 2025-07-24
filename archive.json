@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-22T00:59:42.412777+00:00",
+  "timestamp": "2025-07-24T00:59:57.808525+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -248,15 +248,15 @@
       "id": "I_kwDOOXfHTc6_Vpth",
       "title": "Should the KDFs include XOF() in them?",
       "url": "https://github.com/hpkewg/hpke-pq/issues/24",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "rohanmahy",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "For example, should the KDF for SHAKE256 be called XOF(SHAKE256) or is SHAKE256 sufficiently unambiguous?",
       "createdAt": "2025-07-07T20:07:50Z",
-      "updatedAt": "2025-07-21T10:21:32Z",
-      "closedAt": null,
+      "updatedAt": "2025-07-22T13:01:22Z",
+      "closedAt": "2025-07-22T13:01:22Z",
       "comments": [
         {
           "author": "bifurcation",
@@ -299,6 +299,13 @@
           "body": "Oh, I see.  Well, in that case, XOF is still not relevant.  So you're saying that the names in the [KDF table](https://www.ietf.org/archive/id/draft-ietf-hpke-pq-01.html#table-1) should have XOF?  That still seems redundant to me.  HPKE doesn't have a notion of XOF, only single-stage KDF.  That's already indicated in the \"Two-Stage\" column.",
           "createdAt": "2025-07-21T10:21:32Z",
           "updatedAt": "2025-07-21T10:21:32Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "> Oh, I see. Well, in that case, XOF is still not relevant. So you're saying that the names in the [KDF table](https://www.ietf.org/archive/id/draft-ietf-hpke-pq-01.html#table-1) should have XOF? That still seems redundant to me. HPKE doesn't have a notion of XOF, only single-stage KDF. That's already indicated in the \"Two-Stage\" column.\n\nI'm saying that whatever is in the KDF table should be clear as to which algorithm is being used. Since I saw the XOF(SHAKE256) terminology in use in other places, I wasn't sure if it was necessary or not.",
+          "createdAt": "2025-07-22T11:39:01Z",
+          "updatedAt": "2025-07-22T11:39:01Z"
         }
       ]
     },
@@ -1389,7 +1396,7 @@
       "labels": [],
       "body": "https://mailarchive.ietf.org/arch/msg/hpke/r4_lx0mtSy6wZjT62ldxYUzqQcU/",
       "createdAt": "2025-07-10T22:15:08Z",
-      "updatedAt": "2025-07-11T20:49:28Z",
+      "updatedAt": "2025-07-22T13:00:52Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
@@ -1463,6 +1470,13 @@
           "body": "Most TLS stacks (derived from OpenSSL), and therefore many applications, use text strings to configure ciphers. That is what I was thinking of. Not the protocol-level.\n",
           "createdAt": "2025-07-11T15:22:28Z",
           "updatedAt": "2025-07-11T15:22:28Z"
+        },
+        {
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "body": "Nobody liked my parentheses, but there was plenty of desire for shorter names, so I proposed shorter KEM names without parens.",
+          "createdAt": "2025-07-22T11:43:58Z",
+          "updatedAt": "2025-07-22T11:43:58Z"
         }
       ],
       "reviews": [
@@ -1504,6 +1518,86 @@
           "createdAt": "2025-07-11T20:49:28Z",
           "updatedAt": "2025-07-11T20:49:28Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc61Wnk3",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T11:41:43Z",
+          "updatedAt": "2025-07-22T11:41:43Z",
+          "comments": [
+            {
+              "originalPosition": 10,
+              "body": "```suggestion\r\n| 0x0050 | QSF-P256-MLKEM768   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |\r\n```",
+              "createdAt": "2025-07-22T11:41:43Z",
+              "updatedAt": "2025-07-22T11:41:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc61Wn0J",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T11:42:04Z",
+          "updatedAt": "2025-07-22T11:42:05Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\r\n| 0x0051 | QSF-P384-MLKEM1024  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |\r\n| 0x647a | QSF-X25519-MLKEM768 | 32       | 1120 | 1216 | 32  | no   | RFCXXXX   |\r\n```",
+              "createdAt": "2025-07-22T11:42:04Z",
+              "updatedAt": "2025-07-22T11:42:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc61WqKE",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T11:45:15Z",
+          "updatedAt": "2025-07-22T11:45:16Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "```suggestion\r\n|:-------|:--------------------|:---------|:-----|:-----|:----|:-----|:----------|\r\n```",
+              "createdAt": "2025-07-22T11:45:15Z",
+              "updatedAt": "2025-07-22T11:45:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc61XvGL",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T13:00:51Z",
+          "updatedAt": "2025-07-22T13:00:52Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "I agree with this change, but I also think that this registry should use the same names that are in the CFRG concrete hybrid KEMs draft.  So I would prefer not to make this change until the change is made upstream.",
+              "createdAt": "2025-07-22T13:00:52Z",
+              "updatedAt": "2025-07-22T13:00:52Z"
+            }
+          ]
         }
       ]
     },
@@ -1519,13 +1613,13 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-21T19:19:18Z",
+      "updatedAt": "2025-07-23T09:22:42Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "3b5baeefc075305fb30bf874bb1c137cc5cf1ffb",
+      "headRefOid": "c0e55c6fccd10ef89a05df203ae95d73dc4f4870",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
