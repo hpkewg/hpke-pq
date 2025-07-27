@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-24T00:59:57.808525+00:00",
+  "timestamp": "2025-07-27T01:05:39.146237+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1396,7 +1396,7 @@
       "labels": [],
       "body": "https://mailarchive.ietf.org/arch/msg/hpke/r4_lx0mtSy6wZjT62ldxYUzqQcU/",
       "createdAt": "2025-07-10T22:15:08Z",
-      "updatedAt": "2025-07-22T13:00:52Z",
+      "updatedAt": "2025-07-24T15:31:34Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
@@ -1598,6 +1598,26 @@
               "updatedAt": "2025-07-22T13:00:52Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc617LFm",
+          "commit": {
+            "abbreviatedOid": "d34af5d"
+          },
+          "author": "rohanmahy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-24T15:31:34Z",
+          "updatedAt": "2025-07-24T15:31:34Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/15",
+              "createdAt": "2025-07-24T15:31:34Z",
+              "updatedAt": "2025-07-24T15:31:34Z"
+            }
+          ]
         }
       ]
     },
@@ -1613,13 +1633,13 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-23T09:22:42Z",
+      "updatedAt": "2025-07-24T13:32:57Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "c0e55c6fccd10ef89a05df203ae95d73dc4f4870",
+      "headRefOid": "cf6a4ba716da8985cb0acd6dd5c7605f5fad6602",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
