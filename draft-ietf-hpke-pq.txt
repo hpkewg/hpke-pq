@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                            30 June 2025
-Expires: 1 January 2026
+Intended status: Standards Track                           8 August 2025
+Expires: 9 February 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 January 2026.
+   This Internet-Draft will expire on 9 February 2026.
 
 Copyright Notice
 
@@ -417,8 +417,8 @@ Table of Contents
 
 8.2.  PQ/T Hybrid KEM Entries
 
-   IANA is requested to add the following entries to the HPKE KEM
-   Identifiers registry:
+   IANA is requested to replace the entry for the value 0x647a and add
+   two entries for values 0x0050 and 0x0051 with the following values:
 
    +======+================================+=======+====+====+===+====+=========+
    |Value |KEM                             |Nsecret|Nenc|Npk |Nsk|Auth|Reference|
@@ -426,14 +426,14 @@ Table of Contents
    |0x0050|QSF-                            |32     |1153|1249|32 |no  |RFCXXXX  |
    |      |P256-MLKEM768-SHAKE256-SHA3256  |       |    |    |   |    |         |
    +------+--------------------------------+-------+----+----+---+----+---------+
-   |0x0051|QSF-                            |32     |1221|1317|32 |no  |RFCXXXX  |
-   |      |X25519-MLKEM768-SHAKE256-SHA3256|       |    |    |   |    |         |
-   +------+--------------------------------+-------+----+----+---+----+---------+
-   |0x0052|QSF-                            |32     |1120|1600|32 |no  |RFCXXXX  |
+   |0x0051|QSF-                            |32     |1120|1600|32 |no  |RFCXXXX  |
    |      |P384-MLKEM1024-SHAKE256-SHA3256 |       |    |    |   |    |         |
    +------+--------------------------------+-------+----+----+---+----+---------+
+   |0x647a|QSF-                            |32     |1120|1216|32 |no  |RFCXXXX  |
+   |      |X25519-MLKEM768-SHAKE256-SHA3256|       |    |    |   |    |         |
+   +------+--------------------------------+-------+----+----+---+----+---------+
 
-            Table 3: New PQ/T for the HPKE KEM Identifiers table
+      Table 3: PQ/T hybrid entries for the HPKE KEM Identifiers table
 
 8.3.  SHA-3 KDF Entries
 
@@ -476,11 +476,11 @@ Table of Contents
               hpke-01>.
 
    [I-D.irtf-cfrg-hybrid-kems]
-              Connolly, D., "Hybrid PQ/T Key Encapsulation Mechanisms",
-              Work in Progress, Internet-Draft, draft-irtf-cfrg-hybrid-
-              kems-03, 25 February 2025,
+              Connolly, D., Barnes, R., and P. Grubbs, "Hybrid PQ/T Key
+              Encapsulation Mechanisms", Work in Progress, Internet-
+              Draft, draft-irtf-cfrg-hybrid-kems-05, 20 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              hybrid-kems-03>.
+              hybrid-kems-05>.
 
    [I-D.irtf-cfrg-kangarootwelve]
               Viguier, B., Wong, D., Van Assche, G., Dang, Q., and J.
@@ -513,9 +513,9 @@ Table of Contents
               Banerjee, A., Reddy.K, T., Schoinianakis, D., Hollebeek,
               T., and M. Ounsworth, "Post-Quantum Cryptography for
               Engineers", Work in Progress, Internet-Draft, draft-ietf-
-              pquip-pqc-engineers-12, 19 May 2025,
+              pquip-pqc-engineers-13, 1 July 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-pquip-
-              pqc-engineers-12>.
+              pqc-engineers-13>.
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
