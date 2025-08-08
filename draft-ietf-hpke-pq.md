@@ -34,7 +34,7 @@ normative:
   FIPS202: DOI.10.6028/NIST.FIPS.202
   FIPS203: DOI.10.6028/NIST.FIPS.203
   GENERIC: I-D.irtf-cfrg-hybrid-kems
-  CONCRETE: I-D.irtf-cfrg-hybrid-kems
+  CONCRETE: I-D.irtf-cfrg-concrete-hybrid-kems
   HPKE: I-D.ietf-hpke-hpke
 
 informative:
@@ -340,7 +340,7 @@ a sender to authenticate the message to the recipient without interaction.
 
 The KEMs defined in this document do not support `AuthEncap`/`AuthDecap` and
 cannot be used to migrate uses of HPKE that rely on this mode.
-PSK-authenticated HPKE ({{Section 5.1.2 of I-D.ietf-hpke-hpke}})
+PSK-authenticated HPKE ({{Section 5.1.2 of HPKE}})
 or digital signatures may be suitable alternatives.
 
 # IANA Considerations
