@@ -30,3 +30,12 @@ $ make
 Command line usage requires that you have the necessary software installed.  See
 [the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
 
+## Reference Implementation
+
+The `reference-implementation` directory contains reference implementations of
+the algorithms defined in this document.  For the PQ/T hybrids, it uses the
+reference implementation in [the repository for that
+specification](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/).
+Since these crates are not published, if you want to use the reference
+implementation, you will need to make your own clone of that repo and adjust the
+`path` in Cargo.toml to point to it.

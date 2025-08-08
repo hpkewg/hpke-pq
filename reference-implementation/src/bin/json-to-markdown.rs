@@ -3,28 +3,45 @@ use std::process;
 
 use hpke_ref::test_vectors::{TestVector, TestVectors};
 
-fn format_hex(data: &[u8], line_length: usize, label: &str) -> String {
+const MAX_LINE_LENGTH: usize = 70;
+
+fn format_hex(data: &[u8], label: &str) -> String {
     let hex_string = hex::encode(data);
-    if hex_string.len() <= line_length {
-        hex_string
-    } else {
-        let indent = " ".repeat(label.len());
-        hex_string
-            .chars()
-            .collect::<Vec<_>>()
-            .chunks(line_length)
-            .enumerate()
-            .map(|(i, chunk)| {
-                let line = chunk.iter().collect::<String>();
-                if i == 0 {
-                    line
-                } else {
-                    format!("{}{}", indent, line)
-                }
-            })
-            .collect::<Vec<_>>()
-            .join("\n")
+
+    // Check if the entire hex string fits on one line with the label
+    if label.len() + hex_string.len() <= MAX_LINE_LENGTH {
+        return hex_string;
     }
+
+    // Calculate how many hex characters can fit on the first line after the label
+    let first_line_chars = MAX_LINE_LENGTH - label.len();
+
+    // Calculate how many hex characters can fit on subsequent lines
+    let indent_length = label.len();
+    let subsequent_line_chars = MAX_LINE_LENGTH - indent_length;
+
+    let mut result = String::new();
+    let mut chars = hex_string.chars();
+
+    // First line - take as many characters as will fit after the label
+    let first_line: String = chars.by_ref().take(first_line_chars).collect();
+    result.push_str(&first_line);
+
+    // Subsequent lines - indent and take appropriate number of characters
+    let indent = " ".repeat(indent_length);
+    let remaining: String = chars.collect();
+
+    for chunk in remaining
+        .chars()
+        .collect::<Vec<_>>()
+        .chunks(subsequent_line_chars)
+    {
+        result.push('\n');
+        result.push_str(&indent);
+        result.push_str(&chunk.iter().collect::<String>());
+    }
+
+    result
 }
 
 fn kem_name(kem_id: u16) -> &'static str {
@@ -38,8 +55,8 @@ fn kem_name(kem_id: u16) -> &'static str {
         0x0041 => "ML-KEM-768",
         0x0042 => "ML-KEM-1024",
         0x0050 => "QSF-P256-MLKEM768",
-        0x0051 => "QSF-X25519-MLKEM768",
-        0x0052 => "QSF-P384-MLKEM1024",
+        0x0051 => "QSF-P384-MLKEM1024",
+        0x647a => "QSF-X25519-MLKEM768",
         _ => "Unknown KEM",
     }
 }
@@ -88,42 +105,42 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
     output.push_str(&format!("kem_id: {}\n", tv.kem_id));
     output.push_str(&format!("kdf_id: {}\n", tv.kdf_id));
     output.push_str(&format!("aead_id: {}\n", tv.aead_id));
-    output.push_str(&format!("info: {}\n", hex::encode(&tv.info)));
+    output.push_str(&format!("info: {}\n", format_hex(&tv.info, "info: ")));
 
     if !tv.ikm_r.is_empty() {
-        output.push_str(&format!("ikmR: {}\n", format_hex(&tv.ikm_r, 64, "ikmR: ")));
+        output.push_str(&format!("ikmR: {}\n", format_hex(&tv.ikm_r, "ikmR: ")));
     }
 
-    output.push_str(&format!("pkRm: {}\n", format_hex(&tv.pk_rm, 64, "pkRm: ")));
+    output.push_str(&format!("pkRm: {}\n", format_hex(&tv.pk_rm, "pkRm: ")));
 
     if !tv.sk_rm.is_empty() {
-        output.push_str(&format!("skRm: {}\n", format_hex(&tv.sk_rm, 64, "skRm: ")));
+        output.push_str(&format!("skRm: {}\n", format_hex(&tv.sk_rm, "skRm: ")));
     }
 
-    output.push_str(&format!("enc: {}\n", format_hex(&tv.enc, 64, "enc: ")));
+    output.push_str(&format!("enc: {}\n", format_hex(&tv.enc, "enc: ")));
     output.push_str(&format!(
         "shared_secret: {}\n",
-        format_hex(&tv.shared_secret, 64, "shared_secret: ")
+        format_hex(&tv.shared_secret, "shared_secret: ")
     ));
 
     // Skip key_schedule_context and secret for now as they're not in our test vectors
 
-    output.push_str(&format!("key: {}\n", format_hex(&tv.key, 64, "key: ")));
+    output.push_str(&format!("key: {}\n", format_hex(&tv.key, "key: ")));
     output.push_str(&format!(
         "base_nonce: {}\n",
-        format_hex(&tv.base_nonce, 64, "base_nonce: ")
+        format_hex(&tv.base_nonce, "base_nonce: ")
     ));
     output.push_str(&format!(
         "exporter_secret: {}\n",
-        format_hex(&tv.exporter_secret, 64, "exporter_secret: ")
+        format_hex(&tv.exporter_secret, "exporter_secret: ")
     ));
 
     // PSK fields if present
     if let Some(psk) = &tv.psk {
-        output.push_str(&format!("psk: {}\n", format_hex(psk, 64, "psk: ")));
+        output.push_str(&format!("psk: {}\n", format_hex(psk, "psk: ")));
     }
     if let Some(psk_id) = &tv.psk_id {
-        output.push_str(&format!("psk_id: {}\n", format_hex(psk_id, 64, "psk_id: ")));
+        output.push_str(&format!("psk_id: {}\n", format_hex(psk_id, "psk_id: ")));
     }
 
     output.push_str("~~~\n\n");
@@ -138,10 +155,13 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
                 output.push_str("\n");
             }
             output.push_str(&format!("sequence number: {}\n", i));
-            output.push_str(&format!("pt: {}\n", hex::encode(&enc_vec.pt)));
-            output.push_str(&format!("aad: {}\n", hex::encode(&enc_vec.aad)));
-            output.push_str(&format!("nonce: {}\n", hex::encode(&enc_vec.nonce)));
-            output.push_str(&format!("ct: {}\n", format_hex(&enc_vec.ct, 64, "ct: ")));
+            output.push_str(&format!("pt: {}\n", format_hex(&enc_vec.pt, "pt: ")));
+            output.push_str(&format!("aad: {}\n", format_hex(&enc_vec.aad, "aad: ")));
+            output.push_str(&format!(
+                "nonce: {}\n",
+                format_hex(&enc_vec.nonce, "nonce: ")
+            ));
+            output.push_str(&format!("ct: {}\n", format_hex(&enc_vec.ct, "ct: ")));
         }
 
         output.push_str("~~~\n\n");
@@ -163,7 +183,7 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
             output.push_str(&format!("L: {}\n", exp_vec.length));
             output.push_str(&format!(
                 "exported_value: {}\n",
-                format_hex(&exp_vec.exported_value, 64, "exported_value: ")
+                format_hex(&exp_vec.exported_value, "exported_value: ")
             ));
         }
 
