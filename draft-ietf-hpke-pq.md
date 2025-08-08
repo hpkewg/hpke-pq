@@ -33,11 +33,12 @@ normative:
   FIPS186: DOI.10.6028/NIST.FIPS.186-5
   FIPS202: DOI.10.6028/NIST.FIPS.202
   FIPS203: DOI.10.6028/NIST.FIPS.203
-  CONCRETE:
-    title: "TODO - CFRG Concrete hybrid KEMs"
-    date: Jun, 2001
+  GENERIC: I-D.irtf-cfrg-hybrid-kems
+  CONCRETE: I-D.irtf-cfrg-concrete-hybrid-kems
+  HPKE: I-D.ietf-hpke-hpke
 
 informative:
+  PQCE: I-D.ietf-pquip-pqc-engineers
   CDM23:
     title: "Keeping Up with the KEMs: Stronger Security Notions for KEMs and automated analysis of KEM-based protocols"
     target: https://eprint.iacr.org/2023/1933.pdf
@@ -89,7 +90,7 @@ decryption.  This is the so-called "harvest now, decrypt later" attack.
 
 It is thus a high priority for many organizations right now to migrate key
 exchange technologies to use "post-quantum" (PQ) algorithms, which are resistant
-to attack by a quantum computer {{?I-D.ietf-pquip-pqc-engineers}}.  Since these PQ
+to attack by a quantum computer {{PQCE}}.  Since these PQ
 algorithms are relatively new, there is also interest in hybrid constructions
 combining PQ algorithms with traditional KEMs, so that if the PQ algorithm
 fails, then the traditional algorithm will still provide security, at least
@@ -98,9 +99,9 @@ against classical attacks.
 Hybrid Public Key Encryption (HPKE) is a widely-used public key encryption
 scheme based on combining a Key Encapsulation Mechanism (KEM), a Key Derivation
 Function (KDF), and an Authenticated Encryption with Associated Data (AEAD)
-scheme {{!I-D.barnes-hpke-hpke}}.  It is the foundation of the Messaging Layer
+scheme {{HPKE}}.  It is the foundation of the Messaging Layer
 Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
-ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?I-D.ietf-tls-esni}}.
+ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?TLS-ECH=I-D.ietf-tls-esni}}.
 
 This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
 allows HPKE to provide post-quantum security, as discussed in
@@ -133,7 +134,7 @@ using the KEM algorithms in this document to rely solely on SHA-3.
 {::boilerplate bcp14-tagged}
 
 We generally use the terminology defined in the HPKE specification
-{{I-D.barnes-hpke-hpke}}.
+{{HPKE}}.
 
 There are two meanings of "hybrid" in this document.  In the context of "hybrid
 public key encryption", it refers to the combination of an asymmetric KEM
@@ -232,9 +233,9 @@ QSF-P384-MLKEM1024-SHAKE256-SHA3256:
 : P-384 + ML-KEM-1024
 {: spacing="compact"}
 
-These KEMs satisfy the KEM interface defined in {{!I-D.irtf-cfrg-hybrid-kems}}.
-This interface is mostly the same as the KEM interface in {{Section 4 of
-!I-D.ietf-hpke-hpke}}, with the following mapping:
+These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface is
+mostly the same as the KEM interface in {{Section 4 of HPKE}}, with the
+following mapping:
 
 * The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
   are identical.
@@ -286,7 +287,7 @@ document. ]]
 
 # Selection of AEAD algorithms
 
-As discussed in {{Section 2.1 of I-D.ietf-pquip-pqc-engineers}}, the advent of
+As discussed in {{Section 2.1 of PQCE}}, the advent of
 quantum computers does not necessarily require changes in the AEAD algorithms
 used in HPKE.  However, some compliance regimes call for the use of AEAD
 algorithms with longer key lengths, for example, the AES-256-GCM or
@@ -300,7 +301,7 @@ that HPKE is IND-CCA2 secure against a quantum attacker if it uses a KEM that
 provides IND-CCA security against a quantum attacker, i.e., a PQ KEM.  The KEM
 algorithms defined in this document provide this level of security.  ML-KEM
 itself is IND-CCA secure, and the IND-CCA security of the hybrid constructions
-used in this document is established in {{!I-D.irtf-cfrg-hybrid-kems}}.
+used in this document is established in {{CONCRETE}}.
 
 Another security property that is salient in some use cases is "key binding".
 In {{CDM23}}, these notions are referred to with the shorthand X-BIND-P-Q.
@@ -320,8 +321,7 @@ it, even if the decapsulation key is leaked to an attacker after the encryption
 has been done.
 
 DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
-KEMs also provide these properties, as discussed in
-{{I-D.irtf-cfrg-hybrid-kems}}.
+KEMs also provide these properties, as discussed in {{GENERIC}}.
 
 ## PQ Hybrid vs. Pure PQ
 
@@ -330,8 +330,18 @@ Assuming that ML-KEM is secure, either the PQ/T hybrid KEMs defined in
 quantum attacker.  Hybrid KEMs can be used to provide security against a
 non-quantum attacker in the event of failures with regard to the PQ algorithm,
 including both implementation flaws as well as new cryptanalysis. See
-{{?I-D.irtf-cfrg-hybrid-kems}} for further analysis of hybrid security
-properties.
+{{GENERIC}} for further analysis of hybrid security properties.
+
+## Asymmetric-key-authenticated modes of RFC9180
+
+In the {{?RFC9180}} version of HPKE, KEMs could optionally define the
+additional functions `AuthEncap` and `AuthDecap`. These functions allowed
+a sender to authenticate the message to the recipient without interaction.
+
+The KEMs defined in this document do not support `AuthEncap`/`AuthDecap` and
+cannot be used to migrate uses of HPKE that rely on this mode.
+PSK-authenticated HPKE ({{Section 5.1.2 of HPKE}})
+or digital signatures may be suitable alternatives.
 
 # IANA Considerations
 
@@ -361,15 +371,15 @@ document.
 
 ## PQ/T Hybrid KEM Entries
 
-IANA is requested to add the following entries to the HPKE KEM Identifiers registry:
+IANA is requested to replace the entry for the value `0x647a` and add two
+entries for values `0x0050` and `0x0051` with the following values:
 
 | Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
 |:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
 | 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
-| 0x0052 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
-{: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
-
+| 0x0051 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+| 0x647a | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1120 | 1216 | 32  | no   | RFCXXXX   |
+{: #pqt-iana-table title="PQ/T hybrid entries for the HPKE KEM Identifiers table" }
 
 ## SHA-3 KDF Entries
 
