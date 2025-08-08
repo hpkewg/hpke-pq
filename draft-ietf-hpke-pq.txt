@@ -84,6 +84,7 @@ Table of Contents
    6.  Selection of AEAD algorithms
    7.  Security Considerations
      7.1.  PQ Hybrid vs. Pure PQ
+     7.2.  Asymmetric-key-authenticated modes of RFC9180
    8.  IANA Considerations
      8.1.  Updated ML-KEM KEM Entries
      8.2.  PQ/T Hybrid KEM Entries
@@ -381,6 +382,18 @@ Table of Contents
    [I-D.irtf-cfrg-hybrid-kems] for further analysis of hybrid security
    properties.
 
+7.2.  Asymmetric-key-authenticated modes of RFC9180
+
+   In the [RFC9180] version of HPKE, KEMs could optionally define the
+   additional functions AuthEncap and AuthDecap.  These functions
+   allowed a sender to authenticate the message to the recipient without
+   interaction.
+
+   The KEMs defined in this document do not support AuthEncap/AuthDecap
+   and cannot be used to migrate uses of HPKE that rely on this mode.
+   PSK-authenticated HPKE (Section 5.1.2 of [I-D.ietf-hpke-hpke]) or
+   digital signatures may be suitable alternatives.
+
 8.  IANA Considerations
 
    This section requests that IANA perform three actions:
@@ -523,6 +536,10 @@ Table of Contents
               draft-ietf-tls-esni-25, 14 June 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               esni-25>.
+
+   [RFC9180]  Barnes, R., Bhargavan, K., Lipp, B., and C. Wood, "Hybrid
+              Public Key Encryption", RFC 9180, DOI 10.17487/RFC9180,
+              February 2022, <https://www.rfc-editor.org/rfc/rfc9180>.
 
    [RFC9420]  Barnes, R., Beurdouche, B., Robert, R., Millican, J.,
               Omara, E., and K. Cohn-Gordon, "The Messaging Layer
