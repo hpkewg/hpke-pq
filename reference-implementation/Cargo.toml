@@ -39,3 +39,7 @@ path = "src/bin/verify.rs"
 [[bin]]
 name = "json-to-markdown"
 path = "src/bin/json-to-markdown.rs"
+
+[[bin]]
+name = "print-constants"
+path = "src/bin/print-constants.rs"

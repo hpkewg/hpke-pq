@@ -55,8 +55,8 @@ fn kem_name(kem_id: u16) -> &'static str {
         0x0041 => "ML-KEM-768",
         0x0042 => "ML-KEM-1024",
         0x0050 => "QSF-P256-MLKEM768",
-        0x0051 => "QSF-X25519-MLKEM768",
-        0x0052 => "QSF-P384-MLKEM1024",
+        0x0051 => "QSF-P384-MLKEM1024",
+        0x647a => "QSF-X25519-MLKEM768",
         _ => "Unknown KEM",
     }
 }
