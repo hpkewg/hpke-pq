@@ -361,15 +361,15 @@ document.
 
 ## PQ/T Hybrid KEM Entries
 
-IANA is requested to add the following entries to the HPKE KEM Identifiers registry:
+IANA is requested to replace the entry for the value `0x647a` and add two
+entries for values `0x0050` and `0x0051` with the following values:
 
 | Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
 |:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
 | 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1221 | 1317 | 32  | no   | RFCXXXX   |
-| 0x0052 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
-{: #pqt-iana-table title="New PQ/T for the HPKE KEM Identifiers table" }
-
+| 0x0051 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+| 0x647a | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1120 | 1216 | 32  | no   | RFCXXXX   |
+{: #pqt-iana-table title="PQ/T hybrid entries for the HPKE KEM Identifiers table" }
 
 ## SHA-3 KDF Entries
 
