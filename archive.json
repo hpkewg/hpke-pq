@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-27T01:05:39.146237+00:00",
+  "timestamp": "2025-08-10T01:04:46.434972+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -374,6 +374,37 @@
       "updatedAt": "2025-07-11T14:18:37Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 30,
+      "id": "I_kwDOOXfHTc7E1TXc",
+      "title": "Inflexibility of ikm length and Nsk",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/30",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
+      "createdAt": "2025-08-08T01:07:30Z",
+      "updatedAt": "2025-08-08T07:54:06Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I want to point out that truncation is not an option.  `ikm` might have sufficient entropy, but it doesn't have to be compressed (that's what the extract call does).",
+          "createdAt": "2025-08-08T01:49:28Z",
+          "updatedAt": "2025-08-08T01:49:28Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "For the pure ML-KEM variants, the `ikm` isn't processed any further and as written needs to be 64 bytes, as that is what ML-KEM expects as a seed (even though it only needs 32 bytes of actual entropy in there).",
+          "createdAt": "2025-08-08T07:54:06Z",
+          "updatedAt": "2025-08-08T07:54:06Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -1049,24 +1080,26 @@
       "id": "PR_kwDOOXfHTc6cyGoo",
       "title": "Fix some references",
       "url": "https://github.com/hpkewg/hpke-pq/pull/20",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "draft-barnes-hpke-hpke is easy.\r\n\r\nThe \\[CONCRETE] reference isn't so obvious.  I think that the intent was to reference the hybrid-kems draft, from context.",
       "createdAt": "2025-06-30T23:05:36Z",
-      "updatedAt": "2025-07-10T23:12:17Z",
+      "updatedAt": "2025-08-08T01:05:28Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "barnes",
       "headRefOid": "c20e0412624ff677bdee2dc11d74e5a4da2f07c0",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-08-08T01:05:28Z",
+      "mergedAt": "2025-08-08T01:05:28Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "8d62b4da7c6553fd070009cf8770625e592825d2"
+      },
       "comments": [
         {
           "author": "bifurcation",
@@ -1168,24 +1201,26 @@
       "id": "PR_kwDOOXfHTc6c59pe",
       "title": "Auth modes of RFC9180 and limitations of KEMs",
       "url": "https://github.com/hpkewg/hpke-pq/pull/21",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thomwiggers",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Security considerations seemed to make sense, but this section could also go into the introduction.\r\n\r\nI did not get too technical (\"DH is a NIKE, KEMs are not NIKE\"), but if we want that is an option.\r\n\r\nIf there's a better way to link to a paragraph in another draft, that'd be a great improvement over my hard-coded section number.",
       "createdAt": "2025-07-01T13:14:52Z",
-      "updatedAt": "2025-07-11T07:21:03Z",
+      "updatedAt": "2025-08-08T01:05:16Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "thomwiggers/hpke-pq",
       "headRefName": "no-auth-mode",
-      "headRefOid": "7e2ca630f12f55ad71d2a3c5f2f725f34a2131aa",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "8159dec36557aabf12088ad48b0b40df73be0c41",
+      "closedAt": "2025-08-08T01:05:16Z",
+      "mergedAt": "2025-08-08T01:05:16Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "751ace5857d9244a078e0f38f57a67c21475cc7d"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1347,6 +1382,19 @@
               "updatedAt": "2025-07-11T07:21:03Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc64ugvN",
+          "commit": {
+            "abbreviatedOid": "8159dec"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-08-08T01:04:20Z",
+          "updatedAt": "2025-08-08T01:04:20Z",
+          "comments": []
         }
       ]
     },
@@ -1389,24 +1437,26 @@
       "id": "PR_kwDOOXfHTc6eYyZS",
       "title": "Re-use the existing X-Wing code point",
       "url": "https://github.com/hpkewg/hpke-pq/pull/27",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "https://mailarchive.ietf.org/arch/msg/hpke/r4_lx0mtSy6wZjT62ldxYUzqQcU/",
       "createdAt": "2025-07-10T22:15:08Z",
-      "updatedAt": "2025-07-24T15:31:34Z",
+      "updatedAt": "2025-08-08T01:03:32Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "xwing-iana",
       "headRefOid": "d34af5d13a87c13afb163ba81f7af19c23b6d85f",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-08-08T01:03:32Z",
+      "mergedAt": "2025-08-08T01:03:32Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "705a369ff4ebf007ea23a2810a006c0ceee2743d"
+      },
       "comments": [
         {
           "author": "dconnolly",
@@ -1633,13 +1683,13 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-07-24T13:32:57Z",
+      "updatedAt": "2025-08-09T06:22:56Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
-      "baseRefOid": "e93b03f0e767a7e6b5686c188f5883cadae74136",
+      "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "cf6a4ba716da8985cb0acd6dd5c7605f5fad6602",
+      "headRefOid": "165799ed6f1d29aca6f7ddef90b2b7f168e1e482",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1648,9 +1698,30 @@
         {
           "author": "ilaril",
           "authorAssociation": "NONE",
-          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* X-Wing test fails due to wrong private key length.\r\n  * Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.\r\n  * Both ikmr and skRm in test vectors do not look sane.\r\n  * ~~I have not debugged this further to discover exactly where things go wrong.~~\r\n* ~~All (Turbo)Shake256 tests fail with wrong key error.~~\r\n  * ~~(Turbo)Shake128 looks fine.~~\r\n  * ~~exporter_secret in test vectors does not look sane.~~\r\n  * ~~Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.~~\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n\r\nEdit:\r\n* The ML-KEM failures seem to come from cfrg/draft-irtf-cfrg-concrete-hybrid-kems ML-KEM code using dk instead of ikm as the private key  \u2014 this would explain why hacking the code to use ikmr worked.\r\n* And the X-Wing failure seems to come from cfrg/draft-irtf-cfrg-hybrid-kems reference-implementation/src/qsf.rs incorrectly setting the seed length \u2014 this would explain why hacking the code to use ikmr would still fail \u2014 and using dk_hybrid instead of seed as the private key.\r\n* Tested that the \"Fix Nh for SHAKE256\" commit fixes the SHAKE256 failures.",
+          "body": "Testing against my own implementation (with more extensive set of algorithms), I get the following failures:\r\n\r\n* All ML-KEM tests fail due to wrong private key length.\r\n  * If I hack tests to use ikmr as the private key, tests \u2014 including private key / public key consistency check \u2014 pass.\r\n  * skRm in test vectors does not look sane.\r\n* ~~X-Wing test fails due to wrong private key length.~~\r\n  * ~~Hacking code to use ikmr still gives wrong private key length error \u2014 with different length value.~~\r\n  * ~~Both ikmr and skRm in test vectors do not look sane.~~\r\n  * ~~I have not debugged this further to discover exactly where things go wrong.~~\r\n* ~~All (Turbo)Shake256 tests fail with wrong key error.~~\r\n  * ~~(Turbo)Shake128 looks fine.~~\r\n  * ~~exporter_secret in test vectors does not look sane.~~\r\n  * ~~Presumably because these incorrectly set N_H to 32 instead of 64 \u2014 I have not tested if this would fix the failures.~~\r\n \r\n(The two other hybrids can not be tested because I do not have an implementation of those.)\r\n\r\nEdit:\r\n* The ML-KEM failures seem to come from cfrg/draft-irtf-cfrg-concrete-hybrid-kems ML-KEM code using dk instead of ikm as the private key  \u2014 this would explain why hacking the code to use ikmr worked.\r\n* ~~And the X-Wing failure seems to come from cfrg/draft-irtf-cfrg-hybrid-kems reference-implementation/src/qsf.rs incorrectly setting the seed length \u2014 this would explain why hacking the code to use ikmr would still fail \u2014 and using dk_hybrid instead of seed as the private key.~~\r\n* Tested that the \"Fix Nh for SHAKE256\" commit fixes the SHAKE256 failures.\r\n* All the code got merged into cfrg/draft-irtf-cfrg-concrete-hybrid-kems, and X-Wing tests seem to pass now.",
           "createdAt": "2025-07-12T13:59:32Z",
-          "updatedAt": "2025-07-21T19:19:18Z"
+          "updatedAt": "2025-08-07T06:32:35Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@ilaril @bwesterb - Could you give the latest test vectors a try?",
+          "createdAt": "2025-08-08T01:49:57Z",
+          "updatedAt": "2025-08-08T01:49:57Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "> @ilaril @bwesterb - Could you give the latest test vectors a try?\r\n\r\nI'm out today. Will give them a spin Monday.",
+          "createdAt": "2025-08-08T07:49:09Z",
+          "updatedAt": "2025-08-08T07:49:09Z"
+        },
+        {
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "body": "Looks good. Running tests, KEM 0x50/0x51 tests are skipped (due to missing implementation), and all remaining ones pass.",
+          "createdAt": "2025-08-09T06:22:56Z",
+          "updatedAt": "2025-08-09T06:22:56Z"
         }
       ],
       "reviews": [
@@ -1666,8 +1737,116 @@
           "createdAt": "2025-07-10T23:05:58Z",
           "updatedAt": "2025-07-10T23:05:58Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc64wN4x",
+          "commit": {
+            "abbreviatedOid": "7667085"
+          },
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-08T06:43:41Z",
+          "updatedAt": "2025-08-08T06:43:42Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "The source code file for this seems to be missing?",
+              "createdAt": "2025-08-08T06:43:42Z",
+              "updatedAt": "2025-08-09T06:15:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc64wQj4",
+          "commit": {
+            "abbreviatedOid": "7667085"
+          },
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-08T06:49:02Z",
+          "updatedAt": "2025-08-08T06:49:02Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "This still seems far too long, should be 64 bytes?",
+              "createdAt": "2025-08-08T06:49:02Z",
+              "updatedAt": "2025-08-08T06:49:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc645uxy",
+          "commit": {
+            "abbreviatedOid": "7667085"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-08T21:02:42Z",
+          "updatedAt": "2025-08-08T21:02:42Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Yep, needed to update the upstream ML-KEM wrapper to [use the seed format](https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/17).  Latest test vectors show `ikmR == skmR`.",
+              "createdAt": "2025-08-08T21:02:42Z",
+              "updatedAt": "2025-08-08T21:02:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc645u6J",
+          "commit": {
+            "abbreviatedOid": "7667085"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-08T21:03:04Z",
+          "updatedAt": "2025-08-08T21:03:04Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "Sorry, spurious inclusion of a test binary.  Should be removed now.",
+              "createdAt": "2025-08-08T21:03:04Z",
+              "updatedAt": "2025-08-08T21:03:04Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOOXfHTc6irlQo",
+      "title": "Correct reference to concrete hybrid KEM document",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/31",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes errors in #20 ",
+      "createdAt": "2025-08-08T01:08:48Z",
+      "updatedAt": "2025-08-08T01:08:55Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "8d62b4da7c6553fd070009cf8770625e592825d2",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "concrete",
+      "headRefOid": "decb93cb135e9b0b9b3718417b377a8479ec4546",
+      "closedAt": "2025-08-08T01:08:55Z",
+      "mergedAt": "2025-08-08T01:08:55Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "3a5606f667df551ff641fc1ac10a604aaa97b11e"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
