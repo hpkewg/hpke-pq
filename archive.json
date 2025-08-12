@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-10T01:04:46.434972+00:00",
+  "timestamp": "2025-08-12T00:56:20.456309+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1683,7 +1683,7 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-08-09T06:22:56Z",
+      "updatedAt": "2025-08-11T12:20:33Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
@@ -1722,6 +1722,13 @@
           "body": "Looks good. Running tests, KEM 0x50/0x51 tests are skipped (due to missing implementation), and all remaining ones pass.",
           "createdAt": "2025-08-09T06:22:56Z",
           "updatedAt": "2025-08-09T06:22:56Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "QSF with P-256 and X25519 pass for me, but the first two tests (pure ML-KEM) regressed. Trying to figure out why.\r\n\r\n<ins>Update</ins>:\r\n\r\n- public and private key don't match for me.",
+          "createdAt": "2025-08-11T12:15:05Z",
+          "updatedAt": "2025-08-11T12:20:33Z"
         }
       ],
       "reviews": [
