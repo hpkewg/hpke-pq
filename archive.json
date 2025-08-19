@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-12T00:56:20.456309+00:00",
+  "timestamp": "2025-08-19T00:55:30.891313+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -387,7 +387,7 @@
       "labels": [],
       "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
       "createdAt": "2025-08-08T01:07:30Z",
-      "updatedAt": "2025-08-08T07:54:06Z",
+      "updatedAt": "2025-08-18T15:44:02Z",
       "closedAt": null,
       "comments": [
         {
@@ -403,6 +403,13 @@
           "body": "For the pure ML-KEM variants, the `ikm` isn't processed any further and as written needs to be 64 bytes, as that is what ML-KEM expects as a seed (even though it only needs 32 bytes of actual entropy in there).",
           "createdAt": "2025-08-08T07:54:06Z",
           "updatedAt": "2025-08-08T07:54:06Z"
+        },
+        {
+          "author": "FiloSottile",
+          "authorAssociation": "NONE",
+          "body": "Relatedly, the last remaining divergence between draft-connolly-cfrg-xwing-kem and QSF in draft-ietf-hpke-pq is that the former defines HPKE's DeriveKeyPair as `GenerateKeyPairDerand(SHAKE256(ikm, 32*8))`, and the latter defines it (via draft-irtf-cfrg-hybrid-kems's DeriveKeyPair) as `expandDecapsulationKey(seed)` with no additional SHAKE256 step.",
+          "createdAt": "2025-08-18T15:44:02Z",
+          "updatedAt": "2025-08-18T15:44:02Z"
         }
       ]
     }
@@ -1852,6 +1859,32 @@
       "mergeCommit": {
         "oid": "3a5606f667df551ff641fc1ac10a604aaa97b11e"
       },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOOXfHTc6kHdTK",
+      "title": "Include encapsulation randomness in test vectors",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/32",
+      "state": "OPEN",
+      "author": "FiloSottile",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "It wasn't obvious what to use for EncapDerand of DHKEM.\r\n\r\nRFC 9180 uses rejection sampling for DeriveKeyPair, but includes a scalar in the test vectors (which is not really an EncapDerand input).\r\n\r\ndraft-irtf-cfrg-hybrid-kems defines the EncapsDerand of a nominal group to be reduction based.\r\n\r\nSince DHKEM already has a DeriveKeyPair, I went for that.\r\n\r\nFixes #29",
+      "createdAt": "2025-08-18T13:56:03Z",
+      "updatedAt": "2025-08-18T13:56:03Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "ref-impl-fix",
+      "baseRefOid": "165799ed6f1d29aca6f7ddef90b2b7f168e1e482",
+      "headRepository": "FiloSottile/hpke-pq",
+      "headRefName": "ref-impl-fix",
+      "headRefOid": "19adaeb89ccaf4e2c29850dfc7237415700401a0",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
       "comments": [],
       "reviews": []
     }
