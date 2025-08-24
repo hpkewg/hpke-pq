@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-19T00:55:30.891313+00:00",
+  "timestamp": "2025-08-24T00:59:32.542845+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1690,7 +1690,7 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-08-11T12:20:33Z",
+      "updatedAt": "2025-08-23T07:22:05Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
@@ -1736,6 +1736,13 @@
           "body": "QSF with P-256 and X25519 pass for me, but the first two tests (pure ML-KEM) regressed. Trying to figure out why.\r\n\r\n<ins>Update</ins>:\r\n\r\n- public and private key don't match for me.",
           "createdAt": "2025-08-11T12:15:05Z",
           "updatedAt": "2025-08-11T12:20:33Z"
+        },
+        {
+          "author": "ilaril",
+          "authorAssociation": "NONE",
+          "body": "Now I wrote QSF with P-256/P-384 (KEM 0x50/0x51) implementation that passes smoke test, but the test vectors do not pass.\r\n\r\nSeems like draft-irtf-cfrg-concrete-hybrid-kems reference code implements RandomScalar for P-256/P-384 incorrectly, ~~but I do not know if this is the issue, or if there are also other things going wrong~~.\r\n\r\nEdit: If I modify draft-irtf-cfrg-concrete-hybrid-kems reference code to use the correct moduli, the generated test vectors do pass for me.",
+          "createdAt": "2025-08-23T07:11:33Z",
+          "updatedAt": "2025-08-23T07:22:05Z"
         }
       ],
       "reviews": [
