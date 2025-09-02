@@ -35,6 +35,8 @@ pub struct TestVector {
     pub aead_id: u16,
     #[serde(with = "hex::serde")]
     pub info: Vec<u8>,
+    #[serde(rename = "ikmE", with = "hex::serde")]
+    pub ikm_e: Vec<u8>,
     #[serde(rename = "ikmR", with = "hex::serde")]
     pub ikm_r: Vec<u8>,
     #[serde(rename = "skRm", with = "hex::serde")]
@@ -45,6 +47,8 @@ pub struct TestVector {
     pub enc: Vec<u8>,
     #[serde(with = "hex::serde")]
     pub shared_secret: Vec<u8>,
+    #[serde(with = "hex::serde")]
+    pub suite_id: Vec<u8>,
     #[serde(with = "hex::serde")]
     pub key: Vec<u8>,
     #[serde(with = "hex::serde")]
@@ -211,6 +215,8 @@ impl TestVector {
         H: Kdf,
         A: Aead,
     {
+        use rand::RngCore;
+
         // Fixed test values
         let info = b"4f6465206f6e2061204772656369616e2055726e";
         let pt = b"4265617574792069732074727574682c20747275746820626561757479";
@@ -220,7 +226,6 @@ impl TestVector {
         // Generate random seed for recipient key pair
         let mut rng = rand::rng();
         let ikm_r = {
-            use rand::RngCore;
             // Use the KEM's seed size
             let mut seed = vec![0u8; K::N_SEED];
             rng.fill_bytes(&mut seed);
@@ -231,7 +236,9 @@ impl TestVector {
         let (sk_r, pk_r) = K::derive_key_pair(&ikm_r);
 
         // Perform encapsulation
-        let (shared_secret, enc) = K::encap(&mut rng, &pk_r);
+        let mut ikm_e = vec![0u8; K::N_RANDOM];
+        rng.fill_bytes(&mut ikm_e);
+        let (shared_secret, enc) = K::encap_derand(&pk_r, &ikm_e);
 
         // Create context
         let suite_id = Instance::<K, H, A>::suite_id();
@@ -278,11 +285,13 @@ impl TestVector {
             kdf_id: u16::from_be_bytes(H::ID),
             aead_id: u16::from_be_bytes(A::ID),
             info: info.to_vec(),
+            ikm_e,
             ikm_r: ikm_r.clone(),
             sk_rm: K::serialize_private_key(&sk_r),
             pk_rm: K::serialize_public_key(&pk_r),
             enc,
             shared_secret,
+            suite_id: suite_id.to_vec(),
             key,
             base_nonce,
             exporter_secret,

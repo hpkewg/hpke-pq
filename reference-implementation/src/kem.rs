@@ -9,6 +9,7 @@ pub trait Kem {
     const N_PK: usize;
     const N_SK: usize;
     const N_SEED: usize;
+    const N_RANDOM: usize;
 
     type EncapsulationKey;
     type DecapsulationKey;
@@ -23,6 +24,7 @@ pub trait Kem {
     fn deserialize_private_key(skXm: &[u8]) -> Self::DecapsulationKey;
 
     fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>);
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>);
     fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8>;
 }
 
@@ -30,7 +32,7 @@ pub struct KemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
 impl<K, const ID: u16> Kem for KemWithId<K, ID>
 where
-    K: concrete_hybrid_kem::Kem,
+    K: concrete_hybrid_kem::Kem + concrete_hybrid_kem::EncapsDerand,
 {
     const ID: [u8; 2] = ID.to_be_bytes();
     const N_SECRET: usize = K::SHARED_SECRET_LENGTH;
@@ -38,6 +40,7 @@ where
     const N_PK: usize = K::ENCAPSULATION_KEY_LENGTH;
     const N_SK: usize = K::DECAPSULATION_KEY_LENGTH;
     const N_SEED: usize = K::SEED_LENGTH;
+    const N_RANDOM: usize = K::RANDOMNESS_LENGTH;
 
     type EncapsulationKey = <K as concrete_hybrid_kem::Kem>::EncapsulationKey;
     type DecapsulationKey = <K as concrete_hybrid_kem::Kem>::DecapsulationKey;
@@ -78,6 +81,12 @@ where
         (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
     }
 
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
+        use concrete_hybrid_kem::AsBytes;
+        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
+        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    }
+
     fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
         use concrete_hybrid_kem::AsBytes;
         let enc = K::Ciphertext::from(enc);
@@ -92,7 +101,7 @@ pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
-    K: concrete_hybrid_kem::Kem,
+    K: concrete_hybrid_kem::Kem + concrete_hybrid_kem::EncapsDerand,
 {
     const ID: [u8; 2] = ID.to_be_bytes();
     const N_SECRET: usize = K::SHARED_SECRET_LENGTH;
@@ -100,6 +109,7 @@ where
     const N_PK: usize = K::ENCAPSULATION_KEY_LENGTH;
     const N_SK: usize = K::SEED_LENGTH; // Use seed length for ML-KEM per spec
     const N_SEED: usize = K::SEED_LENGTH;
+    const N_RANDOM: usize = K::RANDOMNESS_LENGTH;
 
     type EncapsulationKey = <K as concrete_hybrid_kem::Kem>::EncapsulationKey;
     type DecapsulationKey = <K as concrete_hybrid_kem::Kem>::DecapsulationKey;
@@ -137,6 +147,12 @@ where
     fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>) {
         use concrete_hybrid_kem::AsBytes;
         let (ct, ss) = <K as concrete_hybrid_kem::Kem>::encaps(pkR, rng).unwrap();
+        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    }
+
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
+        use concrete_hybrid_kem::AsBytes;
+        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
         (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
     }
 
@@ -513,6 +529,7 @@ where
     const N_PK: usize = C::POINT_SIZE;
     const N_SK: usize = C::SCALAR_SIZE;
     const N_SEED: usize = C::SCALAR_SIZE;
+    const N_RANDOM: usize = C::SCALAR_SIZE;
 
     type EncapsulationKey = C::Point;
     type DecapsulationKey = C::Scalar;
@@ -547,6 +564,20 @@ where
         use crate::concat;
 
         let (skE, pkE) = Self::generate_key_pair(rng);
+        let dh = C::dh(&skE, pkR);
+        let enc = Self::serialize_public_key(&pkE);
+
+        let pkRm = Self::serialize_public_key(pkR);
+        let kem_context = concat(&[&enc, &pkRm]);
+
+        let shared_secret = K::extract_and_expand(C::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
+        (shared_secret, enc)
+    }
+
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
+        use crate::concat;
+
+        let (skE, pkE) = Self::derive_key_pair(randomness);
         let dh = C::dh(&skE, pkR);
         let enc = Self::serialize_public_key(&pkE);
 
