@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-24T00:59:32.542845+00:00",
+  "timestamp": "2025-09-02T00:52:55.267888+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1690,7 +1690,7 @@
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-08-23T07:22:05Z",
+      "updatedAt": "2025-08-31T18:20:21Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
@@ -1743,6 +1743,13 @@
           "body": "Now I wrote QSF with P-256/P-384 (KEM 0x50/0x51) implementation that passes smoke test, but the test vectors do not pass.\r\n\r\nSeems like draft-irtf-cfrg-concrete-hybrid-kems reference code implements RandomScalar for P-256/P-384 incorrectly, ~~but I do not know if this is the issue, or if there are also other things going wrong~~.\r\n\r\nEdit: If I modify draft-irtf-cfrg-concrete-hybrid-kems reference code to use the correct moduli, the generated test vectors do pass for me.",
           "createdAt": "2025-08-23T07:11:33Z",
           "updatedAt": "2025-08-23T07:22:05Z"
+        },
+        {
+          "author": "FiloSottile",
+          "authorAssociation": "NONE",
+          "body": "At FiloSottile/age#651 I have an implementation of QSF with P-256 and of X-Wing that interoperate with https://github.com/hpkewg/hpke-pq/commit/19adaeb (this PR +\r\nhttps://github.com/hpkewg/hpke-pq/pull/32 for deterministic Encaps) and https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/commit/1bbca40 (https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/16, now merged).\r\n\r\nI don't have keygen in production code since I need this for hardware keys, but my test code [does reduce the seed against the order of the base field](https://github.com/FiloSottile/age/pull/651/commits/8c3427364d79649f306fb2aecbdc10ee0dc20b5f#diff-ed946ce8a529cfaf734fa0a5ef96e138ec17811572adf7eda1eaa6dfa941b082R208) to pass the test vectors, which I think is the bug @ilaril identified in the draft-irtf-cfrg-concrete-hybrid-kems reference code.",
+          "createdAt": "2025-08-31T18:20:21Z",
+          "updatedAt": "2025-08-31T18:20:21Z"
         }
       ],
       "reviews": [
