@@ -377,7 +377,7 @@ entries for values `0x0050` and `0x0051` with the following values:
 | Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
 |:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
 | 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1120 | 1600 | 32  | no   | RFCXXXX   |
+| 0x0051 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1665 | 1665 | 32  | no   | RFCXXXX   |
 | 0x647a | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1120 | 1216 | 32  | no   | RFCXXXX   |
 {: #pqt-iana-table title="PQ/T hybrid entries for the HPKE KEM Identifiers table" }
 
