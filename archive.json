@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-02T00:52:55.267888+00:00",
+  "timestamp": "2025-09-04T00:49:43.598148+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1888,18 +1888,52 @@
       "labels": [],
       "body": "It wasn't obvious what to use for EncapDerand of DHKEM.\r\n\r\nRFC 9180 uses rejection sampling for DeriveKeyPair, but includes a scalar in the test vectors (which is not really an EncapDerand input).\r\n\r\ndraft-irtf-cfrg-hybrid-kems defines the EncapsDerand of a nominal group to be reduction based.\r\n\r\nSince DHKEM already has a DeriveKeyPair, I went for that.\r\n\r\nFixes #29",
       "createdAt": "2025-08-18T13:56:03Z",
-      "updatedAt": "2025-08-18T13:56:03Z",
+      "updatedAt": "2025-09-02T21:50:16Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "ref-impl-fix",
       "baseRefOid": "165799ed6f1d29aca6f7ddef90b2b7f168e1e482",
       "headRepository": "FiloSottile/hpke-pq",
       "headRefName": "ref-impl-fix",
-      "headRefOid": "19adaeb89ccaf4e2c29850dfc7237415700401a0",
+      "headRefOid": "2a93326b75ad0467239abcbd82c2fbb2a36c8223",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOOXfHTc6mkCky",
+      "title": "Fix Nenc and Npk of QSF-P384-MLKEM1024-SHAKE256-SHA3256",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/33",
+      "state": "OPEN",
+      "author": "FiloSottile",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "A P-384 element is 97 bytes (384 / 8 * 2 + 1), plus 1568 bytes of ML-KEM-1024 ciphertext or public key.\r\n\r\nNot sure where the previous numbers came from.",
+      "createdAt": "2025-09-03T02:55:17Z",
+      "updatedAt": "2025-09-03T03:55:37Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
+      "headRepository": "FiloSottile/hpke-pq",
+      "headRefName": "patch-1",
+      "headRefOid": "c09dc375961523aa97f366fc632f96a4a9e6fe2a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "1600 is 1568 + 32, which would make sense for X25519+ML-KEM-1024.\r\n1120 is the size of X25519+ML-KEM-768.\r\n\r\nAre the others correct?  They look good to me.\r\n\r\n  ",
+          "createdAt": "2025-09-03T03:55:37Z",
+          "updatedAt": "2025-09-03T03:55:37Z"
+        }
+      ],
       "reviews": []
     }
   ]
