@@ -25,7 +25,7 @@ hex-literal = "1.0.0"
 generic-array = "0.14"
 
 # Import the generic hybrid KEM crate
-concrete-hybrid-kem = { path = "../../draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation" }
+concrete-hybrid-kem = { git = "https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems.git" }
 
 
 [[bin]]
