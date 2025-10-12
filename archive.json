@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-04T00:49:43.598148+00:00",
+  "timestamp": "2025-10-12T00:53:49.779640+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -1934,6 +1934,32 @@
           "updatedAt": "2025-09-03T03:55:37Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOOXfHTc6s7DRt",
+      "title": "Reference implementation: use git to fetch dependency",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/34",
+      "state": "OPEN",
+      "author": "thomwiggers",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This allows it to compile on more people's machines\n",
+      "createdAt": "2025-10-09T15:33:03Z",
+      "updatedAt": "2025-10-09T15:33:03Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
+      "headRepository": "thomwiggers/hpke-pq",
+      "headRefName": "dependency",
+      "headRefOid": "3a7b2463177200de5f9bfd648ea3bc0c9b9f788c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
       "reviews": []
     }
   ]
