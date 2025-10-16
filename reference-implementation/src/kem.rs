@@ -88,6 +88,68 @@ where
     }
 }
 
+pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
+
+impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
+where
+    K: concrete_hybrid_kem::Kem,
+{
+    const ID: [u8; 2] = ID.to_be_bytes();
+    const N_SECRET: usize = K::SHARED_SECRET_LENGTH;
+    const N_ENC: usize = K::CIPHERTEXT_LENGTH;
+    const N_PK: usize = K::ENCAPSULATION_KEY_LENGTH;
+    const N_SK: usize = K::SEED_LENGTH; // Use seed length for ML-KEM per spec
+    const N_SEED: usize = K::SEED_LENGTH;
+
+    type EncapsulationKey = <K as concrete_hybrid_kem::Kem>::EncapsulationKey;
+    type DecapsulationKey = <K as concrete_hybrid_kem::Kem>::DecapsulationKey;
+
+    fn generate_key_pair(
+        rng: &mut impl rand::CryptoRng,
+    ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::generate_key_pair(rng).unwrap();
+        (dk, ek)
+    }
+
+    fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::derive_key_pair(ikm).unwrap();
+        (dk, ek)
+    }
+
+    fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
+        use concrete_hybrid_kem::AsBytes;
+        pkX.as_bytes().to_vec()
+    }
+
+    fn deserialize_public_key(pkXm: &[u8]) -> Self::EncapsulationKey {
+        Self::EncapsulationKey::from(pkXm)
+    }
+
+    fn serialize_private_key(skX: &Self::DecapsulationKey) -> Vec<u8> {
+        use concrete_hybrid_kem::AsBytes;
+        skX.as_bytes().to_vec()
+    }
+
+    fn deserialize_private_key(skXm: &[u8]) -> Self::DecapsulationKey {
+        Self::DecapsulationKey::from(skXm)
+    }
+
+    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>) {
+        use concrete_hybrid_kem::AsBytes;
+        let (ct, ss) = <K as concrete_hybrid_kem::Kem>::encaps(pkR, rng).unwrap();
+        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    }
+
+    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
+        use concrete_hybrid_kem::AsBytes;
+        let enc = K::Ciphertext::from(enc);
+        <K as concrete_hybrid_kem::Kem>::decaps(skR, &enc)
+            .unwrap()
+            .as_bytes()
+            .to_vec()
+    }
+}
+
 pub trait Curve {
     const N_ID: u16;
     const SUITE_ID: &[u8];
@@ -515,14 +577,14 @@ pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512>;
 pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256>;
 pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512>;
 
-pub type MlKem512 = KemWithId<concrete_hybrid_kem::MlKem512Kem, 0x0040>;
-pub type MlKem768 = KemWithId<concrete_hybrid_kem::MlKem768Kem, 0x0041>;
-pub type MlKem1024 = KemWithId<concrete_hybrid_kem::MlKem1024Kem, 0x0042>;
+pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::MlKem512Kem, 0x0040>;
+pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::MlKem768Kem, 0x0041>;
+pub type MlKem1024 = MlKemWithId<concrete_hybrid_kem::MlKem1024Kem, 0x0042>;
 
 pub type QsfP256MlKem768 = KemWithId<concrete_hybrid_kem::QsfP256MlKem768Shake256Sha3256, 0x0050>;
+pub type QsfP384MlKem1024 = KemWithId<concrete_hybrid_kem::QsfP384MlKem1024Shake256Sha3256, 0x0051>;
 pub type QsfX25519MlKem768 =
-    KemWithId<concrete_hybrid_kem::QsfX25519MlKem768Shake256Sha3256, 0x0051>;
-pub type QsfP384MlKem1024 = KemWithId<concrete_hybrid_kem::QsfP384MlKem1024Shake256Sha3256, 0x0052>;
+    KemWithId<concrete_hybrid_kem::QsfX25519MlKem768Shake256Sha3256, 0x647a>;
 
 #[cfg(test)]
 mod test {

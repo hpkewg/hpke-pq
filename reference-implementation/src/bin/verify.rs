@@ -1,5 +1,4 @@
-use std::fs;
-use std::path::PathBuf;
+use std::io::{self, Read};
 use std::process;
 
 use hpke_ref::test_vectors::TestVectors;
@@ -38,26 +37,15 @@ fn verify_test_vectors(vectors: &TestVectors) -> VerificationResult {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-
-    if args.len() != 2 {
-        eprintln!("Usage: {} <test-vectors.json>", args[0]);
+    // Read JSON from stdin
+    let mut json_content = String::new();
+    if let Err(e) = io::stdin().read_to_string(&mut json_content) {
+        eprintln!("Error reading from stdin: {}", e);
         process::exit(1);
     }
 
-    let path = PathBuf::from(&args[1]);
-
-    // Read the JSON file
-    let contents = match fs::read_to_string(&path) {
-        Ok(c) => c,
-        Err(e) => {
-            eprintln!("Error reading file {}: {}", path.display(), e);
-            process::exit(1);
-        }
-    };
-
     // Parse the JSON
-    let vectors: TestVectors = match serde_json::from_str(&contents) {
+    let vectors: TestVectors = match serde_json::from_str(&json_content) {
         Ok(v) => v,
         Err(e) => {
             eprintln!("Error parsing JSON: {}", e);
