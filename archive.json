@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-12T00:53:49.779640+00:00",
+  "timestamp": "2025-10-19T00:58:15.349345+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -222,7 +222,7 @@
       "id": "I_kwDOOXfHTc6_MrzW",
       "title": "Ref-impl some KDF IDs seem incorrect",
       "url": "https://github.com/hpkewg/hpke-pq/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ilaril",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -231,8 +231,8 @@
       ],
       "body": "The reference implementation seems to have some KDF identifiers set incorrectly:\n\n* SHAKE256 seems to have ID 0x10, should presumably be 0x11.\n  - Line 225 of reference-implementation/src/kdf.rs\n* TurboSHAKE128 seems to have ID 0x10, should presumably be 0x12.\n  - Line 242 of reference-implementation/src/kdf.rs\n* TurboSHAKE256 seems to have ID 0x10, should presumably be 0x13.\n  - Line 261 of reference-implementation/src/kdf.rs\n\n(Took me a while to find this while trying to debug why the KDF part of test vectors do not verify against my own HPKE implementation.)\n",
       "createdAt": "2025-07-07T06:55:15Z",
-      "updatedAt": "2025-07-10T22:53:02Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-16T21:25:25Z",
+      "closedAt": "2025-10-16T21:25:25Z",
       "comments": [
         {
           "author": "bifurcation",
@@ -338,7 +338,7 @@
       "id": "I_kwDOOXfHTc6_cQ_h",
       "title": "Missing dependency `concrete-hybrid-kem`",
       "url": "https://github.com/hpkewg/hpke-pq/issues/26",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jiep",
       "authorAssociation": "NONE",
       "assignees": [],
@@ -347,8 +347,8 @@
       ],
       "body": "Steps to reproduce:\n\n1. Clone this repository.\n2. Run `cargo build`. The output shows that `concrete-hybrid-kem` has not been found:\n\n```\nerror: failed to get `concrete-hybrid-kem` as a dependency of package `hpke-ref v0.1.0 (/workspaces/hpke-pq/reference-implementation)`\n\nCaused by:\n  failed to load source for dependency `concrete-hybrid-kem`\n\nCaused by:\n  Unable to update /workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation\n\nCaused by:\n  failed to read `/workspaces/draft-irtf-cfrg-concrete-hybrid-kems/reference-implementation/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\n```\n\nWhere can I find the dependency `concrete-hybrid-kem`?\n\nThanks in advance. \n\nBest regards.\n",
       "createdAt": "2025-07-08T09:58:30Z",
-      "updatedAt": "2025-07-10T12:34:14Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-16T21:25:25Z",
+      "closedAt": "2025-10-16T21:25:25Z",
       "comments": [
         {
           "author": "bifurcation",
@@ -1683,24 +1683,26 @@
       "id": "PR_kwDOOXfHTc6eZBP9",
       "title": "Fix some minor issues with the reference implementation",
       "url": "https://github.com/hpkewg/hpke-pq/pull/28",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Replaces #22 \r\nFixes #23 \r\nFixes #26",
       "createdAt": "2025-07-10T22:52:18Z",
-      "updatedAt": "2025-08-31T18:20:21Z",
+      "updatedAt": "2025-10-16T21:25:24Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "ref-impl-fix",
       "headRefOid": "165799ed6f1d29aca6f7ddef90b2b7f168e1e482",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-10-16T21:25:24Z",
+      "mergedAt": "2025-10-16T21:25:23Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "91eb3df97dbe38ea48d05e3f429af1ff9e305e19"
+      },
       "comments": [
         {
           "author": "ilaril",
@@ -1746,10 +1748,24 @@
         },
         {
           "author": "FiloSottile",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "At FiloSottile/age#651 I have an implementation of QSF with P-256 and of X-Wing that interoperate with https://github.com/hpkewg/hpke-pq/commit/19adaeb (this PR +\r\nhttps://github.com/hpkewg/hpke-pq/pull/32 for deterministic Encaps) and https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/commit/1bbca40 (https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems/pull/16, now merged).\r\n\r\nI don't have keygen in production code since I need this for hardware keys, but my test code [does reduce the seed against the order of the base field](https://github.com/FiloSottile/age/pull/651/commits/8c3427364d79649f306fb2aecbdc10ee0dc20b5f#diff-ed946ce8a529cfaf734fa0a5ef96e138ec17811572adf7eda1eaa6dfa941b082R208) to pass the test vectors, which I think is the bug @ilaril identified in the draft-irtf-cfrg-concrete-hybrid-kems reference code.",
           "createdAt": "2025-08-31T18:20:21Z",
           "updatedAt": "2025-08-31T18:20:21Z"
+        },
+        {
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Should this (and #32 and #33) be merged? People are going to keep stumbling upon the broken main branch otherwise.",
+          "createdAt": "2025-10-16T15:28:34Z",
+          "updatedAt": "2025-10-16T15:28:34Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Yep.  I am working on updating this draft between now and Monday.",
+          "createdAt": "2025-10-16T18:16:44Z",
+          "updatedAt": "2025-10-16T18:16:44Z"
         }
       ],
       "reviews": [
@@ -1907,24 +1923,26 @@
       "id": "PR_kwDOOXfHTc6mkCky",
       "title": "Fix Nenc and Npk of QSF-P384-MLKEM1024-SHAKE256-SHA3256",
       "url": "https://github.com/hpkewg/hpke-pq/pull/33",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "FiloSottile",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "A P-384 element is 97 bytes (384 / 8 * 2 + 1), plus 1568 bytes of ML-KEM-1024 ciphertext or public key.\r\n\r\nNot sure where the previous numbers came from.",
       "createdAt": "2025-09-03T02:55:17Z",
-      "updatedAt": "2025-09-03T03:55:37Z",
+      "updatedAt": "2025-10-16T21:27:52Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
       "headRepository": "FiloSottile/hpke-pq",
       "headRefName": "patch-1",
       "headRefOid": "c09dc375961523aa97f366fc632f96a4a9e6fe2a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-10-16T21:27:52Z",
+      "mergedAt": "2025-10-16T21:27:52Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "ac9fe1e19fb1e91efe99504c3dcd8504571263a6"
+      },
       "comments": [
         {
           "author": "martinthomson",
@@ -1934,31 +1952,47 @@
           "updatedAt": "2025-09-03T03:55:37Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc7HgDG2",
+          "commit": {
+            "abbreviatedOid": "c09dc37"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-10-16T21:27:28Z",
+          "updatedAt": "2025-10-16T21:27:28Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 34,
       "id": "PR_kwDOOXfHTc6s7DRt",
       "title": "Reference implementation: use git to fetch dependency",
       "url": "https://github.com/hpkewg/hpke-pq/pull/34",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "thomwiggers",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This allows it to compile on more people's machines\n",
       "createdAt": "2025-10-09T15:33:03Z",
-      "updatedAt": "2025-10-09T15:33:03Z",
+      "updatedAt": "2025-10-16T21:27:03Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "3a5606f667df551ff641fc1ac10a604aaa97b11e",
       "headRepository": "thomwiggers/hpke-pq",
       "headRefName": "dependency",
       "headRefOid": "3a7b2463177200de5f9bfd648ea3bc0c9b9f788c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-10-16T21:27:03Z",
+      "mergedAt": "2025-10-16T21:27:03Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "edb2d65402227ae66d4e06caeb4f4f7fbfb7c760"
+      },
       "comments": [],
       "reviews": []
     }
