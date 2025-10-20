@@ -221,16 +221,16 @@ specified in {{ml-kem-iana-table}}.
 # Hybrid KEMs with ECDH and ML-KEM {#hybrids}
 
 {{CONCRETE}} defines a collection of concrete PQ/T hybrid KEMs.  These KEMs
-combine a traditional ECDH group with ML-KEM:
+combine ML-KEM with a traditional ECDH group:
 
-QSF-P256-MLKEM768-SHAKE256-SHA3256:
-: P-256 + ML-KEM-768
+MLKEM768-P256:
+: ML-KEM-768 and P-256
 
-QSF-X25519-MLKEM768-SHAKE256-SHA3256:
-: X25519 + ML-KEM-768
+MLKEM768-X25519:
+: ML-KEM-768 and X25519
 
-QSF-P384-MLKEM1024-SHAKE256-SHA3256:
-: P-384 + ML-KEM-1024
+MLKEM1024-P384:
+: ML-KEM-1024 and P-384
 {: spacing="compact"}
 
 These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface is
@@ -251,9 +251,9 @@ following mapping:
 
 # Single-Stage KDFs
 
-This section defines HPKE KDFs for three eXtendable Output Functions (XOF) based
-on Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}, and
-the related TurboSHAKE XOFs is defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
+This section defines HPKE KDFs for eXtendable Output Functions (XOF) based on
+Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}.  The
+related TurboSHAKE XOFs is defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
 
 The `Derive()` function for SHAKE is as follows,
 where `<SIZE>` is either 128 or 256:
@@ -320,8 +320,9 @@ then there is only one KEM ciphertext (`CT`, `enc`) that could have produced
 it, even if the decapsulation key is leaked to an attacker after the encryption
 has been done.
 
-DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  QSF-based hybrid
-KEMs also provide these properties, as discussed in {{GENERIC}}.
+DHKEM and ML-KEM meet these properties, as shown in {{CDM23}}.  The hybrid KEMs
+used in this document also provide these properties, as discussed in
+{{GENERIC}}.
 
 ## PQ Hybrid vs. Pure PQ
 
@@ -359,11 +360,11 @@ This section requests that IANA perform three actions:
 IANA is requested to replace the entries in the HPKE KEM Identifiers registry
 for values `0x0040`, `0x0041`, and `0x0042` with the following values:
 
-| Value  | KEM         | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
-|:-------|:------------|:---------|:-----|:-----|:----|:-----|:----------|
-| 0x0040 | ML-KEM-512  | 32       | 768  | 800  | 64  | no   | RFCXXXX   |
-| 0x0041 | ML-KEM-768  | 32       | 1088 | 1184 | 64  | no   | RFCXXXX   |
-| 0x0042 | ML-KEM-1024 | 32       | 1568 | 1568 | 64  | no   | RFCXXXX   |
+| Value  | KEM         | Nsecret | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:------------|:--------|:-----|:-----|:----|:-----|:----------|
+| 0x0040 | ML-KEM-512  | 32      | 768  | 800  | 64  | no   | RFCXXXX   |
+| 0x0041 | ML-KEM-768  | 32      | 1088 | 1184 | 64  | no   | RFCXXXX   |
+| 0x0042 | ML-KEM-1024 | 32      | 1568 | 1568 | 64  | no   | RFCXXXX   |
 {: #ml-kem-iana-table title="Updated ML-KEM entries for the HPKE KEM Identifiers table" }
 
 The only change being made is to update the "Reference" column to refer to this
@@ -374,11 +375,11 @@ document.
 IANA is requested to replace the entry for the value `0x647a` and add two
 entries for values `0x0050` and `0x0051` with the following values:
 
-| Value  | KEM                                  | Nsecret  | Nenc | Npk  | Nsk | Auth | Reference |
-|:-------|:-------------------------------------|:---------|:-----|:-----|:----|:-----|:----------|
-| 0x0050 | QSF-P256-MLKEM768-SHAKE256-SHA3256   | 32       | 1153 | 1249 | 32  | no   | RFCXXXX   |
-| 0x0051 | QSF-P384-MLKEM1024-SHAKE256-SHA3256  | 32       | 1665 | 1665 | 32  | no   | RFCXXXX   |
-| 0x647a | QSF-X25519-MLKEM768-SHAKE256-SHA3256 | 32       | 1120 | 1216 | 32  | no   | RFCXXXX   |
+| Value  | KEM             | Nsecret | Nenc | Npk  | Nsk | Auth | Reference |
+|:-------|:----------------|:--------|:-----|:-----|:----|:-----|:----------|
+| 0x0050 | MLKEM768-P256   | 32      | 1153 | 1249 | 32  | no   | RFCXXXX   |
+| 0x0051 | MLKEM1024-P384  | 32      | 1665 | 1665 | 32  | no   | RFCXXXX   |
+| 0x647a | MLKEM768-X25519 | 32      | 1120 | 1216 | 32  | no   | RFCXXXX   |
 {: #pqt-iana-table title="PQ/T hybrid entries for the HPKE KEM Identifiers table" }
 
 ## SHA-3 KDF Entries
