@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-19T00:58:15.349345+00:00",
+  "timestamp": "2025-10-21T00:53:54.383030+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -112,15 +112,15 @@
       "id": "I_kwDOOXfHTc66pIli",
       "title": "Finalize PQ/T hybrids",
       "url": "https://github.com/hpkewg/hpke-pq/issues/9",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "The general framework for referencing PQ/T hybrid KEMs was set up in #5.  Those documents are still stabilizing, so we will need to update this document as they firm up.",
       "createdAt": "2025-06-09T20:03:22Z",
-      "updatedAt": "2025-07-10T12:25:00Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-20T21:46:26Z",
+      "closedAt": "2025-10-20T21:46:25Z",
       "comments": [
         {
           "author": "rohanmahy",
@@ -142,6 +142,13 @@
           "body": "@martinthomson is on the right track here. \n\n* QSF(X25519 + ML-KEM-768) is intended to be identical to X-Wing\n* We should use the \"QSF\" terminology",
           "createdAt": "2025-07-10T12:25:00Z",
           "updatedAt": "2025-07-10T12:25:00Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "As of #35, this is up to date with the current CFRG spec.",
+          "createdAt": "2025-10-20T21:46:25Z",
+          "updatedAt": "2025-10-20T21:46:25Z"
         }
       ]
     },
@@ -314,15 +321,15 @@
       "id": "I_kwDOOXfHTc6_bF1S",
       "title": "Add hybrid KEM: X448 + ML-KEM-1024",
       "url": "https://github.com/hpkewg/hpke-pq/issues/25",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "jiep",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Hi!\n\nCompared to the current proposal of P-384 + ML-KEM-1024, X448 provides stronger security margins for elliptic curve cryptography, better resistance to side-channel attacks, and improved performance in certain implementations, making it a more robust choice for post-quantum hybrid encryption. \n\nFurthermore, it accelerates the migration to post-quantum cryptography by introducing a secure and streamlined path for current DHKEM(X448, HKDF-SHA512) implementations.\n\nRegards.",
       "createdAt": "2025-07-08T08:25:30Z",
-      "updatedAt": "2025-07-10T12:33:06Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-20T21:47:33Z",
+      "closedAt": "2025-10-20T21:47:33Z",
       "comments": [
         {
           "author": "bifurcation",
@@ -330,6 +337,13 @@
           "body": "Hi @jiep - Could you please raise this on the [hpke working group mailing list](https://datatracker.ietf.org/group/hpke/email/)?  My impression so far has been that there is not demand for an X448 combination.",
           "createdAt": "2025-07-10T12:33:06Z",
           "updatedAt": "2025-07-10T12:33:06Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It looks like this was never raised on the mailing list.  It also never showed up on the CFRG list.  Closing for lack of interest.  Code points can always be registered later.",
+          "createdAt": "2025-10-20T21:47:33Z",
+          "updatedAt": "2025-10-20T21:47:33Z"
         }
       ]
     },
@@ -1992,6 +2006,34 @@
       "mergedBy": "bifurcation",
       "mergeCommit": {
         "oid": "edb2d65402227ae66d4e06caeb4f4f7fbfb7c760"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 35,
+      "id": "PR_kwDOOXfHTc6ut5PU",
+      "title": "Update names; editorial fixes",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/35",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-20T21:39:28Z",
+      "updatedAt": "2025-10-20T21:44:44Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "ac9fe1e19fb1e91efe99504c3dcd8504571263a6",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ietf-124-editorial",
+      "headRefOid": "b9954b416d2fa95f42e705ebbb7d5ed2ada3ca62",
+      "closedAt": "2025-10-20T21:44:44Z",
+      "mergedAt": "2025-10-20T21:44:44Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "ea789724b674eb8bdb6b9730085dc58712928454"
       },
       "comments": [],
       "reviews": []
