@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-21T00:53:54.383030+00:00",
+  "timestamp": "2025-10-28T00:52:06.604102+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -401,7 +401,7 @@
       "labels": [],
       "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
       "createdAt": "2025-08-08T01:07:30Z",
-      "updatedAt": "2025-08-18T15:44:02Z",
+      "updatedAt": "2025-10-27T22:56:59Z",
       "closedAt": null,
       "comments": [
         {
@@ -420,10 +420,17 @@
         },
         {
           "author": "FiloSottile",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Relatedly, the last remaining divergence between draft-connolly-cfrg-xwing-kem and QSF in draft-ietf-hpke-pq is that the former defines HPKE's DeriveKeyPair as `GenerateKeyPairDerand(SHAKE256(ikm, 32*8))`, and the latter defines it (via draft-irtf-cfrg-hybrid-kems's DeriveKeyPair) as `expandDecapsulationKey(seed)` with no additional SHAKE256 step.",
           "createdAt": "2025-08-18T15:44:02Z",
           "updatedAt": "2025-08-18T15:44:02Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Having reflected on this a bit, I think the rigidity is probably the right answer at this level:\n\n1. Update draft-ietf-hpke-hpke to specify a separate Nseed for each KEM, and require that the input to DeriveKeyPair MUST have size Nseed\n2. For ML-KEM: Make `Nseed = 32` and define a DeriveKeyPair that expands the key (using SHAKE256 or SHA3_512)\n3. For the hybrids: Make `Nseed = 32`, as in -concrete-hybrid-kems\n\nThat would still leave the awkwardness of, say, an MLS ciphersuite using HKDF-SHA-384 for the key schedule and wanting to use these algorithms.  But I think that layer -- the layer where you connect two algorithms together -- is the right place to decide how to map inputs to outputs.  In this MLS case, for example, the MLS ciphersuite can simply specify that HKDF should produce a shorter output.\n\nProcedurally, I expect (1) is the biggest challenge.  As our charter says, \"The Standards Track and Informational versions must have identical behavior for any functionality that they both specify\".  However, I think increasing strictness is compatible with that objective.  An implementation built to the older, looser spec will continue to work with any calling code that expects the limitations of the new API.  @martinthomson, thoughts as chair?",
+          "createdAt": "2025-10-27T22:56:59Z",
+          "updatedAt": "2025-10-27T22:56:59Z"
         }
       ]
     }
