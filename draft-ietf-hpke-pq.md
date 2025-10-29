@@ -149,23 +149,26 @@ The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
 using ML-KEM.
 
 The HPKE `DeriveKeyPair` function corresponds to the function
-`ML-KEM.KeyGen_internal` in {{FIPS203}}.  The input `ikm` MUST be exactly
-`Nsk = 64` bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal` are
-the first and last 32-byte segments of `ikm`, respectively.  The output `skX` is
-the generated decapsulation key and the output `pkX` is the generated
-encapsulation key.
+`ML-KEM.KeyGen_internal` in {{FIPS203}}.  The input `ikm` MUST be at least 32
+bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal` are the first
+and last 32-byte segments of `ikm`, respectively.  The output `skX` is the
+generated decapsulation key and the output `pkX` is the generated encapsulation
+key.
 
 ~~~ pseudocode
+def expandDecapsulationKey(ikm):
+    dz = SHAKE256(ikm, 256)
+    d = dz[:32]
+    z = dz[32:]
+    (ek, dk) = ML-KEM.KeyGen_internal(d, z)
+    return (dk, ek)
+
 def DeriveKeyPair(ikm):
     if len(ikm) != 64:
         raise DeriveKeyPairError
 
-    d = ikm[:32]
-    z = ikm[32:]
-
-    dk = ikm
-    (ek, _) = ML-KEM.KeyGen_internal(d, z)
-    return (dk, ek)
+    (dk, ek) = expandDecapsulationKey(ikm)
+    return (ikm, ek)
 ~~~
 
 The `GenerateKeyPair` function is simply `DeriveKeyPair` with a pseudorandom
@@ -197,9 +200,7 @@ expanded decapsulation key from the 64-byte seed format and invoke
 
 ~~~ pseudocode
 def Decap(enc, skR):
-    d = skR[:32]
-    z = skR[32:]
-    (_, dk) = ML-KEM.KeyGen_internal(d, z)
+    (dk, _) = expandDecapsulationKey(skR)
     return ML-KEM.Decaps(dk, enc)
 ~~~
 
@@ -238,7 +239,8 @@ mostly the same as the KEM interface in {{Section 4 of HPKE}}, with the
 following mapping:
 
 * The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
-  are identical.
+  are identical.  The input `ikm` to `DeriveKeyPair` MUST be exactly 32 bytes
+  long.
 
 * The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
   identity, since encapsulation keys are already fixed-length byte strings.
