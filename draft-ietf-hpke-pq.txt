@@ -4,8 +4,8 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                         20 October 2025
-Expires: 23 April 2026
+Intended status: Standards Track                         29 October 2025
+Expires: 2 May 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 April 2026.
+   This Internet-Draft will expire on 2 May 2026.
 
 Copyright Notice
 
@@ -456,9 +456,9 @@ Table of Contents
 
    [CONCRETE] Connolly, D. and R. Barnes, "Concrete Hybrid PQ/T Key
               Encapsulation Mechanisms", Work in Progress, Internet-
-              Draft, draft-irtf-cfrg-concrete-hybrid-kems-00, 7 July
+              Draft, draft-irtf-cfrg-concrete-hybrid-kems-01, 20 October
               2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
-              cfrg-concrete-hybrid-kems-00>.
+              cfrg-concrete-hybrid-kems-01>.
 
    [FIPS186]  "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
@@ -477,9 +477,9 @@ Table of Contents
 
    [GENERIC]  Connolly, D., Barnes, R., and P. Grubbs, "Hybrid PQ/T Key
               Encapsulation Mechanisms", Work in Progress, Internet-
-              Draft, draft-irtf-cfrg-hybrid-kems-05, 20 July 2025,
+              Draft, draft-irtf-cfrg-hybrid-kems-07, 20 October 2025,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              hybrid-kems-05>.
+              hybrid-kems-07>.
 
    [HPKE]     Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
