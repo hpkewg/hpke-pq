@@ -52,12 +52,12 @@ where
     fn generate_key_pair(
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
         (dk, ek)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
         (dk, ek)
     }
 
@@ -77,7 +77,10 @@ where
         DecapsulationKey::from(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (SharedSecret, Ciphertext) {
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
         <K as concrete_hybrid_kem::kem::Kem>::encaps(pkR, rng)
     }
 
@@ -107,13 +110,15 @@ where
     type EncapsulationKey = EncapsulationKey;
     type DecapsulationKey = DecapsulationKey;
 
-    fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
+    fn generate_key_pair(
+        rng: &mut impl rand::CryptoRng,
+    ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
         (dk, ek)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
         (dk, ek)
     }
 
@@ -133,7 +138,10 @@ where
         DecapsulationKey::from(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (SharedSecret, Ciphertext) {
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
         <K as concrete_hybrid_kem::kem::Kem>::encaps(pkR, rng)
     }
 
@@ -509,7 +517,9 @@ where
     type EncapsulationKey = C::Point;
     type DecapsulationKey = C::Scalar;
 
-    fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+    fn generate_key_pair(
+        rng: &mut impl rand::CryptoRng,
+    ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
         C::generate_key_pair(rng)
     }
 
@@ -533,7 +543,10 @@ where
         C::deserialize_private_key(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (SharedSecret, Ciphertext) {
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
         use crate::concat;
 
         let (skE, pkE) = Self::generate_key_pair(rng);

@@ -47,7 +47,7 @@ pub struct TestVector {
     pub enc: Vec<u8>,
     #[serde(with = "hex::serde")]
     pub shared_secret: Vec<u8>,
-    #[serde(with = "hex::serde")]
+    #[serde(with = "hex::serde", default)]
     pub suite_id: Vec<u8>,
     #[serde(with = "hex::serde")]
     pub key: Vec<u8>,
