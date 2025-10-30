@@ -357,17 +357,17 @@ impl TestVector {
             (0x0042, 0x0002, 0x0002) => self.v::<MlKem1024, HkdfSha384, Aes256Gcm>(),
             (0x0042, 0x0002, 0xffff) => self.v::<MlKem1024, HkdfSha384, ExportOnly>(),
 
-            // QSF-P256-MLKEM768 + combinations
-            (0x0050, 0x0011, 0x0001) => self.v::<QsfP256MlKem768, Shake256, Aes128Gcm>(),
-            (0x0050, 0x0011, 0xffff) => self.v::<QsfP256MlKem768, Shake256, ExportOnly>(),
+            // MLKEM768-P256 combinations
+            (0x0050, 0x0011, 0x0001) => self.v::<MlKem768P256, Shake256, Aes128Gcm>(),
+            (0x0050, 0x0011, 0xffff) => self.v::<MlKem768P256, Shake256, ExportOnly>(),
 
-            // QSF-X25519-MLKEM768 combinations
-            (0x647a, 0x0011, 0x0001) => self.v::<QsfX25519MlKem768, Shake256, Aes128Gcm>(),
-            (0x647a, 0x0011, 0xffff) => self.v::<QsfX25519MlKem768, Shake256, ExportOnly>(),
+            // MLKEM768-X25519 combinations
+            (0x647a, 0x0011, 0x0001) => self.v::<MlKem768X25519, Shake256, Aes128Gcm>(),
+            (0x647a, 0x0011, 0xffff) => self.v::<MlKem768X25519, Shake256, ExportOnly>(),
 
-            // QSF-P384-MLKEM1024 combinations
-            (0x0051, 0x0011, 0x0002) => self.v::<QsfP384MlKem1024, Shake256, Aes256Gcm>(),
-            (0x0051, 0x0011, 0xffff) => self.v::<QsfP384MlKem1024, Shake256, ExportOnly>(),
+            // MLKEM1024-P384 combinations
+            (0x0051, 0x0011, 0x0002) => self.v::<MlKem1024P384, Shake256, Aes256Gcm>(),
+            (0x0051, 0x0011, 0xffff) => self.v::<MlKem1024P384, Shake256, ExportOnly>(),
 
             _ => Err(format!(
                 "Unsupported algorithm combination: KEM={:#x}, KDF={:#x}, AEAD={:#x}",
