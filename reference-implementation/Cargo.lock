@@ -123,6 +123,7 @@ dependencies = [
 [[package]]
 name = "concrete-hybrid-kem"
 version = "0.1.0"
+source = "git+https://github.com/cfrg/draft-irtf-cfrg-concrete-hybrid-kems.git#ad1eecfbd1476ac8d73c0fac1125204aeb4b9940"
 dependencies = [
  "elliptic-curve 0.13.8",
  "hex",
