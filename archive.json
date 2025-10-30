@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-28T00:52:06.604102+00:00",
+  "timestamp": "2025-10-30T00:55:39.311075+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -378,15 +378,15 @@
       "id": "I_kwDOOXfHTc7AHJrg",
       "title": "Use deterministic encapsulation for the test vectors",
       "url": "https://github.com/hpkewg/hpke-pq/issues/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "The CFRG concrete KEMs draft defines an optional [EncapsDerand](https://www.ietf.org/archive/id/draft-irtf-cfrg-hybrid-kems-04.html#appendix-A) algorithm that performs deterministic encapsulation.  This is implemented by the hybrid KEMs defined there, and thus by the concrete hybrid KEMs used by this document.\n\nUsing EncapsDerand for the test vectors could help implementations verify that their `Setup<Mode>S` implementations are correct as well as their `Setup<Mode>R` implementations.  It would be consistent with the inclusion of `skE` / `pkE` values in the RFC 9180 test vectors.",
       "createdAt": "2025-07-11T14:18:37Z",
-      "updatedAt": "2025-07-11T14:18:37Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-29T22:48:59Z",
+      "closedAt": "2025-10-29T22:48:59Z",
       "comments": []
     },
     {
@@ -401,7 +401,7 @@
       "labels": [],
       "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
       "createdAt": "2025-08-08T01:07:30Z",
-      "updatedAt": "2025-10-27T22:56:59Z",
+      "updatedAt": "2025-10-29T13:31:14Z",
       "closedAt": null,
       "comments": [
         {
@@ -431,6 +431,20 @@
           "body": "Having reflected on this a bit, I think the rigidity is probably the right answer at this level:\n\n1. Update draft-ietf-hpke-hpke to specify a separate Nseed for each KEM, and require that the input to DeriveKeyPair MUST have size Nseed\n2. For ML-KEM: Make `Nseed = 32` and define a DeriveKeyPair that expands the key (using SHAKE256 or SHA3_512)\n3. For the hybrids: Make `Nseed = 32`, as in -concrete-hybrid-kems\n\nThat would still leave the awkwardness of, say, an MLS ciphersuite using HKDF-SHA-384 for the key schedule and wanting to use these algorithms.  But I think that layer -- the layer where you connect two algorithms together -- is the right place to decide how to map inputs to outputs.  In this MLS case, for example, the MLS ciphersuite can simply specify that HKDF should produce a shorter output.\n\nProcedurally, I expect (1) is the biggest challenge.  As our charter says, \"The Standards Track and Informational versions must have identical behavior for any functionality that they both specify\".  However, I think increasing strictness is compatible with that objective.  An implementation built to the older, looser spec will continue to work with any calling code that expects the limitations of the new API.  @martinthomson, thoughts as chair?",
           "createdAt": "2025-10-27T22:56:59Z",
           "updatedAt": "2025-10-27T22:56:59Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We'd probably want to float that with a wider audience, but it seems like - as long as there is no need for more input entropy and as long as old implementations that accept more are acknowledged as being mostly OK - that seems like it is within the spirit of the charter.\n\nDid you mean 32 or 64 for ML-KEM?  [32 bytes of entropy, 64 bytes in size](https://github.com/hpkewg/hpke-pq/issues/30#issuecomment-3166909668)...",
+          "createdAt": "2025-10-28T04:18:09Z",
+          "updatedAt": "2025-10-28T04:18:09Z"
+        },
+        {
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "body": "> That would still leave the awkwardness of, say, an MLS ciphersuite using HKDF-SHA-384 for the key schedule and wanting to use these algorithms\n\nI don't see why this is the case.\n\n> Update draft-ietf-hpke-hpke to specify a separate Nseed for each KEM, and require that the input to DeriveKeyPair MUST have size Nseed\n\nWhat is the reasoning to disallow longer inputs? I don't see harm if we're going to plop it into SHAKE256 anyway.",
+          "createdAt": "2025-10-29T13:31:14Z",
+          "updatedAt": "2025-10-29T13:31:14Z"
         }
       ]
     }
@@ -1918,26 +1932,42 @@
       "id": "PR_kwDOOXfHTc6kHdTK",
       "title": "Include encapsulation randomness in test vectors",
       "url": "https://github.com/hpkewg/hpke-pq/pull/32",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "FiloSottile",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "It wasn't obvious what to use for EncapDerand of DHKEM.\r\n\r\nRFC 9180 uses rejection sampling for DeriveKeyPair, but includes a scalar in the test vectors (which is not really an EncapDerand input).\r\n\r\ndraft-irtf-cfrg-hybrid-kems defines the EncapsDerand of a nominal group to be reduction based.\r\n\r\nSince DHKEM already has a DeriveKeyPair, I went for that.\r\n\r\nFixes #29",
       "createdAt": "2025-08-18T13:56:03Z",
-      "updatedAt": "2025-09-02T21:50:16Z",
+      "updatedAt": "2025-10-29T22:47:58Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "ref-impl-fix",
       "baseRefOid": "165799ed6f1d29aca6f7ddef90b2b7f168e1e482",
       "headRepository": "FiloSottile/hpke-pq",
       "headRefName": "ref-impl-fix",
       "headRefOid": "2a93326b75ad0467239abcbd82c2fbb2a36c8223",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-10-29T22:47:58Z",
+      "mergedAt": "2025-10-29T22:47:58Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "5f83c3db7ee2f2a7cee4f4d19c7def8e355ccb27"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc7KdWPq",
+          "commit": {
+            "abbreviatedOid": "2a93326"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-10-29T22:47:52Z",
+          "updatedAt": "2025-10-29T22:47:52Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 33,
@@ -2041,6 +2071,109 @@
       "mergedBy": "bifurcation",
       "mergeCommit": {
         "oid": "ea789724b674eb8bdb6b9730085dc58712928454"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOOXfHTc6wfZ4P",
+      "title": "Use seed format for private keys and expand seed",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/36",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #30 ",
+      "createdAt": "2025-10-29T22:47:14Z",
+      "updatedAt": "2025-10-29T22:56:17Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "78953d3e1f142a52653ad2efec855deb31020b7c",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "nsk",
+      "headRefOid": "f7dcd1080aa84c9f38799d42d60c2238e6e7bbe3",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This change would not be FIPS compatible as I understand it in October 2025; also I don't understand the need for a divergent seed format in the pure MLKEM case (64 bytes vs 32 bytes)",
+          "createdAt": "2025-10-29T22:56:17Z",
+          "updatedAt": "2025-10-29T22:56:17Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc7Kdaeq",
+          "commit": {
+            "abbreviatedOid": "f7dcd10"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-29T22:51:55Z",
+          "updatedAt": "2025-10-29T22:52:05Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "If you care, I do not think this is FIPS compatible ",
+              "createdAt": "2025-10-29T22:51:55Z",
+              "updatedAt": "2025-10-29T22:52:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7KdbwB",
+          "commit": {
+            "abbreviatedOid": "f7dcd10"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-29T22:53:09Z",
+          "updatedAt": "2025-10-29T22:53:09Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "Why are you proposing a 32byte seed for pure MLKEM? ",
+              "createdAt": "2025-10-29T22:53:09Z",
+              "updatedAt": "2025-10-29T22:53:09Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOOXfHTc6wfa98",
+      "title": "Incorporate #32 in main",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/37",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-29T22:48:50Z",
+      "updatedAt": "2025-10-29T22:48:58Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "ea789724b674eb8bdb6b9730085dc58712928454",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ref-impl-fix",
+      "headRefOid": "5f83c3db7ee2f2a7cee4f4d19c7def8e355ccb27",
+      "closedAt": "2025-10-29T22:48:57Z",
+      "mergedAt": "2025-10-29T22:48:57Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "78953d3e1f142a52653ad2efec855deb31020b7c"
       },
       "comments": [],
       "reviews": []
