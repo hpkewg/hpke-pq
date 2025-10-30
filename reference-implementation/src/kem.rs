@@ -83,7 +83,8 @@ where
 
     fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
         use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
+        let (ct, ss) =
+            <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
         (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
     }
 
@@ -98,6 +99,32 @@ where
 }
 
 pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
+
+impl<K, const ID: u16> MlKemWithId<K, ID>
+where
+    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
+{
+    fn expand_decapsulation_key(
+        ikm: &[u8],
+    ) -> (
+        <Self as Kem>::DecapsulationKey,
+        <Self as Kem>::EncapsulationKey,
+    ) {
+        use sha3::{
+            digest::{ExtendableOutput, Update, XofReader},
+            Shake256,
+        };
+
+        let mut h = Shake256::default();
+        h.update(ikm);
+        let mut r = h.finalize_xof();
+
+        let mut dz = [0; 64];
+        r.read(&mut dz);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dz);
+        (dk, ek)
+    }
+}
 
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
@@ -117,13 +144,15 @@ where
     fn generate_key_pair(
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::generate_key_pair(rng).unwrap();
-        (dk, ek)
+        use rand::Rng;
+        let mut seed = [0; 32];
+        rng.fill(&mut seed);
+        Self::derive_key_pair(&seed)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::derive_key_pair(ikm).unwrap();
-        (dk, ek)
+        let (_dk, ek) = Self::expand_decapsulation_key(ikm);
+        (ikm.to_vec(), ek)
     }
 
     fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
@@ -152,17 +181,14 @@ where
 
     fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
         use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
+        let (ct, ss) =
+            <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
         (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
     }
 
-    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        let enc = K::Ciphertext::from(enc);
-        <K as concrete_hybrid_kem::Kem>::decaps(skR, &enc)
-            .unwrap()
-            .as_bytes()
-            .to_vec()
+    fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
+        let (dk, _ek) = Self::expand_decapsulation_key(skR);
+        <K as concrete_hybrid_kem::kem::Kem>::decaps(&dk, enc)
     }
 }
 
