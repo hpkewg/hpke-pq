@@ -9,14 +9,14 @@ aes-gcm = "0.10.3"
 chacha20poly1305 = "0.10.1"
 hkdf = "0.12.4"
 hmac = "0.12.1"
-ml-kem = "0.2.1"
-p256 = { version = "0.13.2", features = ["ecdh"] }
-p384 = "0.13.1"
-p521 = { version = "0.13.3", features = ["ecdh"] }
+ml-kem = "0.3.0-pre.1"
+p256 = { version = "0.14.0-rc.0", features = ["ecdh"] }
+p384 = "0.14.0-rc.0"
+p521 = { version = "0.14.0-rc.0", features = ["ecdh"] }
 rand = "0.9"
 sha2 = "0.10.8"
 sha3 = "0.10.8"
-x25519-dalek = { version = "2.0.1", features = ["static_secrets"] }
+x25519-dalek = { version = "3.0.0-pre.1", features = ["static_secrets"] }
 x448 = "0.6.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

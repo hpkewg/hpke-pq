@@ -15,16 +15,16 @@ fn generate_test_vectors() -> TestVectors {
     vectors.push(TestVector::new::<MlKem1024, HkdfSha384, Aes256Gcm>());
 
     // 3. QSF-P256-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<QsfP256MlKem768, Shake256, Aes128Gcm>());
+    vectors.push(TestVector::new::<MlKem768P256, Shake256, Aes128Gcm>());
 
     // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<QsfX25519MlKem768, HkdfSha256, Aes128Gcm>());
+    vectors.push(TestVector::new::<MlKem768X25519, HkdfSha256, Aes128Gcm>());
 
     // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<QsfX25519MlKem768, Shake256, Aes128Gcm>());
+    vectors.push(TestVector::new::<MlKem768X25519, Shake256, Aes128Gcm>());
 
     // 5. QSF-P384-MLKEM1024 + SHAKE256 + AES-256-GCM
-    vectors.push(TestVector::new::<QsfP384MlKem1024, Shake256, Aes256Gcm>());
+    vectors.push(TestVector::new::<MlKem1024P384, Shake256, Aes256Gcm>());
 
     vectors
 }
