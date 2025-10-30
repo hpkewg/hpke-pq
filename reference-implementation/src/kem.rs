@@ -1,6 +1,7 @@
 use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf};
-
-use concrete_hybrid_kem::utils::RngWrapper;
+use concrete_hybrid_kem::kem::{
+    Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
+};
 
 pub trait Kem {
     const ID: [u8; 2];
@@ -23,77 +24,72 @@ pub trait Kem {
     fn serialize_private_key(skX: &Self::DecapsulationKey) -> Vec<u8>;
     fn deserialize_private_key(skXm: &[u8]) -> Self::DecapsulationKey;
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>);
-    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>);
-    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8>;
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext);
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (SharedSecret, Ciphertext);
+    fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret;
 }
 
 pub struct KemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
 impl<K, const ID: u16> Kem for KemWithId<K, ID>
 where
-    K: concrete_hybrid_kem::Kem + concrete_hybrid_kem::EncapsDerand,
+    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
 {
     const ID: [u8; 2] = ID.to_be_bytes();
-    const N_SECRET: usize = K::SHARED_SECRET_LENGTH;
-    const N_ENC: usize = K::CIPHERTEXT_LENGTH;
-    const N_PK: usize = K::ENCAPSULATION_KEY_LENGTH;
-    const N_SK: usize = K::DECAPSULATION_KEY_LENGTH;
-    const N_SEED: usize = K::SEED_LENGTH;
-    const N_RANDOM: usize = K::RANDOMNESS_LENGTH;
+    const N_SECRET: usize = K::SHARED_SECRET_SIZE;
+    const N_ENC: usize = K::CIPHERTEXT_SIZE;
+    const N_PK: usize = K::ENCAPSULATION_KEY_SIZE;
+    const N_SK: usize = K::DECAPSULATION_KEY_SIZE;
+    const N_SEED: usize = K::SEED_SIZE;
+    const N_RANDOM: usize = K::RANDOMNESS_SIZE;
 
-    type EncapsulationKey = <K as concrete_hybrid_kem::Kem>::EncapsulationKey;
-    type DecapsulationKey = <K as concrete_hybrid_kem::Kem>::DecapsulationKey;
+    type EncapsulationKey = EncapsulationKey;
+    type DecapsulationKey = DecapsulationKey;
 
     fn generate_key_pair(
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::generate_key_pair(rng).unwrap();
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
         (dk, ek)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::derive_key_pair(ikm).unwrap();
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
         (dk, ek)
     }
 
     fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        pkX.as_bytes().to_vec()
+        pkX.clone()
     }
 
     fn deserialize_public_key(pkXm: &[u8]) -> Self::EncapsulationKey {
-        Self::EncapsulationKey::from(pkXm)
+        EncapsulationKey::from(pkXm)
     }
 
     fn serialize_private_key(skX: &Self::DecapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        skX.as_bytes().to_vec()
+        skX.clone()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::DecapsulationKey {
-        Self::DecapsulationKey::from(skXm)
+        DecapsulationKey::from(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>) {
-        use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::Kem>::encaps(pkR, rng).unwrap();
-        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
+        <K as concrete_hybrid_kem::kem::Kem>::encaps(pkR, rng)
     }
 
-    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
-        use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
-        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (SharedSecret, Ciphertext) {
+        <K as EncapsDerand>::encaps_derand(pkR, randomness)
     }
 
-    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        let enc = K::Ciphertext::from(enc);
-        <K as concrete_hybrid_kem::Kem>::decaps(skR, &enc)
-            .unwrap()
-            .as_bytes()
-            .to_vec()
+    fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
+        <K as concrete_hybrid_kem::kem::Kem>::decaps(skR, enc)
     }
 }
 
@@ -101,68 +97,60 @@ pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
-    K: concrete_hybrid_kem::Kem + concrete_hybrid_kem::EncapsDerand,
+    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
 {
     const ID: [u8; 2] = ID.to_be_bytes();
-    const N_SECRET: usize = K::SHARED_SECRET_LENGTH;
-    const N_ENC: usize = K::CIPHERTEXT_LENGTH;
-    const N_PK: usize = K::ENCAPSULATION_KEY_LENGTH;
-    const N_SK: usize = K::SEED_LENGTH; // Use seed length for ML-KEM per spec
-    const N_SEED: usize = K::SEED_LENGTH;
-    const N_RANDOM: usize = K::RANDOMNESS_LENGTH;
+    const N_SECRET: usize = K::SHARED_SECRET_SIZE;
+    const N_ENC: usize = K::CIPHERTEXT_SIZE;
+    const N_PK: usize = K::ENCAPSULATION_KEY_SIZE;
+    const N_SK: usize = K::SEED_SIZE; // Use seed length for ML-KEM per spec
+    const N_SEED: usize = K::SEED_SIZE;
+    const N_RANDOM: usize = K::RANDOMNESS_SIZE;
 
-    type EncapsulationKey = <K as concrete_hybrid_kem::Kem>::EncapsulationKey;
-    type DecapsulationKey = <K as concrete_hybrid_kem::Kem>::DecapsulationKey;
+    type EncapsulationKey = EncapsulationKey;
+    type DecapsulationKey = DecapsulationKey;
 
     fn generate_key_pair(
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::generate_key_pair(rng).unwrap();
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
         (dk, ek)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (ek, dk) = <K as concrete_hybrid_kem::Kem>::derive_key_pair(ikm).unwrap();
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
         (dk, ek)
     }
 
     fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        pkX.as_bytes().to_vec()
+        pkX.clone()
     }
 
     fn deserialize_public_key(pkXm: &[u8]) -> Self::EncapsulationKey {
-        Self::EncapsulationKey::from(pkXm)
+        EncapsulationKey::from(pkXm)
     }
 
     fn serialize_private_key(skX: &Self::DecapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        skX.as_bytes().to_vec()
+        skX.clone()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::DecapsulationKey {
-        Self::DecapsulationKey::from(skXm)
+        DecapsulationKey::from(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>) {
-        use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::Kem>::encaps(pkR, rng).unwrap();
-        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
+        <K as concrete_hybrid_kem::kem::Kem>::encaps(pkR, rng)
     }
 
-    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
-        use concrete_hybrid_kem::AsBytes;
-        let (ct, ss) = <K as concrete_hybrid_kem::EncapsDerand>::encaps_derand(pkR, randomness).unwrap();
-        (ss.as_bytes().to_vec(), ct.as_bytes().to_vec())
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (SharedSecret, Ciphertext) {
+        <K as EncapsDerand>::encaps_derand(pkR, randomness)
     }
 
-    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
-        use concrete_hybrid_kem::AsBytes;
-        let enc = K::Ciphertext::from(enc);
-        <K as concrete_hybrid_kem::Kem>::decaps(skR, &enc)
-            .unwrap()
-            .as_bytes()
-            .to_vec()
+    fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
+        <K as concrete_hybrid_kem::kem::Kem>::decaps(skR, enc)
     }
 }
 
@@ -200,7 +188,7 @@ impl Curve for P256 {
     type Point = p256::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(&mut RngWrapper(rng));
+        let dk = Self::Scalar::random(rng);
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -236,12 +224,11 @@ impl Curve for P256 {
 
     fn serialize_private_key(skX: &Self::Scalar) -> Vec<u8> {
         let sk = p256::SecretKey::from(skX);
-        sk.to_bytes().as_slice().to_vec()
+        sk.to_bytes().to_vec()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        let sk = generic_array::GenericArray::clone_from_slice(skXm);
-        Self::Scalar::from_repr(sk).unwrap()
+        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
@@ -268,7 +255,7 @@ impl Curve for P384 {
     type Point = p384::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(&mut RngWrapper(rng));
+        let dk = Self::Scalar::random(rng);
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -286,8 +273,7 @@ impl Curve for P384 {
                 continue;
             }
 
-            let sk_arr = generic_array::GenericArray::clone_from_slice(sk.as_slice());
-            let sk = Self::Scalar::from_repr(sk_arr).unwrap();
+            let sk = Self::Scalar::from_repr(sk.try_into().unwrap()).unwrap();
             let pk = Self::Point::from_secret_scalar(&sk);
             return (sk, pk);
         }
@@ -305,12 +291,11 @@ impl Curve for P384 {
 
     fn serialize_private_key(skX: &Self::Scalar) -> Vec<u8> {
         let sk = p384::SecretKey::from(skX);
-        sk.to_bytes().as_slice().to_vec()
+        sk.to_bytes().to_vec()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        let sk = generic_array::GenericArray::clone_from_slice(skXm);
-        Self::Scalar::from_repr(sk).unwrap()
+        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
@@ -337,7 +322,7 @@ impl Curve for P521 {
     type Point = p521::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(&mut RngWrapper(rng));
+        let dk = Self::Scalar::random(rng);
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -356,8 +341,7 @@ impl Curve for P521 {
                 continue;
             }
 
-            let sk_arr = generic_array::GenericArray::clone_from_slice(sk.as_slice());
-            let sk = Self::Scalar::from_repr(sk_arr).unwrap();
+            let sk = Self::Scalar::from_repr(sk.try_into().unwrap()).unwrap();
             let pk = Self::Point::from_secret_scalar(&sk);
             return (sk, pk);
         }
@@ -375,12 +359,11 @@ impl Curve for P521 {
 
     fn serialize_private_key(skX: &Self::Scalar) -> Vec<u8> {
         let sk = p521::SecretKey::from(skX);
-        sk.to_bytes().as_slice().to_vec()
+        sk.to_bytes().to_vec()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        let sk = generic_array::GenericArray::clone_from_slice(skXm);
-        Self::Scalar::from_repr(sk).unwrap()
+        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
@@ -407,7 +390,7 @@ impl Curve for X25519 {
     type Point = x25519_dalek::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = x25519_dalek::StaticSecret::random_from_rng(&mut RngWrapper(rng));
+        let dk = x25519_dalek::StaticSecret::random_from_rng(rng);
         let ek = x25519_dalek::PublicKey::from(&dk);
         (dk, ek)
     }
@@ -560,7 +543,10 @@ where
         C::deserialize_private_key(skXm)
     }
 
-    fn encap(rng: &mut impl rand::CryptoRng, pkR: &Self::EncapsulationKey) -> (Vec<u8>, Vec<u8>) {
+    fn encap(
+        rng: &mut impl rand::CryptoRng,
+        pkR: &Self::EncapsulationKey,
+    ) -> (SharedSecret, Ciphertext) {
         use crate::concat;
 
         let (skE, pkE) = Self::generate_key_pair(rng);
@@ -574,7 +560,7 @@ where
         (shared_secret, enc)
     }
 
-    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (Vec<u8>, Vec<u8>) {
+    fn encap_derand(pkR: &Self::EncapsulationKey, randomness: &[u8]) -> (SharedSecret, Ciphertext) {
         use crate::concat;
 
         let (skE, pkE) = Self::derive_key_pair(randomness);
@@ -588,7 +574,7 @@ where
         (shared_secret, enc)
     }
 
-    fn decap(enc: &[u8], skR: &Self::DecapsulationKey) -> Vec<u8> {
+    fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
         use crate::concat;
 
         let pkE = Self::deserialize_public_key(&enc);
@@ -608,14 +594,13 @@ pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512>;
 pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256>;
 pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512>;
 
-pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::MlKem512Kem, 0x0040>;
-pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::MlKem768Kem, 0x0041>;
-pub type MlKem1024 = MlKemWithId<concrete_hybrid_kem::MlKem1024Kem, 0x0042>;
+pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::kem::MlKem512, 0x0040>;
+pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::kem::MlKem768, 0x0041>;
+pub type MlKem1024 = MlKemWithId<concrete_hybrid_kem::kem::MlKem1024, 0x0042>;
 
-pub type QsfP256MlKem768 = KemWithId<concrete_hybrid_kem::QsfP256MlKem768Shake256Sha3256, 0x0050>;
-pub type QsfP384MlKem1024 = KemWithId<concrete_hybrid_kem::QsfP384MlKem1024Shake256Sha3256, 0x0051>;
-pub type QsfX25519MlKem768 =
-    KemWithId<concrete_hybrid_kem::QsfX25519MlKem768Shake256Sha3256, 0x647a>;
+pub type MlKem768P256 = KemWithId<concrete_hybrid_kem::MlKem768P256, 0x0050>;
+pub type MlKem1024P384 = KemWithId<concrete_hybrid_kem::MlKem1024P384, 0x0051>;
+pub type MlKem768X25519 = KemWithId<concrete_hybrid_kem::MlKem768X25519, 0x647a>;
 
 #[cfg(test)]
 mod test {
@@ -648,8 +633,8 @@ mod test {
         test::<MlKem512>();
         test::<MlKem768>();
         test::<MlKem1024>();
-        test::<QsfP256MlKem768>();
-        test::<QsfX25519MlKem768>();
-        test::<QsfP384MlKem1024>();
+        test::<MlKem768P256>();
+        test::<MlKem768X25519>();
+        test::<MlKem1024P384>();
     }
 }

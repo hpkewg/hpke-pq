@@ -11,6 +11,10 @@ pub use aead::*;
 pub use kdf::*;
 pub use kem::*;
 
+pub use concrete_hybrid_kem::kem::Ciphertext;
+pub use concrete_hybrid_kem::kem::DecapsulationKey;
+pub use concrete_hybrid_kem::kem::EncapsulationKey;
+
 fn concat(parts: &[&[u8]]) -> Vec<u8> {
     let len = parts.iter().map(|x| x.len()).sum();
     let mut out = Vec::with_capacity(len);
@@ -212,7 +216,7 @@ where
         rng: &mut impl rand::CryptoRng,
         pkR: &K::EncapsulationKey,
         info: &[u8],
-    ) -> (Vec<u8>, Context<A, Sender>) {
+    ) -> (Ciphertext, Context<A, Sender>) {
         let (shared_secret, enc) = K::encap(rng, pkR);
         (
             enc,
@@ -221,7 +225,7 @@ where
     }
 
     pub fn setup_base_r(
-        enc: &[u8],
+        enc: &Ciphertext,
         skR: &K::DecapsulationKey,
         info: &[u8],
     ) -> Context<A, Receiver> {
@@ -235,7 +239,7 @@ where
         info: &[u8],
         psk: &[u8],
         psk_id: &[u8],
-    ) -> (Vec<u8>, Context<A, Sender>) {
+    ) -> (Ciphertext, Context<A, Sender>) {
         let (shared_secret, enc) = K::encap(rng, pkR);
         (
             enc,
@@ -244,7 +248,7 @@ where
     }
 
     pub fn setup_psk_r(
-        enc: &[u8],
+        enc: &Ciphertext,
         skR: &K::DecapsulationKey,
         info: &[u8],
         psk: &[u8],
@@ -260,14 +264,14 @@ where
         info: &[u8],
         aad: &[u8],
         pt: &[u8],
-    ) -> (Vec<u8>, Vec<u8>) {
+    ) -> (Ciphertext, Vec<u8>) {
         let (enc, mut ctx) = Self::setup_base_s(rng, pkR, info);
         let ct = ctx.seal(aad, pt);
         (enc, ct)
     }
 
     pub fn open_base(
-        enc: &[u8],
+        enc: &Ciphertext,
         skR: &K::DecapsulationKey,
         info: &[u8],
         aad: &[u8],
@@ -285,14 +289,14 @@ where
         pt: &[u8],
         psk: &[u8],
         psk_id: &[u8],
-    ) -> (Vec<u8>, Vec<u8>) {
+    ) -> (Ciphertext, Vec<u8>) {
         let (enc, mut ctx) = Self::setup_psk_s(rng, pkR, info, psk, psk_id);
         let ct = ctx.seal(aad, pt);
         (enc, ct)
     }
 
     pub fn open_psk(
-        enc: &[u8],
+        enc: &Ciphertext,
         skR: &K::DecapsulationKey,
         info: &[u8],
         aad: &[u8],
