@@ -93,32 +93,6 @@ where
 
 pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
-impl<K, const ID: u16> MlKemWithId<K, ID>
-where
-    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
-{
-    fn expand_decapsulation_key(
-        ikm: &[u8],
-    ) -> (
-        <Self as Kem>::DecapsulationKey,
-        <Self as Kem>::EncapsulationKey,
-    ) {
-        use sha3::{
-            digest::{ExtendableOutput, Update, XofReader},
-            Shake256,
-        };
-
-        let mut h = Shake256::default();
-        h.update(ikm);
-        let mut r = h.finalize_xof();
-
-        let mut dz = vec![0; 64];
-        r.read(&mut dz);
-        let (_dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dz);
-        (dz, ek)
-    }
-}
-
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
     K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
@@ -143,9 +117,22 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        use sha3::{
+            digest::{ExtendableOutput, Update, XofReader},
+            Shake256,
+        };
+
         assert_eq!(ikm.len(), 32);
-        let (_dk, ek) = Self::expand_decapsulation_key(ikm);
-        (ikm.to_vec(), ek)
+
+        let mut h = Shake256::default();
+        h.update(ikm);
+        let mut r = h.finalize_xof();
+
+        let mut dk = vec![0; 64];
+        r.read(&mut dk);
+
+        let (_exanded_dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dk);
+        (dk, ek)
     }
 
     fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
@@ -176,8 +163,8 @@ where
     }
 
     fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
-        let (dk, ek) = Self::expand_decapsulation_key(skR);
-        <K as concrete_hybrid_kem::kem::Kem>::decaps(&dk, enc)
+        let (exanded_dk, _ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(skR);
+        <K as concrete_hybrid_kem::kem::Kem>::decaps(&exanded_dk, enc)
     }
 }
 
