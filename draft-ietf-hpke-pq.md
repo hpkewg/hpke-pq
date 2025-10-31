@@ -167,8 +167,12 @@ def DeriveKeyPair(ikm):
     if len(ikm) != 64:
         raise DeriveKeyPairError
 
-    (dk, ek) = expandDecapsulationKey(ikm)
-    return (ikm, ek)
+    dk = SHAKE256(ikm, 256)
+    d = dk[:32]
+    z = dk[32:]
+
+    (ek, _expanded_dk) = ML-KEM.KeyGen_internal(d, z)
+    return (dk, ek)
 ~~~
 
 The `GenerateKeyPair` function is simply `DeriveKeyPair` with a pseudorandom
@@ -200,8 +204,10 @@ expanded decapsulation key from the 64-byte seed format and invoke
 
 ~~~ pseudocode
 def Decap(enc, skR):
-    (dk, _) = expandDecapsulationKey(skR)
-    return ML-KEM.Decaps(dk, enc)
+    d = dk[:32]
+    z = dk[32:]
+    (_ek, expanded_dk) = ML-KEM.KeyGen_internal(d, z)
+    return ML-KEM.Decaps(expanded_dk, enc)
 ~~~
 
 The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
