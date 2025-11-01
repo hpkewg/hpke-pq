@@ -1,10 +1,11 @@
-use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf};
+use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
 
 pub trait Kem {
     const ID: [u8; 2];
+    const SUITE_ID: &[u8] = &[0x4b, 0x45, 0x4d, Self::ID[0], Self::ID[1]];
     const N_SECRET: usize;
     const N_ENC: usize;
     const N_PK: usize;
@@ -55,7 +56,10 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
+        assert!(ikm.len() >= 32);
+        let seed =
+            Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"Hybrid KEM DeriveKeyPair", b"", 32);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&seed);
         (dk, ek)
     }
 
@@ -93,6 +97,22 @@ where
 
 pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
+impl<K, const ID: u16> MlKemWithId<K, ID>
+where
+    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
+{
+    fn expand_decaps_key(
+        dk: &[u8],
+    ) -> (
+        <Self as Kem>::DecapsulationKey,
+        <Self as Kem>::EncapsulationKey,
+    ) {
+        assert_eq!(dk.len(), Self::N_SK);
+        let (dk, ek, info) = K::derive_key_pair(dk);
+        (dk, ek)
+    }
+}
+
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
     K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
@@ -101,7 +121,7 @@ where
     const N_SECRET: usize = K::SHARED_SECRET_SIZE;
     const N_ENC: usize = K::CIPHERTEXT_SIZE;
     const N_PK: usize = K::ENCAPSULATION_KEY_SIZE;
-    const N_SK: usize = 32; // Seed is always 32 bytes
+    const N_SK: usize = K::DECAPSULATION_KEY_SIZE;
     const N_RANDOM: usize = K::RANDOMNESS_SIZE;
 
     type EncapsulationKey = EncapsulationKey;
@@ -111,27 +131,16 @@ where
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
         use rand::Rng;
-        let mut seed = [0; 32];
-        rng.fill(&mut seed);
-        Self::derive_key_pair(&seed)
+        let mut dk = [0; 64];
+        rng.fill(&mut dk);
+        Self::expand_decaps_key(&dk)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        use sha3::{
-            digest::{ExtendableOutput, Update, XofReader},
-            Shake256,
-        };
-
-        assert_eq!(ikm.len(), 32);
-
-        let mut h = Shake256::default();
-        h.update(ikm);
-        let mut r = h.finalize_xof();
-
-        let mut dk = vec![0; 64];
-        r.read(&mut dk);
-
-        let (_exanded_dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dk);
+        assert!(ikm.len() >= 32);
+        let dk =
+            Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"ML-KEM DeriveKeyPair", b"", 64);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dk);
         (dk, ek)
     }
 
@@ -624,8 +633,10 @@ mod test {
         K: Kem,
     {
         let mut rng = rand::rng();
-
         let (dk, ek) = K::generate_key_pair(&mut rng);
+
+        let ikm = [0xA0; 72];
+        let (dk, ek) = K::derive_key_pair(&mut ikm);
 
         let ekm = K::serialize_public_key(&ek);
         assert_eq!(ekm.len(), K::N_PK);

@@ -154,7 +154,7 @@ format, then uses the function `ML-KEM.KeyGen_internal` from {{FIPS203}} to
 compute the corresponding encapsulation key.
 
 ~~~ pseudocode
-def expandDecapsulationKey(dk):
+def expandDecapsKey(dk):
     d = dk[:32]
     z = dk[32:]
     (ek, expanded_dk) = ML-KEM.KeyGen_internal(d, z)
@@ -165,7 +165,7 @@ def DeriveKeyPair(ikm):
         raise DeriveKeyPairError
 
     dk = SHAKE256.LabeledDerive(ikm, "ML-KEM DeriveKeyPair", "", 64)
-    (_expanded_dk, ek) = expandDecapsulationKey(dk)
+    (_expanded_dk, ek) = expandDecapsKey(dk)
     return (dk, ek)
 ~~~
 
@@ -185,7 +185,8 @@ format rather than the expanded form returned by `ML-KEM.KeyGen`.
 ~~~ pseudocode
 def GenerateKeyPair():
     dk = random(64)
-    return expandDecapsulationKey(dk)
+    (_expanded_dk, ek) = expandDecapsKey(dk)
+    return (dk, ek)
 ~~~
 
 The `SerializePublicKey` and `DeserializePublicKey` functions are both the
@@ -205,9 +206,7 @@ expanded decapsulation key from the 64-byte seed format and invoke
 
 ~~~ pseudocode
 def Decap(enc, skR):
-    d = dk[:32]
-    z = dk[32:]
-    (_ek, expanded_dk) = ML-KEM.KeyGen_internal(d, z)
+    (expanded_dk, _ek) = expandDecapsKey(skR)
     return ML-KEM.Decaps(expanded_dk, enc)
 ~~~
 
