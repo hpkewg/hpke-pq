@@ -169,7 +169,7 @@ def DeriveKeyPair(ikm):
     return (dk, ek)
 ~~~
 
-As discussed in {{I-D.ietf-hpke-hpke}}, the value of `suite_id` used within
+As discussed in {{HPKE}}, the value of `suite_id` used within
 LabeledDerive identifies the KEM in use:
 
 * ML-KEM-512: `KEM\x00\x40` (hex: 4b454d0040)
@@ -241,7 +241,7 @@ MLKEM1024-P384:
 {: spacing="compact"}
 
 These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface
-maps to the KEM interface in {{I-D.ietf-hpke-hpke}} in the following way: 
+maps to the KEM interface in {{HPKE}} in the following way:
 
 * The HPKE `DeriveKeyPair` function uses the SHAKE256 KDF (see
   {{single-stage-kdfs}}) to derive a 32-byte seed for the hybrid KEM, then uses
@@ -268,7 +268,7 @@ def DeriveKeyPair(ikm):
     * `Npk = Nek`
     * `Nsk = Ndk`
 
-As discussed in {{I-D.ietf-hpke-hpke}}, the value of `suite_id` used within
+As discussed in {{HPKE}}, the value of `suite_id` used within
 LabeledDerive identifies the KEM in use:
 
 * MLKEM768-P256: `KEM\x00\x50` (hex: 4b454d0050)
