@@ -161,10 +161,7 @@ def expandDecapsKey(dk):
     return (expanded_dk, ek)
 
 def DeriveKeyPair(ikm):
-    if len(ikm) < 32:
-        raise DeriveKeyPairError
-
-    dk = SHAKE256.LabeledDerive(ikm, "ML-KEM DeriveKeyPair", "", 64)
+    dk = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 64)
     (_expanded_dk, ek) = expandDecapsKey(dk)
     return (dk, ek)
 ~~~
@@ -189,10 +186,10 @@ def GenerateKeyPair():
     return (dk, ek)
 ~~~
 
-The `SerializePublicKey` and `DeserializePublicKey` functions are both the
-identity function, since the ML-KEM already uses fixed-length byte strings for
-public encapsulation keys.  The length of the byte string is determined by the
-ML-KEM parameter set in use.
+The `SerializePublicKey`, `DeserializePublicKey`, `SerializePrivateKey`, and
+`DeserializePrivateKey` functions are both the identity function, since the
+ML-KEM already uses fixed-length byte strings for public encapsulation keys.
+The length of the byte string is determined by the ML-KEM parameter set in use.
 
 The `Encap` function corresponds to the function `ML-KEM.Encaps` in
 {{FIPS203}}, where an ML-KEM encapsulation key check failure causes an HPKE
@@ -245,22 +242,20 @@ maps to the KEM interface in {{HPKE}} in the following way:
 
 * The HPKE `DeriveKeyPair` function uses the SHAKE256 KDF (see
   {{single-stage-kdfs}}) to derive a 32-byte seed for the hybrid KEM, then uses
-  the function `DeriveKeyPair` from {{FIPS203}} to compute the key pair for the
-  hybrid KEM.  The input to this function MUST be at least 32 bytes long.
+  the function `DeriveKeyPair` from {{GENERIC}} to compute the key pair for the
+  hybrid KEM.  The input to this function SHOULD be at least 32 bytes long.
 
 ~~~ pseudocode
 def DeriveKeyPair(ikm):
-    if len(ikm) < 32:
-        raise DeriveKeyPairError
-
-    seed = SHAKE256.LabeledDerive(ikm, "Hybrid KEM DeriveKeyPair", "", 32)
+    seed = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 32)
     return KEM.DeriveKeyPair(seed)
 ~~~
 
 * The `GenerateKeyPair`, `Encap` and `Decap` algorithms are identical.
 
-* The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
-  identity, since encapsulation keys are already fixed-length byte strings.
+* The `SerializePublicKey`, `DeserializePublicKey`, `SerializePrivateKey`, and
+  `DeserializePrivateKey` algorithms are the identity, since encapsulation and
+  decapsulation keys are already fixed-length byte strings.
 
 * The constants map as follows:
     * `Nsecret = Nss`

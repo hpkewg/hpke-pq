@@ -56,9 +56,7 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        assert!(ikm.len() >= 32);
-        let seed =
-            Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"Hybrid KEM DeriveKeyPair", b"", 32);
+        let seed = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 32);
         let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&seed);
         (dk, ek)
     }
@@ -137,9 +135,7 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        assert!(ikm.len() >= 32);
-        let dk =
-            Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"ML-KEM DeriveKeyPair", b"", 64);
+        let dk = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 64);
         let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dk);
         (dk, ek)
     }
@@ -636,7 +632,7 @@ mod test {
         let (dk, ek) = K::generate_key_pair(&mut rng);
 
         let ikm = [0xA0; 72];
-        let (dk, ek) = K::derive_key_pair(&mut ikm);
+        let (dk, ek) = K::derive_key_pair(&ikm);
 
         let ekm = K::serialize_public_key(&ek);
         assert_eq!(ekm.len(), K::N_PK);
