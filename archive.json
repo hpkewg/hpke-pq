@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-30T00:55:39.311075+00:00",
+  "timestamp": "2025-11-02T00:58:02.012793+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -401,7 +401,7 @@
       "labels": [],
       "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
       "createdAt": "2025-08-08T01:07:30Z",
-      "updatedAt": "2025-10-29T13:31:14Z",
+      "updatedAt": "2025-11-01T02:49:54Z",
       "closedAt": null,
       "comments": [
         {
@@ -445,6 +445,13 @@
           "body": "> That would still leave the awkwardness of, say, an MLS ciphersuite using HKDF-SHA-384 for the key schedule and wanting to use these algorithms\n\nI don't see why this is the case.\n\n> Update draft-ietf-hpke-hpke to specify a separate Nseed for each KEM, and require that the input to DeriveKeyPair MUST have size Nseed\n\nWhat is the reasoning to disallow longer inputs? I don't see harm if we're going to plop it into SHAKE256 anyway.",
           "createdAt": "2025-10-29T13:31:14Z",
           "updatedAt": "2025-10-29T13:31:14Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Mailing list discussion: https://mailarchive.ietf.org/arch/msg/hpke/Sq2apDTygF4F6-ZLevVGukKxsJE/",
+          "createdAt": "2025-11-01T02:49:54Z",
+          "updatedAt": "2025-11-01T02:49:54Z"
         }
       ]
     }
@@ -2087,13 +2094,13 @@
       "labels": [],
       "body": "Fixes #30 ",
       "createdAt": "2025-10-29T22:47:14Z",
-      "updatedAt": "2025-10-29T22:56:17Z",
+      "updatedAt": "2025-11-01T15:29:57Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
-      "baseRefOid": "78953d3e1f142a52653ad2efec855deb31020b7c",
+      "baseRefOid": "1341646aff9b94abdf9ae60fc59f9c8ae69bed23",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "nsk",
-      "headRefOid": "f7dcd1080aa84c9f38799d42d60c2238e6e7bbe3",
+      "headRefOid": "1607e40929fb8bec193764a371189c5e35209b23",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2147,6 +2154,102 @@
               "updatedAt": "2025-10-29T22:53:09Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7Kfaal",
+          "commit": {
+            "abbreviatedOid": "9c3eeab"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T02:42:50Z",
+          "updatedAt": "2025-10-30T02:42:50Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "Paging @bwesterb\r\n\r\nIt seems like if 32 bytes is good enough for the hybrids -- ML-KEM plus something else -- then it ought to be good enough for ML-KEM alone?",
+              "createdAt": "2025-10-30T02:42:50Z",
+              "updatedAt": "2025-10-30T02:42:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7KfhSa",
+          "commit": {
+            "abbreviatedOid": "9c3eeab"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T03:02:44Z",
+          "updatedAt": "2025-10-30T03:02:44Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "But why? Just to copy? This would make ML-KEM decaps keys for HPKE vary from most other ML-KEM implementations that use the 64 byte (d, z) format that is FIPS/spec-compatible. \n\nI'm pretty sure this is not allowed by FIPS 203 and SP 800-133 (existing and upcoming updates, unless they decide to change their mind and support XOFs like SHAKE to source seeds, as opposed to their explicit KDFs) ",
+              "createdAt": "2025-10-30T03:02:44Z",
+              "updatedAt": "2025-10-30T03:02:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LG2Wz",
+          "commit": {
+            "abbreviatedOid": "1607e40"
+          },
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "I like using SHAKE256.LabeledDerive, LGTM with the note about removing the minimum ikm length.",
+          "createdAt": "2025-11-01T15:19:25Z",
+          "updatedAt": "2025-11-01T15:29:57Z",
+          "comments": [
+            {
+              "originalPosition": 25,
+              "body": "In RFC 9180 a long enough ikm is a SHOULD, not a MUST, and I don't think doing DeriveKeyPair on 128 bits of entropy would be always unreasonable. IMHO we should no check the length here. ",
+              "createdAt": "2025-11-01T15:19:25Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 32,
+              "body": "Very weak preference for `\"DeriveKeyPair\"`. Putting ML-KEM and not ML-KEM-768 in there feels off, and the actual KEM is already separated by suite_id, so leaning on the side of removing ML-KEM instead of adding the parameter size.",
+              "createdAt": "2025-11-01T15:20:21Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 64,
+              "body": "I think you are missing `SerializePrivateKey` and `DeserializePrivateKey` descriptions, similarly trivial.",
+              "createdAt": "2025-11-01T15:25:14Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 92,
+              "body": "```suggestion\r\n  the function `DeriveKeyPair` from {{GENERIC}} to compute the key pair for the\r\n```",
+              "createdAt": "2025-11-01T15:26:15Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 93,
+              "body": "Same as above on removing the minimum ikm length.",
+              "createdAt": "2025-11-01T15:26:42Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 100,
+              "body": "Same as above on using `\"DeriveKeyPair\"` and letting the suite_id do the work.",
+              "createdAt": "2025-11-01T15:27:02Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            },
+            {
+              "originalPosition": 107,
+              "body": "Same as above on missing SerializePrivateKey and DeserializePrivateKey.",
+              "createdAt": "2025-11-01T15:27:55Z",
+              "updatedAt": "2025-11-01T15:29:58Z"
+            }
+          ]
         }
       ]
     },
@@ -2177,6 +2280,123 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 38,
+      "id": "PR_kwDOOXfHTc6wgbzN",
+      "title": "Update reference implementation",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/38",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "... to match the latest changes in the hybrid KEMs reference implementation.",
+      "createdAt": "2025-10-30T01:05:06Z",
+      "updatedAt": "2025-10-30T03:09:12Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "78953d3e1f142a52653ad2efec855deb31020b7c",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "ref-impl-update",
+      "headRefOid": "f8aaa7bba214ca0a17fbc5faf41b395716b0f4a0",
+      "closedAt": "2025-10-30T01:05:12Z",
+      "mergedAt": "2025-10-30T01:05:12Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "1341646aff9b94abdf9ae60fc59f9c8ae69bed23"
+      },
+      "comments": [
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for the feedback @martinthomson.  I'm going to update #36 with the semantic changes, so I'll add the assertions there.",
+          "createdAt": "2025-10-30T02:22:15Z",
+          "updatedAt": "2025-10-30T02:22:15Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc7Ke2e9",
+          "commit": {
+            "abbreviatedOid": "f8aaa7b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T01:13:04Z",
+          "updatedAt": "2025-10-30T01:13:04Z",
+          "comments": [
+            {
+              "originalPosition": 196,
+              "body": "Shouldn't this assert that randomness is >= N_SEED (or ==)",
+              "createdAt": "2025-10-30T01:13:04Z",
+              "updatedAt": "2025-10-30T01:13:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7Ke3sm",
+          "commit": {
+            "abbreviatedOid": "f8aaa7b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T01:15:35Z",
+          "updatedAt": "2025-10-30T01:15:35Z",
+          "comments": [
+            {
+              "originalPosition": 164,
+              "body": "Given these constants, there's a scary option:\n\n\n```suggestion\n    fn deserialize_public_key(pkXm: &[u8; Self::N_PK]) -> Self::EncapsulationKey {\n```\n\nYou'd have to redefine the trait to include the constants, of course.\n\nThat doesn't work with this using the Ciphertext alias from the ML-KEM crate though.",
+              "createdAt": "2025-10-30T01:15:35Z",
+              "updatedAt": "2025-10-30T01:16:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7KfRT6",
+          "commit": {
+            "abbreviatedOid": "f8aaa7b"
+          },
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T02:21:33Z",
+          "updatedAt": "2025-10-30T02:21:33Z",
+          "comments": [
+            {
+              "originalPosition": 164,
+              "body": "Yeah, until we get nicer const generics, I'll settle for an `assert!()`.",
+              "createdAt": "2025-10-30T02:21:33Z",
+              "updatedAt": "2025-10-30T02:21:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7KfjQQ",
+          "commit": {
+            "abbreviatedOid": "f8aaa7b"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-30T03:09:12Z",
+          "updatedAt": "2025-10-30T03:09:12Z",
+          "comments": [
+            {
+              "originalPosition": 164,
+              "body": "To be perfectly blunt, const generics are good enough for what you are seeking to do here.  They have been for a while.  You can't do sums or conditions, but for what you have, with constants for everything, you don't need that.  You could avoid the need for bounds-checking, if nothing else.",
+              "createdAt": "2025-10-30T03:09:12Z",
+              "updatedAt": "2025-10-30T03:09:12Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
