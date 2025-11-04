@@ -270,7 +270,6 @@ LabeledDerive identifies the KEM in use:
 * MLKEM768-X25519: `KEM\x64\x7a` (hex: 4b454d647a)
 * MLKEM1024-P384: `KEM\x00\x51` (hex: 4b454d0051)
 
-
 # Single-Stage KDFs
 
 This section defines HPKE KDFs for eXtendable Output Functions (XOF) based on
