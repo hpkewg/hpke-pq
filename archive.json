@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-02T00:58:02.012793+00:00",
+  "timestamp": "2025-11-04T00:54:24.578359+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -2094,13 +2094,13 @@
       "labels": [],
       "body": "Fixes #30 ",
       "createdAt": "2025-10-29T22:47:14Z",
-      "updatedAt": "2025-11-01T15:29:57Z",
+      "updatedAt": "2025-11-03T20:04:13Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "1341646aff9b94abdf9ae60fc59f9c8ae69bed23",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "nsk",
-      "headRefOid": "1607e40929fb8bec193764a371189c5e35209b23",
+      "headRefOid": "44c7ee481f5de2d76529b2066687358dc75e7888",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2248,6 +2248,125 @@
               "body": "Same as above on missing SerializePrivateKey and DeserializePrivateKey.",
               "createdAt": "2025-11-01T15:27:55Z",
               "updatedAt": "2025-11-01T15:29:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LOQtv",
+          "commit": {
+            "abbreviatedOid": "f7dcd10"
+          },
+          "author": "bwesterb",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T06:05:43Z",
+          "updatedAt": "2025-11-03T06:05:43Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "From a security standpoint this is fine.\r\n\r\nFrom a compliance standpoint, I'd like to remark that we've been wrong many times on such details and have many times underestimated the willingness of NIST to allow the reasonable thing.\r\n\r\nThe primary objection I see is that the established seed private-key format for ML-KEM is 64 bytes\u2014not 32 bytes.",
+              "createdAt": "2025-11-03T06:05:43Z",
+              "updatedAt": "2025-11-03T06:05:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LQvfU",
+          "commit": {
+            "abbreviatedOid": "f7dcd10"
+          },
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T09:35:01Z",
+          "updatedAt": "2025-11-03T09:35:02Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "We are not defining a seed format here, especially not a 32-bytes one. The Serialize/DeserializePrivateKey functions are still defined to take the FIPS 203 64-byte seed.\r\n\r\nWhat this PR is doing is defining the DeriveKeyPair interface required by HPKE, which takes arbitrary length inputs. I think calling that input a seed only caused confusion. DeriveKeyPair is not required to use HPKE, so applications with strong FIPS compliance requirements can just do GenerateKeyPair and Serialize/DeserializePrivateKey.",
+              "createdAt": "2025-11-03T09:35:02Z",
+              "updatedAt": "2025-11-03T09:35:02Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LQxEf",
+          "commit": {
+            "abbreviatedOid": "44c7ee4"
+          },
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-03T09:36:43Z",
+          "updatedAt": "2025-11-03T09:36:43Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LYfbH",
+          "commit": {
+            "abbreviatedOid": "44c7ee4"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T17:39:58Z",
+          "updatedAt": "2025-11-03T17:49:21Z",
+          "comments": [
+            {
+              "originalPosition": 131,
+              "body": "```suggestion\n```",
+              "createdAt": "2025-11-03T17:39:58Z",
+              "updatedAt": "2025-11-03T17:49:21Z"
+            },
+            {
+              "originalPosition": 20,
+              "body": "9180 says 'For a given KEM, the ikm parameter given to DeriveKeyPair() SHOULD have length at least Nsk, and SHOULD have at least Nsk bytes of entropy.' It does not specify that the input MUST be arbitrary length, especially per-KEM. For the existing definitions including use of HKDF inside DH-KEM, there are in fact maximum allowed lengths for IKM, and the RECOMMENDED limits are exactly 64 bytes:\r\n\r\n<img width=\"814\" height=\"490\" alt=\"image\" src=\"https://github.com/user-attachments/assets/21322daa-5b85-46fd-848b-e5736893ea46\" />\r\n\r\nSo it seems we have implicit mins and maxes for IKM anyway. \r\n\r\nI do agree with Bas that this is not insecure, it just seems to be an extra complication.",
+              "createdAt": "2025-11-03T17:48:06Z",
+              "updatedAt": "2025-11-03T17:49:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7LY6CH",
+          "commit": {
+            "abbreviatedOid": "f7dcd10"
+          },
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T18:12:38Z",
+          "updatedAt": "2025-11-03T18:12:38Z",
+          "comments": [
+            {
+              "originalPosition": 20,
+              "body": "That section explicitly calls them variable-length parameters. It's not a MUST, but it looks pretty explicit to me.\r\n\r\nFundamentally, I think an application that passes 16, 48, or 64 bytes to DeriveKeyPair is using RFC 9180 correctly, and a new KEM can't break the abstraction by rejecting them. The whole point of HPKE is to be an abstraction.",
+              "createdAt": "2025-11-03T18:12:38Z",
+              "updatedAt": "2025-11-03T18:12:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7Lad3v",
+          "commit": {
+            "abbreviatedOid": "44c7ee4"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-11-03T20:04:07Z",
+          "updatedAt": "2025-11-03T20:04:13Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "I do like the included label here",
+              "createdAt": "2025-11-03T20:04:07Z",
+              "updatedAt": "2025-11-03T20:04:13Z"
             }
           ]
         }
