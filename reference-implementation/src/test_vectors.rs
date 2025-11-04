@@ -227,7 +227,7 @@ impl TestVector {
         let mut rng = rand::rng();
         let ikm_r = {
             // Use the KEM's seed size
-            let mut seed = vec![0u8; K::N_SEED];
+            let mut seed = vec![0u8; K::N_SK];
             rng.fill_bytes(&mut seed);
             seed
         };

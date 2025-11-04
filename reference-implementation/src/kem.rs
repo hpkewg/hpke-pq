@@ -1,15 +1,15 @@
-use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf};
+use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
 
 pub trait Kem {
     const ID: [u8; 2];
+    const SUITE_ID: &[u8] = &[0x4b, 0x45, 0x4d, Self::ID[0], Self::ID[1]];
     const N_SECRET: usize;
     const N_ENC: usize;
     const N_PK: usize;
     const N_SK: usize;
-    const N_SEED: usize;
     const N_RANDOM: usize;
 
     type EncapsulationKey;
@@ -43,7 +43,6 @@ where
     const N_ENC: usize = K::CIPHERTEXT_SIZE;
     const N_PK: usize = K::ENCAPSULATION_KEY_SIZE;
     const N_SK: usize = K::DECAPSULATION_KEY_SIZE;
-    const N_SEED: usize = K::SEED_SIZE;
     const N_RANDOM: usize = K::RANDOMNESS_SIZE;
 
     type EncapsulationKey = EncapsulationKey;
@@ -57,7 +56,8 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
+        let seed = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 32);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&seed);
         (dk, ek)
     }
 
@@ -95,6 +95,22 @@ where
 
 pub struct MlKemWithId<K, const ID: u16>(core::marker::PhantomData<K>);
 
+impl<K, const ID: u16> MlKemWithId<K, ID>
+where
+    K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
+{
+    fn expand_decaps_key(
+        dk: &[u8],
+    ) -> (
+        <Self as Kem>::DecapsulationKey,
+        <Self as Kem>::EncapsulationKey,
+    ) {
+        assert_eq!(dk.len(), Self::N_SK);
+        let (dk, ek, info) = K::derive_key_pair(dk);
+        (dk, ek)
+    }
+}
+
 impl<K, const ID: u16> Kem for MlKemWithId<K, ID>
 where
     K: concrete_hybrid_kem::kem::Kem + EncapsDerand,
@@ -103,8 +119,7 @@ where
     const N_SECRET: usize = K::SHARED_SECRET_SIZE;
     const N_ENC: usize = K::CIPHERTEXT_SIZE;
     const N_PK: usize = K::ENCAPSULATION_KEY_SIZE;
-    const N_SK: usize = K::SEED_SIZE; // Use seed length for ML-KEM per spec
-    const N_SEED: usize = K::SEED_SIZE;
+    const N_SK: usize = K::DECAPSULATION_KEY_SIZE;
     const N_RANDOM: usize = K::RANDOMNESS_SIZE;
 
     type EncapsulationKey = EncapsulationKey;
@@ -113,12 +128,15 @@ where
     fn generate_key_pair(
         rng: &mut impl rand::CryptoRng,
     ) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::generate_key_pair(rng);
-        (dk, ek)
+        use rand::Rng;
+        let mut dk = [0; 64];
+        rng.fill(&mut dk);
+        Self::expand_decaps_key(&dk)
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(ikm);
+        let dk = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 64);
+        let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&dk);
         (dk, ek)
     }
 
@@ -150,7 +168,8 @@ where
     }
 
     fn decap(enc: &Ciphertext, skR: &Self::DecapsulationKey) -> SharedSecret {
-        <K as concrete_hybrid_kem::kem::Kem>::decaps(skR, enc)
+        let (exanded_dk, _ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(skR);
+        <K as concrete_hybrid_kem::kem::Kem>::decaps(&exanded_dk, enc)
     }
 }
 
@@ -511,7 +530,6 @@ where
     const N_ENC: usize = C::POINT_SIZE;
     const N_PK: usize = C::POINT_SIZE;
     const N_SK: usize = C::SCALAR_SIZE;
-    const N_SEED: usize = C::SCALAR_SIZE;
     const N_RANDOM: usize = C::SCALAR_SIZE;
 
     type EncapsulationKey = C::Point;
@@ -611,8 +629,10 @@ mod test {
         K: Kem,
     {
         let mut rng = rand::rng();
-
         let (dk, ek) = K::generate_key_pair(&mut rng);
+
+        let ikm = [0xA0; 72];
+        let (dk, ek) = K::derive_key_pair(&ikm);
 
         let ekm = K::serialize_public_key(&ek);
         assert_eq!(ekm.len(), K::N_PK);

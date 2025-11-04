@@ -148,42 +148,48 @@ The NIST Module-Lattice-Based Key-Encapsulation Mechanism is defined in
 {{FIPS203}}.  In this section, we define how to implement the HPKE KEM interface
 using ML-KEM.
 
-The HPKE `DeriveKeyPair` function corresponds to the function
-`ML-KEM.KeyGen_internal` in {{FIPS203}}.  The input `ikm` MUST be exactly
-`Nsk = 64` bytes long.  The `d` and `z` inputs to `ML-KEM.KeyGen_internal` are
-the first and last 32-byte segments of `ikm`, respectively.  The output `skX` is
-the generated decapsulation key and the output `pkX` is the generated
-encapsulation key.
+The HPKE `DeriveKeyPair` function uses the SHAKE256 KDF (see
+{{single-stage-kdfs}}) to derive an ML-KEM decapsulation key in the 64-byte seed
+format, then uses the function `ML-KEM.KeyGen_internal` from {{FIPS203}} to
+compute the corresponding encapsulation key.
 
 ~~~ pseudocode
+def expandDecapsKey(dk):
+    d = dk[:32]
+    z = dk[32:]
+    (ek, expanded_dk) = ML-KEM.KeyGen_internal(d, z)
+    return (expanded_dk, ek)
+
 def DeriveKeyPair(ikm):
-    if len(ikm) != 64:
-        raise DeriveKeyPairError
-
-    d = ikm[:32]
-    z = ikm[32:]
-
-    dk = ikm
-    (ek, _) = ML-KEM.KeyGen_internal(d, z)
+    dk = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 64)
+    (_expanded_dk, ek) = expandDecapsKey(dk)
     return (dk, ek)
 ~~~
 
-The `GenerateKeyPair` function is simply `DeriveKeyPair` with a pseudorandom
-`ikm` value.  As long as the bytes supplied by `random` meet the randomness
-requirements of {{FIPS203}}, this corresponds to the `ML-KEM.KeyGen` function,
-with the distinction that the decapsulation key is returned in seed format
-rather than the expanded form returned by `ML-KEM.KeyGen`.
+As discussed in {{HPKE}}, the value of `suite_id` used within
+LabeledDerive identifies the KEM in use:
+
+* ML-KEM-512: `KEM\x00\x40` (hex: 4b454d0040)
+* ML-KEM-768: `KEM\x00\x41` (hex: 4b454d0041)
+* ML-KEM-1024: `KEM\x00\x42` (hex: 4b454d0042)
+
+The `GenerateKeyPair` function simply calls `ML-KEM.KeyGen_internal` with a
+pseudorandom `dk` value.  As long as the bytes supplied by `random` meet the
+randomness requirements of {{FIPS203}}, this corresponds to the `ML-KEM.KeyGen`
+function, with the distinction that the decapsulation key is returned in seed
+format rather than the expanded form returned by `ML-KEM.KeyGen`.
 
 ~~~ pseudocode
 def GenerateKeyPair():
-    dz = random(64)
-    return DeriveKeyPair(dz)
+    dk = random(64)
+    (_expanded_dk, ek) = expandDecapsKey(dk)
+    return (dk, ek)
 ~~~
 
-The `SerializePublicKey` and `DeserializePublicKey` functions are both the
-identity function, since the ML-KEM already uses fixed-length byte strings for
-public encapsulation keys.  The length of the byte string is determined by the
-ML-KEM parameter set in use.
+The `SerializePublicKey`, `DeserializePublicKey`, `SerializePrivateKey`, and
+`DeserializePrivateKey` functions are both the identity function, since the
+ML-KEM already uses fixed-length byte strings for public encapsulation keys.
+The length of the byte string is determined by the ML-KEM parameter set in use.
 
 The `Encap` function corresponds to the function `ML-KEM.Encaps` in
 {{FIPS203}}, where an ML-KEM encapsulation key check failure causes an HPKE
@@ -197,10 +203,8 @@ expanded decapsulation key from the 64-byte seed format and invoke
 
 ~~~ pseudocode
 def Decap(enc, skR):
-    d = skR[:32]
-    z = skR[32:]
-    (_, dk) = ML-KEM.KeyGen_internal(d, z)
-    return ML-KEM.Decaps(dk, enc)
+    (expanded_dk, _ek) = expandDecapsKey(skR)
+    return ML-KEM.Decaps(expanded_dk, enc)
 ~~~
 
 The constants `Nsecret` and `Nsk` are always 32 and 64, respectively.  The
@@ -233,21 +237,38 @@ MLKEM1024-P384:
 : ML-KEM-1024 and P-384
 {: spacing="compact"}
 
-These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface is
-mostly the same as the KEM interface in {{Section 4 of HPKE}}, with the
-following mapping:
+These KEMs satisfy the KEM interface defined in {{GENERIC}}.  This interface
+maps to the KEM interface in {{HPKE}} in the following way:
 
-* The `GenerateKeyPair`, `DeriveKeyPair`, and `Encap` and `Decap` algorithms
-  are identical.
+* The HPKE `DeriveKeyPair` function uses the SHAKE256 KDF (see
+  {{single-stage-kdfs}}) to derive a 32-byte seed for the hybrid KEM, then uses
+  the function `DeriveKeyPair` from {{GENERIC}} to compute the key pair for the
+  hybrid KEM.  The input to this function SHOULD be at least 32 bytes long.
 
-* The `SerializePublicKey` and `DeserializePublicKey` algorithms are the
-  identity, since encapsulation keys are already fixed-length byte strings.
+~~~ pseudocode
+def DeriveKeyPair(ikm):
+    seed = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 32)
+    return KEM.DeriveKeyPair(seed)
+~~~
+
+* The `GenerateKeyPair`, `Encap` and `Decap` algorithms are identical.
+
+* The `SerializePublicKey`, `DeserializePublicKey`, `SerializePrivateKey`, and
+  `DeserializePrivateKey` algorithms are the identity, since encapsulation and
+  decapsulation keys are already fixed-length byte strings.
 
 * The constants map as follows:
     * `Nsecret = Nss`
     * `Nenc = Nct`
     * `Npk = Nek`
     * `Nsk = Ndk`
+
+As discussed in {{HPKE}}, the value of `suite_id` used within
+LabeledDerive identifies the KEM in use:
+
+* MLKEM768-P256: `KEM\x00\x50` (hex: 4b454d0050)
+* MLKEM768-X25519: `KEM\x64\x7a` (hex: 4b454d647a)
+* MLKEM1024-P384: `KEM\x00\x51` (hex: 4b454d0051)
 
 # Single-Stage KDFs
 
