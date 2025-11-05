@@ -103,7 +103,7 @@ scheme {{HPKE}}.  It is the foundation of the Messaging Layer
 Security (MLS) protocol, the Oblivious HTTP protocol, and the TLS Encrypted
 ClientHello extension {{?RFC9420}} {{?RFC9458}} {{?TLS-ECH=I-D.ietf-tls-esni}}.
 
-This document defines a collection of PQ and PQ/T KEM algorithms for HPKE, which
+This document defines a collection of PQ and post-quantum/traditional (PQ/T) KEM algorithms for HPKE, which
 allows HPKE to provide post-quantum security, as discussed in
 {{security-considerations}}:
 
@@ -138,7 +138,7 @@ We generally use the terminology defined in the HPKE specification
 
 There are two meanings of "hybrid" in this document.  In the context of "hybrid
 public key encryption", it refers to the combination of an asymmetric KEM
-operaiton and a symmetric AEAD operation.  In the context of "PQ/T hybrid",
+operation and a symmetric AEAD operation.  In the context of "PQ/T hybrid",
 refers to the combination of PQ and traditional KEMs.  For clarity, we always
 use "HPKE" for the former, and "PQ/T hybrid" for the latter.
 
@@ -251,7 +251,7 @@ def DeriveKeyPair(ikm):
     return KEM.DeriveKeyPair(seed)
 ~~~
 
-* The `GenerateKeyPair`, `Encap` and `Decap` algorithms are identical.
+* The `GenerateKeyPair`, `Encap`, and `Decap` algorithms are identical.
 
 * The `SerializePublicKey`, `DeserializePublicKey`, `SerializePrivateKey`, and
   `DeserializePrivateKey` algorithms are the identity, since encapsulation and
@@ -274,7 +274,7 @@ LabeledDerive identifies the KEM in use:
 
 This section defines HPKE KDFs for eXtendable Output Functions (XOF) based on
 Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}.  The
-related TurboSHAKE XOFs is defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
+related TurboSHAKE XOFs are defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
 
 The `Derive()` function for SHAKE is as follows,
 where `<SIZE>` is either 128 or 256:
@@ -306,7 +306,7 @@ The `Nh` values for the KDFs defined in this section are listed in
 [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned to this
 document. ]]
 
-# Selection of AEAD algorithms
+# Selection of AEAD Algorithms
 
 As discussed in {{Section 2.1 of PQCE}}, the advent of
 quantum computers does not necessarily require changes in the AEAD algorithms
@@ -354,7 +354,7 @@ non-quantum attacker in the event of failures with regard to the PQ algorithm,
 including both implementation flaws as well as new cryptanalysis. See
 {{GENERIC}} for further analysis of hybrid security properties.
 
-## Asymmetric-key-authenticated modes of RFC9180
+## Asymmetric-Key-Authenticated Modes of RFC9180
 
 In the {{?RFC9180}} version of HPKE, KEMs could optionally define the
 additional functions `AuthEncap` and `AuthDecap`. These functions allowed
