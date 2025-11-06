@@ -4,8 +4,9 @@
 
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
-Intended status: Standards Track                         4 November 2025
-Expires: 8 May 2026
+Intended status: Standards Track                             D. Connolly
+Expires: 10 May 2026                                 Selkie Cryptography
+                                                         6 November 2025
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -58,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 May 2026.
+   This Internet-Draft will expire on 10 May 2026.
 
 Copyright Notice
 
@@ -105,7 +106,7 @@ Table of Contents
        A.5.1.  Base Setup Information
      A.6.  QSF-P384-MLKEM1024, Unknown KDF, AES-256-GCM
        A.6.1.  Base Setup Information
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -508,9 +509,9 @@ Table of Contents
 
    [HPKE]     Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
-              Internet-Draft, draft-ietf-hpke-hpke-01, 24 June 2025,
+              Internet-Draft, draft-ietf-hpke-hpke-02, 4 November 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
-              hpke-01>.
+              hpke-02>.
 
    [I-D.irtf-cfrg-kangarootwelve]
               Viguier, B., Wong, D., Van Assche, G., Dang, Q., and J.
@@ -1787,8 +1788,13 @@ A.6.1.2.  Exported Values
   exported_value: 796b22d8ceaceccc4a700c7e943f0cc10de5da4174d20399ff6edf
                   9bcd162422
 
-Author's Address
+Authors' Addresses
 
    Richard Barnes
    Cisco
    Email: rlb@ipv.sx
+
+
+   Deirdre Connolly
+   Selkie Cryptography
+   Email: durumcrustulum@gmail.com
