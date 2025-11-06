@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-04T00:54:24.578359+00:00",
+  "timestamp": "2025-11-06T00:55:10.227678+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -394,15 +394,15 @@
       "id": "I_kwDOOXfHTc7E1TXc",
       "title": "Inflexibility of ikm length and Nsk",
       "url": "https://github.com/hpkewg/hpke-pq/issues/30",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "martinthomson",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "\u00a73. Existing KEMs only require that len(ikm) \u2265 Nsk. In this draft it's\nrequired that len(ikm) = Nsk = 64. This might catch users off guard. For\none, MLS as it's written now will be forced to use HKDF-SHA512 from the\nexisting set of KDFs. That's a needless lower bound. I see a few options:\n\n1. Accept this breaking change.\n2. Always hash down ikm and require len(ikm) \u2265 32.\n3. Require len(ikm) \u2265 32 and only hash down ikm to 64 bytes if it's not yet64 bytes.\n\nFrom @bwesterb [here](https://mailarchive.ietf.org/arch/msg/hpke/WsFaJbVpkPNaK8Js4TB2ex0BYIw/).\n",
       "createdAt": "2025-08-08T01:07:30Z",
-      "updatedAt": "2025-11-01T02:49:54Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-04T03:22:26Z",
+      "closedAt": "2025-11-04T03:22:26Z",
       "comments": [
         {
           "author": "martinthomson",
@@ -2087,24 +2087,26 @@
       "id": "PR_kwDOOXfHTc6wfZ4P",
       "title": "Use seed format for private keys and expand seed",
       "url": "https://github.com/hpkewg/hpke-pq/pull/36",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Fixes #30 ",
       "createdAt": "2025-10-29T22:47:14Z",
-      "updatedAt": "2025-11-03T20:04:13Z",
+      "updatedAt": "2025-11-04T03:22:25Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "1341646aff9b94abdf9ae60fc59f9c8ae69bed23",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "nsk",
-      "headRefOid": "44c7ee481f5de2d76529b2066687358dc75e7888",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "c3d621fb09aa64618f98397b3e7bb6d48b38dccb",
+      "closedAt": "2025-11-04T03:22:25Z",
+      "mergedAt": "2025-11-04T03:22:25Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "b1d82d3cad861743a6e218d992af05679a2b8575"
+      },
       "comments": [
         {
           "author": "dconnolly",
@@ -2516,6 +2518,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 39,
+      "id": "PR_kwDOOXfHTc6xja_d",
+      "title": "Edits to comply with RFC style guide",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/39",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-11-05T04:13:52Z",
+      "updatedAt": "2025-11-05T04:13:52Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "b1d82d3cad861743a6e218d992af05679a2b8575",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "rfc-style",
+      "headRefOid": "afc5c5e0960c8f9fff99c2d68930e21ba7716fd6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
