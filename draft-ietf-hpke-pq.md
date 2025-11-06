@@ -28,6 +28,10 @@ author:
     fullname: "Richard Barnes"
     organization: Cisco
     email: "rlb@ipv.sx"
+ -
+    fullname: Deirdre Connolly
+    organization: Selkie Cryptography
+    email: durumcrustulum@gmail.com
 
 normative:
   FIPS186: DOI.10.6028/NIST.FIPS.186-5
