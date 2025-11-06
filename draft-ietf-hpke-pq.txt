@@ -82,10 +82,10 @@ Table of Contents
    3.  ML-KEM
    4.  Hybrid KEMs with ECDH and ML-KEM
    5.  Single-Stage KDFs
-   6.  Selection of AEAD algorithms
+   6.  Selection of AEAD Algorithms
    7.  Security Considerations
      7.1.  PQ Hybrid vs. Pure PQ
-     7.2.  Asymmetric-key-authenticated modes of RFC9180
+     7.2.  Asymmetric-Key-Authenticated Modes of RFC9180
    8.  IANA Considerations
      8.1.  Updated ML-KEM KEM Entries
      8.2.  PQ/T Hybrid KEM Entries
@@ -139,9 +139,9 @@ Table of Contents
    Oblivious HTTP protocol, and the TLS Encrypted ClientHello extension
    [RFC9420] [RFC9458] [TLS-ECH].
 
-   This document defines a collection of PQ and PQ/T KEM algorithms for
-   HPKE, which allows HPKE to provide post-quantum security, as
-   discussed in Section 7:
+   This document defines a collection of PQ and post-quantum/traditional
+   (PQ/T) KEM algorithms for HPKE, which allows HPKE to provide post-
+   quantum security, as discussed in Section 7:
 
    *  ML-KEM-512
 
@@ -187,7 +187,7 @@ Table of Contents
 
    There are two meanings of "hybrid" in this document.  In the context
    of "hybrid public key encryption", it refers to the combination of an
-   asymmetric KEM operaiton and a symmetric AEAD operation.  In the
+   asymmetric KEM operation and a symmetric AEAD operation.  In the
    context of "PQ/T hybrid", refers to the combination of PQ and
    traditional KEMs.  For clarity, we always use "HPKE" for the former,
    and "PQ/T hybrid" for the latter.
@@ -293,7 +293,7 @@ Table of Contents
        seed = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 32)
        return KEM.DeriveKeyPair(seed)
 
-   *  The GenerateKeyPair, Encap and Decap algorithms are identical.
+   *  The GenerateKeyPair, Encap, and Decap algorithms are identical.
 
    *  The SerializePublicKey, DeserializePublicKey, SerializePrivateKey,
       and DeserializePrivateKey algorithms are the identity, since
@@ -323,7 +323,7 @@ Table of Contents
 
    This section defines HPKE KDFs for eXtendable Output Functions (XOF)
    based on Keccak.  SHAKE is defined as part of the SHA-3 specification
-   [FIPS202].  The related TurboSHAKE XOFs is defined in
+   [FIPS202].  The related TurboSHAKE XOFs are defined in
    [I-D.irtf-cfrg-kangarootwelve].
 
    The Derive() function for SHAKE is as follows, where <SIZE> is either
@@ -358,7 +358,7 @@ Table of Contents
    [[ RFC EDITOR: Please change "XXXX" above to the RFC number assigned
    to this document. ]]
 
-6.  Selection of AEAD algorithms
+6.  Selection of AEAD Algorithms
 
    As discussed in Section 2.1 of [PQCE], the advent of quantum
    computers does not necessarily require changes in the AEAD algorithms
@@ -408,7 +408,7 @@ Table of Contents
    implementation flaws as well as new cryptanalysis.  See [GENERIC] for
    further analysis of hybrid security properties.
 
-7.2.  Asymmetric-key-authenticated modes of RFC9180
+7.2.  Asymmetric-Key-Authenticated Modes of RFC9180
 
    In the [RFC9180] version of HPKE, KEMs could optionally define the
    additional functions AuthEncap and AuthDecap.  These functions
