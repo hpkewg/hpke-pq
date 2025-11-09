@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-06T00:55:10.227678+00:00",
+  "timestamp": "2025-11-09T00:57:45.798519+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -2524,26 +2524,83 @@
       "id": "PR_kwDOOXfHTc6xja_d",
       "title": "Edits to comply with RFC style guide",
       "url": "https://github.com/hpkewg/hpke-pq/pull/39",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2025-11-05T04:13:52Z",
-      "updatedAt": "2025-11-05T04:13:52Z",
+      "updatedAt": "2025-11-06T16:59:36Z",
       "baseRepository": "hpkewg/hpke-pq",
       "baseRefName": "main",
       "baseRefOid": "b1d82d3cad861743a6e218d992af05679a2b8575",
       "headRepository": "hpkewg/hpke-pq",
       "headRefName": "rfc-style",
       "headRefOid": "afc5c5e0960c8f9fff99c2d68930e21ba7716fd6",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-11-06T16:59:36Z",
+      "mergedAt": "2025-11-06T16:59:36Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "5e8eabce802a0a32e5ab627cfca5776d4e8b2ec2"
+      },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 40,
+      "id": "PR_kwDOOXfHTc6x8joI",
+      "title": "Add Deirdre Connolly as an author",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/40",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Deirdre's work on [ML-KE](https://datatracker.ietf.org/doc/draft-connolly-cfrg-hpke-mlkem/04/), [SHA-3](https://datatracker.ietf.org/doc/draft-connolly-cfrg-sha3-hpke/) and [X-Wing](https://www.ietf.org/archive/id/draft-connolly-cfrg-xwing-kem-09.html#name-use-in-hpke) in HPKE predated this draft and originated a lot of ideas that are in this draft.",
+      "createdAt": "2025-11-06T16:55:37Z",
+      "updatedAt": "2025-11-06T19:43:42Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "b1d82d3cad861743a6e218d992af05679a2b8575",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "deirdre",
+      "headRefOid": "35f0e03dc554e0decd8b6963508bebe3699953ff",
+      "closedAt": "2025-11-06T16:59:22Z",
+      "mergedAt": "2025-11-06T16:59:22Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "ad85dd18a88da64d962b0c7a7c8a2afd73c44ba9"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOXfHTc7MaEdk",
+          "commit": {
+            "abbreviatedOid": "35f0e03"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-06T16:58:46Z",
+          "updatedAt": "2025-11-06T16:58:46Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOXfHTc7MaEoy",
+          "commit": {
+            "abbreviatedOid": "35f0e03"
+          },
+          "author": "dconnolly",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-11-06T16:58:53Z",
+          "updatedAt": "2025-11-06T16:58:53Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
