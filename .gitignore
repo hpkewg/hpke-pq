@@ -21,3 +21,4 @@ draft-barnes-hpke-pq.xml
 package-lock.json
 report.xml
 !requirements.txt
+**/.claude

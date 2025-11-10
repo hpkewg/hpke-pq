@@ -369,6 +369,17 @@ impl TestVector {
             (0x0051, 0x0011, 0x0002) => self.v::<MlKem1024P384, Shake256, Aes256Gcm>(),
             (0x0051, 0x0011, 0xffff) => self.v::<MlKem1024P384, Shake256, ExportOnly>(),
 
+            // Combinations that appear in the tests
+            // TODO(RLB): Refactor so that all the enumeration here is unnecessary.  Probably need
+            // to rewrite the KEM traits so that we can pass a `Box<dyn Kem>`.
+            (0x0011, 0x0002, 0x0002) => self.v::<DhkemP384HkdfSha384, HkdfSha384, Aes256Gcm>(),
+            (0x0040, 0x0001, 0x0001) => self.v::<MlKem512, HkdfSha256, Aes128Gcm>(),
+            (0x0010, 0x0010, 0x0001) => self.v::<DhkemP256HkdfSha256, Shake128, Aes128Gcm>(),
+            (0x0011, 0x0011, 0x0002) => self.v::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>(),
+            (0x0020, 0x0012, 0x0001) => self.v::<DhkemX25519HkdfSha256, TurboShake128, Aes128Gcm>(),
+            (0x0021, 0x0013, 0x0002) => self.v::<DhkemX448HkdfSha512, TurboShake256, Aes256Gcm>(),
+            (0x647a, 0x0001, 0x0001) => self.v::<MlKem768X25519, HkdfSha256, Aes128Gcm>(),
+
             _ => Err(format!(
                 "Unsupported algorithm combination: KEM={:#x}, KDF={:#x}, AEAD={:#x}",
                 self.kem_id, self.kdf_id, self.aead_id
@@ -456,7 +467,9 @@ mod tests {
         A: Aead,
     {
         let test_vector = TestVector::new::<K, H, A>();
-        let result = test_vector.verify();
+        let serialized = serde_json::to_string(&test_vector).unwrap();
+        let deserialized: TestVector = serde_json::from_str(&serialized).unwrap();
+        deserialized.verify().unwrap()
     }
 
     #[test]
@@ -470,6 +483,10 @@ mod tests {
         test::<MlKem512, HkdfSha256, Aes128Gcm>();
         test::<MlKem768, HkdfSha256, Aes128Gcm>();
         test::<MlKem1024, HkdfSha384, Aes256Gcm>();
+
+        test::<MlKem768P256, Shake256, Aes128Gcm>();
+        test::<MlKem768X25519, Shake256, Aes128Gcm>();
+        test::<MlKem1024P384, Shake256, Aes256Gcm>();
 
         test::<DhkemP256HkdfSha256, Shake128, Aes128Gcm>();
         test::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>();
