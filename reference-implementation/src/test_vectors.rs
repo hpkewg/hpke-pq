@@ -378,6 +378,7 @@ impl TestVector {
             (0x0011, 0x0011, 0x0002) => self.v::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>(),
             (0x0020, 0x0012, 0x0001) => self.v::<DhkemX25519HkdfSha256, TurboShake128, Aes128Gcm>(),
             (0x0021, 0x0013, 0x0002) => self.v::<DhkemX448HkdfSha512, TurboShake256, Aes256Gcm>(),
+            (0x647a, 0x0001, 0x0001) => self.v::<MlKem768X25519, HkdfSha256, Aes128Gcm>(),
 
             _ => Err(format!(
                 "Unsupported algorithm combination: KEM={:#x}, KDF={:#x}, AEAD={:#x}",
