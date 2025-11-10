@@ -1,7 +1,37 @@
+#![allow(deprecated)] // XXX(RLB) Using old GenericArray, but it's required by the EC libraries
+
 use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
+use generic_array::GenericArray;
+
+// A wrapper that implements CryptoRngCore from rand_core v0.6
+struct OldRng<'a, T>(&'a mut T);
+
+impl<'a, T> old_rand_core::CryptoRng for OldRng<'a, T> where T: rand::CryptoRng {}
+
+impl<'a, T> old_rand_core::RngCore for OldRng<'a, T>
+where
+    T: rand::RngCore,
+{
+    fn next_u32(&mut self) -> u32 {
+        rand::RngCore::next_u32(self.0)
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        rand::RngCore::next_u64(self.0)
+    }
+
+    fn fill_bytes(&mut self, dest: &mut [u8]) {
+        rand::RngCore::fill_bytes(self.0, dest)
+    }
+
+    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), old_rand_core::Error> {
+        rand::RngCore::fill_bytes(self.0, dest);
+        Ok(())
+    }
+}
 
 pub trait Kem {
     const ID: [u8; 2];
@@ -207,7 +237,7 @@ impl Curve for P256 {
     type Point = p256::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(rng);
+        let dk = Self::Scalar::random(&mut OldRng(rng));
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -247,7 +277,7 @@ impl Curve for P256 {
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
+        Self::Scalar::from_repr(*GenericArray::from_slice(skXm)).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
@@ -274,7 +304,7 @@ impl Curve for P384 {
     type Point = p384::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(rng);
+        let dk = Self::Scalar::random(&mut OldRng(rng));
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -292,7 +322,7 @@ impl Curve for P384 {
                 continue;
             }
 
-            let sk = Self::Scalar::from_repr(sk.try_into().unwrap()).unwrap();
+            let sk = Self::Scalar::from_repr(*GenericArray::from_slice(&sk)).unwrap();
             let pk = Self::Point::from_secret_scalar(&sk);
             return (sk, pk);
         }
@@ -314,7 +344,7 @@ impl Curve for P384 {
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
+        Self::Scalar::from_repr(*GenericArray::from_slice(skXm)).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
@@ -341,7 +371,7 @@ impl Curve for P521 {
     type Point = p521::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
-        let dk = Self::Scalar::random(rng);
+        let dk = Self::Scalar::random(&mut OldRng(rng));
         let ek = Self::Point::from_secret_scalar(&dk);
         (dk, ek)
     }
@@ -360,7 +390,7 @@ impl Curve for P521 {
                 continue;
             }
 
-            let sk = Self::Scalar::from_repr(sk.try_into().unwrap()).unwrap();
+            let sk = Self::Scalar::from_repr(*GenericArray::from_slice(&sk)).unwrap();
             let pk = Self::Point::from_secret_scalar(&sk);
             return (sk, pk);
         }
@@ -382,7 +412,7 @@ impl Curve for P521 {
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        Self::Scalar::from_repr(skXm.try_into().unwrap()).unwrap()
+        Self::Scalar::from_repr(*GenericArray::from_slice(skXm)).unwrap()
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
