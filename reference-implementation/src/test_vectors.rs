@@ -380,6 +380,24 @@ impl TestVector {
             (0x0021, 0x0013, 0x0002) => self.v::<DhkemX448HkdfSha512, TurboShake256, Aes256Gcm>(),
             (0x647a, 0x0001, 0x0001) => self.v::<MlKem768X25519, HkdfSha256, Aes128Gcm>(),
 
+            /*
+            (0x647a, 0x1, 0x3) => self.v::<MlKem768X25519, HkdfSha256, ChaChaPoly>(),
+            (0x51, 0x2, 0x2) => self.v::<MlKem1024P384, HkdfSha384, Aes256Gcm>(),
+            (0x23, 0x10, 0x3) => self.v::<DhkemX25519Shake128, Shake128, ChaChaPoly>(),
+            (0x23, 0x12, 0x3) => self.v::<DhkemX25519Shake128, TurboShake128, ChaChaPoly>(),
+            (0x18, 0x13, 0x2) => self.v::<DhkemP384Shake256, TurboShake256, Aes256Gcm>(),
+            */
+            (0x0018, 0x0011, 0x0002) => self.v::<DhkemP384Shake256, Shake256, Aes256Gcm>(),
+            (0x0018, 0x0013, 0x0002) => self.v::<DhkemP384Shake256, TurboShake256, Aes256Gcm>(),
+            (0x0023, 0x0010, 0x0003) => self.v::<DhkemX25519Shake128, Shake128, ChaChaPoly>(),
+            (0x0023, 0x0012, 0x0003) => self.v::<DhkemX25519Shake128, TurboShake128, ChaChaPoly>(),
+            (0x0042, 0x0013, 0x0001) => self.v::<MlKem1024, TurboShake256, Aes128Gcm>(),
+            (0x0050, 0x0001, 0x0001) => self.v::<MlKem768P256, HkdfSha256, Aes128Gcm>(),
+            (0x0050, 0x0010, 0x0002) => self.v::<MlKem768P256, Shake128, Aes256Gcm>(),
+            (0x0051, 0x0002, 0x0002) => self.v::<MlKem1024P384, HkdfSha384, Aes256Gcm>(),
+            (0x647a, 0x0001, 0x0003) => self.v::<MlKem768X25519, HkdfSha256, ChaChaPoly>(),
+            (0x647a, 0x0011, 0x0003) => self.v::<MlKem768X25519, Shake256, ChaChaPoly>(),
+
             _ => Err(format!(
                 "Unsupported algorithm combination: KEM={:#x}, KDF={:#x}, AEAD={:#x}",
                 self.kem_id, self.kdf_id, self.aead_id

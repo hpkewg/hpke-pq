@@ -26,7 +26,10 @@ fn generate_test_vectors() -> TestVectors {
     >());
     vectors.push(TestVector::new::<DhkemP384Shake256, TurboShake256, Aes256Gcm>());
 
-    // Odd
+    // Multiple new things at once, and mismatched levels
+    vectors.push(TestVector::new::<MlKem768P256, Shake128, Aes256Gcm>());
+    vectors.push(TestVector::new::<MlKem768X25519, Shake256, ChaChaPoly>());
+    vectors.push(TestVector::new::<MlKem1024, TurboShake256, Aes128Gcm>());
 
     vectors
 }
