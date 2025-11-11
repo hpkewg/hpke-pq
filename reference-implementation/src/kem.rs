@@ -1,6 +1,8 @@
 #![allow(deprecated)] // XXX(RLB) Using old GenericArray, but it's required by the EC libraries
 
-use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
+use crate::kdf::{
+    HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake128, Shake256, Shake256Core,
+};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
@@ -86,6 +88,7 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        // All of the hybrid KEMs use SHAKE256, so we invoke it directly instead of being generic
         let seed = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 32);
         let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&seed);
         (dk, ek)
@@ -641,6 +644,9 @@ pub type DhkemP384HkdfSha384 = Dhkem<P384, HkdfSha384>;
 pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512>;
 pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256>;
 pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512>;
+
+pub type DhkemX25519Shake128 = Dhkem<X25519, Shake128>;
+pub type DhkemP384Shake256 = Dhkem<P384, Shake256>;
 
 pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::kem::MlKem512, 0x0040>;
 pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::kem::MlKem768, 0x0041>;

@@ -57,4 +57,4 @@ jobs:
       run: |
         go build -v
         ./circl-verifier ../tests/rfc9180.json
-
+        ./circl-verifier ../../test-vectors.json

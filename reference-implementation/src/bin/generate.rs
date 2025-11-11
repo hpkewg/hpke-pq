@@ -6,25 +6,27 @@ use hpke_ref::*;
 fn generate_test_vectors() -> TestVectors {
     let mut vectors = TestVectors::new();
 
-    // Only generate the specified combinations:
-
-    // 1. ML-KEM-768 + HKDF-SHA256 + AES-128-GCM
+    // Pure ML-KEM
+    vectors.push(TestVector::new::<MlKem512, HkdfSha256, Aes128Gcm>());
     vectors.push(TestVector::new::<MlKem768, HkdfSha256, Aes128Gcm>());
-
-    // 2. ML-KEM-1024 + HKDF-SHA384 + AES-256-GCM
     vectors.push(TestVector::new::<MlKem1024, HkdfSha384, Aes256Gcm>());
 
-    // 3. QSF-P256-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<MlKem768P256, Shake256, Aes128Gcm>());
+    // Hybrid KEMs
+    vectors.push(TestVector::new::<MlKem768P256, HkdfSha256, Aes128Gcm>());
+    vectors.push(TestVector::new::<MlKem768X25519, HkdfSha256, ChaChaPoly>());
+    vectors.push(TestVector::new::<MlKem1024P384, HkdfSha384, Aes256Gcm>());
 
-    // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<MlKem768X25519, HkdfSha256, Aes128Gcm>());
+    // Single-stage KDFs
+    vectors.push(TestVector::new::<DhkemX25519Shake128, Shake128, ChaChaPoly>());
+    vectors.push(TestVector::new::<DhkemP384Shake256, Shake256, Aes256Gcm>());
+    vectors.push(TestVector::new::<
+        DhkemX25519Shake128,
+        TurboShake128,
+        ChaChaPoly,
+    >());
+    vectors.push(TestVector::new::<DhkemP384Shake256, TurboShake256, Aes256Gcm>());
 
-    // 4. QSF-X25519-MLKEM768 + SHAKE256 + AES-128-GCM
-    vectors.push(TestVector::new::<MlKem768X25519, Shake256, Aes128Gcm>());
-
-    // 5. QSF-P384-MLKEM1024 + SHAKE256 + AES-256-GCM
-    vectors.push(TestVector::new::<MlKem1024P384, Shake256, Aes256Gcm>());
+    // Odd
 
     vectors
 }
