@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-09T00:57:45.798519+00:00",
+  "timestamp": "2025-11-11T00:55:43.056096+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -2601,6 +2601,34 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 41,
+      "id": "PR_kwDOOXfHTc6ylK2B",
+      "title": "Improve testing of the reference implementation",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/41",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Turns out we weren't actually testing that the test vectors passed on the round-trip tests, and some things were broken.  (Thanks, AI!)  Also, something about the RC builds of the elliptic curve library is currently broken, so I reverted to the stable one.\r\n\r\nTogether with recent changes to `concrete-hybrid-kems`, this should render the test vectors more sane.  As a first check, since Circl seemed to have HPKE and X-Wing implementations that could be plugged together, I added a small script that uses Circl to verify the test vectors.  Since the binary format is fixed now, as we get more implementations of the hybrid KEMs, it could be good to add more similar verifiers / CI.",
+      "createdAt": "2025-11-10T17:08:19Z",
+      "updatedAt": "2025-11-10T17:10:55Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "5e8eabce802a0a32e5ab627cfca5776d4e8b2ec2",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "better-test-2",
+      "headRefOid": "903f9995e800ec44718af8a7b9072be443e0197e",
+      "closedAt": "2025-11-10T17:10:55Z",
+      "mergedAt": "2025-11-10T17:10:55Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "3baf31190bb6ecc345d186f890ebeab67185f5d6"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
