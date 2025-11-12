@@ -1,6 +1,8 @@
 #![allow(deprecated)] // XXX(RLB) Using old GenericArray, but it's required by the EC libraries
 
-use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
+use crate::kdf::{
+    HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake128, Shake256, Shake256Core,
+};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
@@ -86,6 +88,7 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
+        // All of the hybrid KEMs use SHAKE256, so we invoke it directly instead of being generic
         let seed = Shake256Core::labeled_derive(Self::SUITE_ID, ikm, b"DeriveKeyPair", b"", 32);
         let (dk, ek, _info) = <K as concrete_hybrid_kem::kem::Kem>::derive_key_pair(&seed);
         (dk, ek)
@@ -204,8 +207,6 @@ where
 }
 
 pub trait Curve {
-    const N_ID: u16;
-    const SUITE_ID: &[u8];
     const SCALAR_SIZE: usize;
     const POINT_SIZE: usize;
     const SECRET_SIZE: usize;
@@ -214,7 +215,7 @@ pub trait Curve {
     type Point;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point);
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point);
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point);
     fn serialize_public_key(pkX: &Self::Point) -> Vec<u8>;
     fn deserialize_public_key(pkXm: &[u8]) -> Self::Point;
     fn serialize_private_key(skX: &Self::Scalar) -> Vec<u8>;
@@ -227,8 +228,6 @@ pub trait Curve {
 pub struct P256;
 
 impl Curve for P256 {
-    const N_ID: u16 = 0x0010;
-    const SUITE_ID: &[u8] = b"KEM\x00\x10";
     const SECRET_SIZE: usize = 32;
     const SCALAR_SIZE: usize = 32;
     const POINT_SIZE: usize = 65;
@@ -242,14 +241,14 @@ impl Curve for P256 {
         (dk, ek)
     }
 
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point) {
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
         use hex_literal::hex;
         const BITMASK: u8 = 0xff;
         const ORDER: &[u8] =
             &hex!("ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551");
 
         for counter in 0u8..255 {
-            let mut sk = K::derive_candidate(Self::SUITE_ID, ikm, counter, Self::SCALAR_SIZE);
+            let mut sk = K::derive_candidate(suite_id, ikm, counter, Self::SCALAR_SIZE);
             sk[0] &= BITMASK;
             if sk.as_slice() >= ORDER {
                 continue;
@@ -294,8 +293,6 @@ impl Curve for P256 {
 pub struct P384;
 
 impl Curve for P384 {
-    const N_ID: u16 = 0x0011;
-    const SUITE_ID: &[u8] = b"KEM\x00\x11";
     const SECRET_SIZE: usize = 48;
     const SCALAR_SIZE: usize = 48;
     const POINT_SIZE: usize = 97;
@@ -309,14 +306,14 @@ impl Curve for P384 {
         (dk, ek)
     }
 
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point) {
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
         use hex_literal::hex;
         const BITMASK: u8 = 0xff;
         const ORDER: &[u8] = &hex!("ffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf"
                                    "581a0db248b0a77aecec196accc52973");
 
         for counter in 0u8..255 {
-            let mut sk = K::derive_candidate(Self::SUITE_ID, ikm, counter, Self::SCALAR_SIZE);
+            let mut sk = K::derive_candidate(suite_id, ikm, counter, Self::SCALAR_SIZE);
             sk[0] &= BITMASK;
             if sk.as_slice() >= ORDER {
                 continue;
@@ -361,8 +358,6 @@ impl Curve for P384 {
 pub struct P521;
 
 impl Curve for P521 {
-    const N_ID: u16 = 0x0012;
-    const SUITE_ID: &[u8] = b"KEM\x00\x12";
     const SECRET_SIZE: usize = 64;
     const SCALAR_SIZE: usize = 66;
     const POINT_SIZE: usize = 133;
@@ -376,14 +371,14 @@ impl Curve for P521 {
         (dk, ek)
     }
 
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point) {
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
         use hex_literal::hex;
         const BITMASK: u8 = 0x01;
         const ORDER: &[u8] = &hex!("01ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
                                    "fa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409");
 
         for counter in 0u8..255 {
-            let mut sk = K::derive_candidate(Self::SUITE_ID, ikm, counter, Self::SCALAR_SIZE);
+            let mut sk = K::derive_candidate(suite_id, ikm, counter, Self::SCALAR_SIZE);
             sk[0] &= BITMASK;
             if sk.as_slice() >= ORDER {
                 println!("sampled: {}", hex::encode(&sk));
@@ -429,8 +424,6 @@ impl Curve for P521 {
 pub struct X25519;
 
 impl Curve for X25519 {
-    const N_ID: u16 = 0x0020;
-    const SUITE_ID: &[u8] = b"KEM\x00\x20";
     const SECRET_SIZE: usize = 32;
     const SCALAR_SIZE: usize = 32;
     const POINT_SIZE: usize = 32;
@@ -444,8 +437,8 @@ impl Curve for X25519 {
         (dk, ek)
     }
 
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point) {
-        let sk_vec = K::derive_sk(Self::SUITE_ID, ikm, Self::SCALAR_SIZE);
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
+        let sk_vec = K::derive_sk(suite_id, ikm, Self::SCALAR_SIZE);
 
         let mut sk_arr = [0_u8; Self::SCALAR_SIZE];
         sk_arr.copy_from_slice(&sk_vec);
@@ -487,8 +480,6 @@ impl Curve for X25519 {
 pub struct X448;
 
 impl Curve for X448 {
-    const N_ID: u16 = 0x0021;
-    const SUITE_ID: &[u8] = b"KEM\x00\x21";
     const SECRET_SIZE: usize = 64;
     const SCALAR_SIZE: usize = 56;
     const POINT_SIZE: usize = 56;
@@ -505,8 +496,8 @@ impl Curve for X448 {
         (dk, ek)
     }
 
-    fn derive_key_pair<K: Kdf>(ikm: &[u8]) -> (Self::Scalar, Self::Point) {
-        let sk_vec = K::derive_sk(Self::SUITE_ID, ikm, Self::SCALAR_SIZE);
+    fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
+        let sk_vec = K::derive_sk(suite_id, ikm, Self::SCALAR_SIZE);
 
         let mut sk_arr = [0_u8; Self::SCALAR_SIZE];
         sk_arr.copy_from_slice(&sk_vec);
@@ -541,7 +532,7 @@ impl Curve for X448 {
     }
 }
 
-pub struct Dhkem<C, K>
+pub struct Dhkem<C, K, const ID: u16>
 where
     C: Curve,
     K: Kdf,
@@ -549,12 +540,12 @@ where
     _phantom: core::marker::PhantomData<(C, K)>,
 }
 
-impl<C, K> Kem for Dhkem<C, K>
+impl<C, K, const ID: u16> Kem for Dhkem<C, K, ID>
 where
     C: Curve,
     K: Kdf,
 {
-    const ID: [u8; 2] = C::N_ID.to_be_bytes();
+    const ID: [u8; 2] = ID.to_be_bytes();
 
     const N_SECRET: usize = C::SECRET_SIZE;
     const N_ENC: usize = C::POINT_SIZE;
@@ -572,7 +563,7 @@ where
     }
 
     fn derive_key_pair(ikm: &[u8]) -> (Self::DecapsulationKey, Self::EncapsulationKey) {
-        C::derive_key_pair::<K>(ikm)
+        C::derive_key_pair::<K>(Self::SUITE_ID, ikm)
     }
 
     fn serialize_public_key(pkX: &Self::EncapsulationKey) -> Vec<u8> {
@@ -604,7 +595,8 @@ where
         let pkRm = Self::serialize_public_key(pkR);
         let kem_context = concat(&[&enc, &pkRm]);
 
-        let shared_secret = K::extract_and_expand(C::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
+        let shared_secret =
+            K::extract_and_expand(Self::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
         (shared_secret, enc)
     }
 
@@ -618,7 +610,8 @@ where
         let pkRm = Self::serialize_public_key(pkR);
         let kem_context = concat(&[&enc, &pkRm]);
 
-        let shared_secret = K::extract_and_expand(C::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
+        let shared_secret =
+            K::extract_and_expand(Self::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
         (shared_secret, enc)
     }
 
@@ -631,16 +624,23 @@ where
         let pkRm = Self::serialize_public_key(&C::base_mult(skR));
         let kem_context = concat(&[&enc, &pkRm]);
 
-        let shared_secret = K::extract_and_expand(C::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
+        let shared_secret =
+            K::extract_and_expand(Self::SUITE_ID, &dh, &kem_context, Self::N_SECRET);
         shared_secret
     }
 }
 
-pub type DhkemP256HkdfSha256 = Dhkem<P256, HkdfSha256>;
-pub type DhkemP384HkdfSha384 = Dhkem<P384, HkdfSha384>;
-pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512>;
-pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256>;
-pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512>;
+pub type DhkemP256HkdfSha256 = Dhkem<P256, HkdfSha256, 0x0010>;
+pub type DhkemP384HkdfSha384 = Dhkem<P384, HkdfSha384, 0x0011>;
+pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512, 0x0012>;
+pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256, 0x0020>;
+pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512, 0x0021>;
+
+pub type DhkemP256Shake128 = Dhkem<P256, Shake128, 0x0017>;
+pub type DhkemP384Shake256 = Dhkem<P384, Shake256, 0x0018>;
+pub type DhkemP521Shake256 = Dhkem<P521, Shake256, 0x0019>;
+pub type DhkemX25519Shake128 = Dhkem<X25519, Shake128, 0x0023>;
+pub type DhkemX448Shake256 = Dhkem<X448, Shake128, 0x0024>;
 
 pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::kem::MlKem512, 0x0040>;
 pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::kem::MlKem768, 0x0041>;
