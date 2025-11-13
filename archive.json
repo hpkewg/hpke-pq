@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-11T00:55:43.056096+00:00",
+  "timestamp": "2025-11-13T00:55:22.959917+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -452,6 +452,44 @@
           "body": "Mailing list discussion: https://mailarchive.ietf.org/arch/msg/hpke/Sq2apDTygF4F6-ZLevVGukKxsJE/",
           "createdAt": "2025-11-01T02:49:54Z",
           "updatedAt": "2025-11-01T02:49:54Z"
+        }
+      ]
+    },
+    {
+      "number": 43,
+      "id": "I_kwDOOXfHTc7XVAcY",
+      "title": "New DHKEM identifiers?",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/43",
+      "state": "OPEN",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In trying to be more systematic with test vectors, I added a DHKEM KEM with EC groups and SHAKE.  Since this is a legal combination, and something new introduced here, it seemed good to test it.  Should we register KEM identifiers for these?  And if not, should we use more \"vendor space\" looking identifiers?  Here's what is in the reference implementation now:\n\n| ID     | Algorithm               |\n|--------|-------------------------|\n| 0x0017 | DHKEM(P-256, SHAKE128)  |\n| 0x0018 | DHKEM(P-384, Shake256)  |\n| 0x0019 | DHKEM(P-521, Shake256)  |\n| 0x0023 | DHKEM(X25519, SHAKE128) |\n| 0x0024 | DHKEM(X448, Shake256)   |\n\n",
+      "createdAt": "2025-11-11T14:41:35Z",
+      "updatedAt": "2025-11-12T13:12:52Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "A legal and already testable combination is e.g. DHKEM(P-256, HKDF-SHA256) as KEM and SHAKE128 as KDF. That works and doesn't require any new codepoints.\n\nThe question is whether to define _new_ KEM codepoints that use DHKEM with one-step KDFs. IMHO, it's not worth it. It's much nicer to have one KEM per curve, and the SHAKE KDFs were mostly introduced to go along with the PQ KEMs. It's telling that no one ever asked for these.\n\nIn any case, we can always add them later, even just with a trivial IANA request, so I would not hold up the documents to discuss them.",
+          "createdAt": "2025-11-11T15:24:43Z",
+          "updatedAt": "2025-11-11T15:24:43Z"
+        },
+        {
+          "author": "bifurcation",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My only concern with that approach is that we end up with un-tested functionality.  Specifically, we wouldn't have any testing on the [`DeriveCandidate_OneStage`](https://github.com/hpkewg/hpke/blob/main/draft-ietf-hpke-hpke.md#derivekeypair-derive-key-pair) method.  To test that, you need a KEM ID (via `LabeledDerive`).\n\nNow, maybe I'm over-thinking this.  `LabeledDerive` is used elsewhere, so if you don't have a working implementation of that, you'll fail other test vectors with SHAKE in the KDF position.  The only things you could possibly screw up in `DeriveCandidate_OneStage` are the inputs: `ikm`, the label `\"candidate\"`, the encoded counter, and the length `Nsk`.\n\nAnd maybe another way to think of this is to punt: If/when someone wants to register a DHKEM variant that uses a one-stage KDF, they'll get a code point and they can publish test vectors.\n\nGiven the above, I would be OK closing this.  I'll leave it open another 24 hours or so in case anyone else has thoughts.  I might add a note to the test vector description saying we don't cover this case. ",
+          "createdAt": "2025-11-12T12:54:19Z",
+          "updatedAt": "2025-11-12T12:54:19Z"
+        },
+        {
+          "author": "FiloSottile",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> And maybe another way to think of this is to punt: If/when someone wants to register a DHKEM variant that uses a one-stage KDF, they'll get a code point and they can publish test vectors.\n\nYeah that's how I think about it. The part that's untested is the part that's unspecified, which sounds right.\n\n> I might add a note to the test vector description saying we don't cover this case.\n\nMaybe add a note to the `DeriveCandidate_OneStage` definition saying that no currently defined KEMs use a one-stage KDF?\n\nI actually think I will de-implement it from my implementation, until such a time we have a need for it.",
+          "createdAt": "2025-11-12T13:12:52Z",
+          "updatedAt": "2025-11-12T13:12:52Z"
         }
       ]
     }
@@ -2626,6 +2664,34 @@
       "mergedBy": "bifurcation",
       "mergeCommit": {
         "oid": "3baf31190bb6ecc345d186f890ebeab67185f5d6"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 42,
+      "id": "PR_kwDOOXfHTc6yw8DZ",
+      "title": "More testing improvements",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/42",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "* Actually run the Circl verifier on the PQ test vectors in CI\r\n* Be more systematic about the set of test vectors generated\r\n* Remove remaining references to QSF\r\n* Regenerate test vectors\r\n\r\nThis work raised a new issue: https://github.com/hpkewg/hpke-pq/issues/43",
+      "createdAt": "2025-11-11T13:56:57Z",
+      "updatedAt": "2025-11-12T12:26:12Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "3baf31190bb6ecc345d186f890ebeab67185f5d6",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "better-test-2",
+      "headRefOid": "d0c5351b285559d4263e665dfce20bd5621b08af",
+      "closedAt": "2025-11-12T12:26:12Z",
+      "mergedAt": "2025-11-12T12:26:12Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "83231c9b9efadd3c6ad13d71df6f169e3f3fe265"
       },
       "comments": [],
       "reviews": []
