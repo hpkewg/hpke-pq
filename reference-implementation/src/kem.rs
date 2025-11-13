@@ -1,8 +1,6 @@
 #![allow(deprecated)] // XXX(RLB) Using old GenericArray, but it's required by the EC libraries
 
-use crate::kdf::{
-    HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake128, Shake256, Shake256Core,
-};
+use crate::kdf::{HkdfSha256, HkdfSha384, HkdfSha512, Kdf, OneStageKdf, Shake256Core};
 use concrete_hybrid_kem::kem::{
     Ciphertext, DecapsulationKey, EncapsDerand, EncapsulationKey, SharedSecret,
 };
@@ -635,12 +633,6 @@ pub type DhkemP384HkdfSha384 = Dhkem<P384, HkdfSha384, 0x0011>;
 pub type DhkemP521HkdfSha512 = Dhkem<P521, HkdfSha512, 0x0012>;
 pub type DhkemX25519HkdfSha256 = Dhkem<X25519, HkdfSha256, 0x0020>;
 pub type DhkemX448HkdfSha512 = Dhkem<X448, HkdfSha512, 0x0021>;
-
-pub type DhkemP256Shake128 = Dhkem<P256, Shake128, 0x0017>;
-pub type DhkemP384Shake256 = Dhkem<P384, Shake256, 0x0018>;
-pub type DhkemP521Shake256 = Dhkem<P521, Shake256, 0x0019>;
-pub type DhkemX25519Shake128 = Dhkem<X25519, Shake128, 0x0023>;
-pub type DhkemX448Shake256 = Dhkem<X448, Shake128, 0x0024>;
 
 pub type MlKem512 = MlKemWithId<concrete_hybrid_kem::kem::MlKem512, 0x0040>;
 pub type MlKem768 = MlKemWithId<concrete_hybrid_kem::kem::MlKem768, 0x0041>;
