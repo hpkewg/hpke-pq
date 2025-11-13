@@ -17,14 +17,18 @@ fn generate_test_vectors() -> TestVectors {
     vectors.push(TestVector::new::<MlKem1024P384, HkdfSha384, Aes256Gcm>());
 
     // Single-stage KDFs
-    vectors.push(TestVector::new::<DhkemX25519Shake128, Shake128, ChaChaPoly>());
-    vectors.push(TestVector::new::<DhkemP384Shake256, Shake256, Aes256Gcm>());
+    vectors.push(TestVector::new::<DhkemP256HkdfSha256, Shake128, Aes128Gcm>());
+    vectors.push(TestVector::new::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>());
     vectors.push(TestVector::new::<
-        DhkemX25519Shake128,
+        DhkemX25519HkdfSha256,
         TurboShake128,
         ChaChaPoly,
     >());
-    vectors.push(TestVector::new::<DhkemP384Shake256, TurboShake256, Aes256Gcm>());
+    vectors.push(TestVector::new::<
+        DhkemX448HkdfSha512,
+        TurboShake256,
+        ChaChaPoly,
+    >());
 
     // Multiple new things at once, and mismatched levels
     vectors.push(TestVector::new::<MlKem768P256, Shake128, Aes256Gcm>());
