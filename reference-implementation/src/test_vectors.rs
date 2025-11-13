@@ -482,23 +482,25 @@ mod tests {
 
     #[test]
     fn test_all() {
-        test::<DhkemP256HkdfSha256, HkdfSha256, Aes128Gcm>();
-        test::<DhkemP384HkdfSha384, HkdfSha384, Aes256Gcm>();
-        test::<DhkemP521HkdfSha512, HkdfSha512, Aes256Gcm>();
-        test::<DhkemX25519HkdfSha256, HkdfSha256, ChaChaPoly>();
-        test::<DhkemX448HkdfSha512, HkdfSha512, ChaChaPoly>();
-
+        // Pure ML-KEM
         test::<MlKem512, HkdfSha256, Aes128Gcm>();
         test::<MlKem768, HkdfSha256, Aes128Gcm>();
         test::<MlKem1024, HkdfSha384, Aes256Gcm>();
 
-        test::<MlKem768P256, Shake256, Aes128Gcm>();
-        test::<MlKem768X25519, Shake256, Aes128Gcm>();
-        test::<MlKem1024P384, Shake256, Aes256Gcm>();
+        // Hybrid KEMs
+        test::<MlKem768P256, HkdfSha256, Aes128Gcm>();
+        test::<MlKem768X25519, HkdfSha256, ChaChaPoly>();
+        test::<MlKem1024P384, HkdfSha384, Aes256Gcm>();
 
+        // Single-stage KDFs
         test::<DhkemP256HkdfSha256, Shake128, Aes128Gcm>();
         test::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>();
-        test::<DhkemX25519HkdfSha256, TurboShake128, Aes128Gcm>();
-        test::<DhkemX448HkdfSha512, TurboShake256, Aes256Gcm>();
+        test::<DhkemX25519HkdfSha256, TurboShake128, ChaChaPoly>();
+        test::<DhkemX448HkdfSha512, TurboShake256, ChaChaPoly>();
+
+        // Multiple new things at once, and mismatched levels
+        test::<MlKem768P256, Shake128, Aes256Gcm>();
+        test::<MlKem768X25519, Shake256, ChaChaPoly>();
+        test::<MlKem1024, TurboShake256, Aes128Gcm>();
     }
 }
