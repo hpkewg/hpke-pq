@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-13T00:55:22.959917+00:00",
+  "timestamp": "2025-11-16T00:59:16.999142+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -460,15 +460,15 @@
       "id": "I_kwDOOXfHTc7XVAcY",
       "title": "New DHKEM identifiers?",
       "url": "https://github.com/hpkewg/hpke-pq/issues/43",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bifurcation",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "In trying to be more systematic with test vectors, I added a DHKEM KEM with EC groups and SHAKE.  Since this is a legal combination, and something new introduced here, it seemed good to test it.  Should we register KEM identifiers for these?  And if not, should we use more \"vendor space\" looking identifiers?  Here's what is in the reference implementation now:\n\n| ID     | Algorithm               |\n|--------|-------------------------|\n| 0x0017 | DHKEM(P-256, SHAKE128)  |\n| 0x0018 | DHKEM(P-384, Shake256)  |\n| 0x0019 | DHKEM(P-521, Shake256)  |\n| 0x0023 | DHKEM(X25519, SHAKE128) |\n| 0x0024 | DHKEM(X448, Shake256)   |\n\n",
       "createdAt": "2025-11-11T14:41:35Z",
-      "updatedAt": "2025-11-12T13:12:52Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-13T14:16:05Z",
+      "closedAt": "2025-11-13T14:16:05Z",
       "comments": [
         {
           "author": "FiloSottile",
@@ -2692,6 +2692,34 @@
       "mergedBy": "bifurcation",
       "mergeCommit": {
         "oid": "83231c9b9efadd3c6ad13d71df6f169e3f3fe265"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 44,
+      "id": "PR_kwDOOXfHTc6zHhdK",
+      "title": "Revert the use of SHAKE with DHKEM and clean up",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/44",
+      "state": "MERGED",
+      "author": "bifurcation",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #43 ",
+      "createdAt": "2025-11-13T02:50:18Z",
+      "updatedAt": "2025-11-13T14:16:04Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "83231c9b9efadd3c6ad13d71df6f169e3f3fe265",
+      "headRepository": "hpkewg/hpke-pq",
+      "headRefName": "better-test-2",
+      "headRefOid": "410c6a4bda598e6af7f604967a4d816c55c8d55c",
+      "closedAt": "2025-11-13T14:16:04Z",
+      "mergedAt": "2025-11-13T14:16:04Z",
+      "mergedBy": "bifurcation",
+      "mergeCommit": {
+        "oid": "c523f03f85342aa82c1189a99a34e96204a8f6a3"
       },
       "comments": [],
       "reviews": []
