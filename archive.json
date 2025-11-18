@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-16T00:59:16.999142+00:00",
+  "timestamp": "2025-11-18T00:54:54.373154+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -492,6 +492,22 @@
           "updatedAt": "2025-11-12T13:12:52Z"
         }
       ]
+    },
+    {
+      "number": 45,
+      "id": "I_kwDOOXfHTc7Yahs3",
+      "title": "Conversion from private key to public key is unclear",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/45",
+      "state": "OPEN",
+      "author": "FiloSottile",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I can't decide if this is an issue with hpke-pq or with RFC 9180, but there doesn't seem to be a function I can reference to turn a seed / private key / decapsulation key into its public key / encapsulation key.\n\nDeserializePrivateKey/SerializePrivateKey and DeserializePublicKey/SerializePublicKey are the identity, because Encaps/Decaps take byte slices themselves. I am actually a big fan of this specification approach. But a side-effect is that there is no implicit relationship between the private key byte slice and the public key byte slice.\n\nIt's not hard to figure out, or even ambiguous: it can be inferred from keygen, and obviously the answer is \n\n```\ndef PrivateKeyToPublicKey(seed):\n    ek_PQ, ek_T, _, _ = expandKey(seed)\n    ek = ek_PQ || ek_T\n\n    return ek\n```\n\nStill, I was trying to describe how to turn a private key into a public key and I can't find a way to refer to it.\n\nOne interpretation is that RFC 9180 intended for DeserializePrivateKey to turn the sk into a KEM-internal representation, for which the KEM would then define a private-to-public operation, and the SerializePublicKey operates on the result. Another interpretation is that this is an oversight in RFC 9180 and should be fixed in hpke-hpke. Or maybe it's (also) an issue in the CFRG documents, and then whatever is added to those should be referenced from hpke-pq?",
+      "createdAt": "2025-11-16T17:11:17Z",
+      "updatedAt": "2025-11-16T17:11:17Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
