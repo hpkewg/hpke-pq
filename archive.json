@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-18T00:54:54.373154+00:00",
+  "timestamp": "2025-11-23T01:02:30.261085+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -2738,6 +2738,40 @@
         "oid": "c523f03f85342aa82c1189a99a34e96204a8f6a3"
       },
       "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 46,
+      "id": "PR_kwDOOXfHTc60sEMk",
+      "title": "unclamp skRm in DHKEM(X448, HKDF-SHA512)",
+      "url": "https://github.com/hpkewg/hpke-pq/pull/46",
+      "state": "OPEN",
+      "author": "panva",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "See https://github.com/hpkewg/hpke/pull/42#issuecomment-3559974435",
+      "createdAt": "2025-11-20T21:00:31Z",
+      "updatedAt": "2025-11-22T09:53:58Z",
+      "baseRepository": "hpkewg/hpke-pq",
+      "baseRefName": "main",
+      "baseRefOid": "c523f03f85342aa82c1189a99a34e96204a8f6a3",
+      "headRepository": "panva/hpke-pq",
+      "headRefName": "patch-1",
+      "headRefOid": "347c8706a7f799a7199b5f1dc8029d782ec2ea55",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "panva",
+          "authorAssociation": "NONE",
+          "body": "This should be corrected in the underlying implementation that is generating the vectors too.",
+          "createdAt": "2025-11-22T09:53:49Z",
+          "updatedAt": "2025-11-22T09:53:58Z"
+        }
+      ],
       "reviews": []
     }
   ]
