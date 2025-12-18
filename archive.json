@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-16T00:59:01.660380+00:00",
+  "timestamp": "2025-12-18T00:55:21.821720+00:00",
   "repo": "hpkewg/hpke-pq",
   "labels": [
     {
@@ -524,6 +524,37 @@
       "updatedAt": "2025-12-16T00:30:32Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 48,
+      "id": "I_kwDOOXfHTc7eviqc",
+      "title": "Missing SHAKE in ML-KEM DeriveKeyPair",
+      "url": "https://github.com/hpkewg/hpke-pq/issues/48",
+      "state": "CLOSED",
+      "author": "clundin25",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The reference implementation applies a SHAKE operation to `ikm` in the ML-KEM DeriveKeyPair function of the reference implementation [src](https://github.com/hpkewg/hpke-pq/blob/main/reference-implementation/src/kem.rs#L169).\n\nThe spec does not mention this operation in the specification https://www.ietf.org/archive/id/draft-ietf-hpke-pq-01.html#section-3.\n\nCan you clarify this inconsistency?",
+      "createdAt": "2025-12-17T01:53:47Z",
+      "updatedAt": "2025-12-17T14:58:44Z",
+      "closedAt": "2025-12-17T14:58:44Z",
+      "comments": [
+        {
+          "author": "panva",
+          "authorAssociation": "NONE",
+          "body": "@clundin25 https://www.ietf.org/archive/id/draft-ietf-hpke-pq-03.html#section-3",
+          "createdAt": "2025-12-17T06:18:01Z",
+          "updatedAt": "2025-12-17T06:18:01Z"
+        },
+        {
+          "author": "clundin25",
+          "authorAssociation": "NONE",
+          "body": "Thank you @panva. That clears this up!",
+          "createdAt": "2025-12-17T14:58:44Z",
+          "updatedAt": "2025-12-17T14:58:44Z"
+        }
+      ]
     }
   ],
   "pulls": [
