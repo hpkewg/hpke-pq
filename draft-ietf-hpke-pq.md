@@ -170,7 +170,7 @@ def DeriveKeyPair(ikm):
     return (dk, ek)
 ~~~
 
-As discussed in {{HPKE}}, the value of `suite_id` used within
+As discussed in {{Section 4.4 of HPKE}}, the value of `suite_id` used within
 LabeledDerive identifies the KEM in use:
 
 * ML-KEM-512: `KEM\x00\x40` (hex: 4b454d0040)
