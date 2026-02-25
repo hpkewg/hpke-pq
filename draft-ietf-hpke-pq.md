@@ -296,6 +296,13 @@ def TurboSHAKE<SIZE>.Derive(ikm, L):
     return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
 ~~~
 
+As defined in {{HPKE}}, the `ikm` input to `Derive()`
+MAY be provided as an ordered list of octet strings;
+in that case, the effective message M is the
+concatenation of the list elements in the order given,
+and the output MUST match the one-shot definition for
+the concatenated octet string.
+
 The `Nh` values for the KDFs defined in this section are listed in
 {{kdfid-values}}.
 
