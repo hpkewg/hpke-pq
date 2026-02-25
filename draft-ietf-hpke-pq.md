@@ -165,7 +165,8 @@ def expandDecapsKey(dk):
     return (expanded_dk, ek)
 
 def DeriveKeyPair(ikm):
-    dk = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 64)
+    dk = SHAKE256.LabeledDerive("", "DeriveKeyPair",
+                                ikm, "", 64)
     (_expanded_dk, ek) = expandDecapsKey(dk)
     return (dk, ek)
 ~~~
@@ -251,7 +252,8 @@ maps to the KEM interface in {{HPKE}} in the following way:
 
 ~~~ pseudocode
 def DeriveKeyPair(ikm):
-    seed = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 32)
+    seed = SHAKE256.LabeledDerive("", "DeriveKeyPair",
+                                  ikm, "", 32)
     return KEM.DeriveKeyPair(seed)
 ~~~
 
@@ -285,7 +287,11 @@ where `<SIZE>` is either 128 or 256:
 
 ~~~ pseudocode
 def SHAKE<SIZE>.Derive(ikm, L):
-    return SHAKE<SIZE>(M = ikm, d = 8*L)
+    if ikm is a list:
+        M = concat(lengthPrefixed(x) for x in ikm)
+    else:
+        M = ikm
+    return SHAKE<SIZE>(M = M, d = 8*L)
 ~~~
 
 The `Derive()` function for TurboSHAKE is as follows,
@@ -293,15 +299,16 @@ where `<SIZE>` is either 128 or 256:
 
 ~~~ pseudocode
 def TurboSHAKE<SIZE>.Derive(ikm, L):
-    return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
+    if ikm is a list:
+        M = concat(lengthPrefixed(x) for x in ikm)
+    else:
+        M = ikm
+    return TurboSHAKE<SIZE>(M = M, D = 0x1f, L)
 ~~~
 
-As defined in {{HPKE}}, the `ikm` input to `Derive()`
-MAY be provided as an ordered list of octet strings;
-in that case, the effective message M is the
-concatenation of the list elements in the order given,
-and the output MUST match the one-shot definition for
-the concatenated octet string.
+When `ikm` is provided as an ordered list of octet strings,
+each element is length-prefixed before concatenation, ensuring
+unambiguous framing of the individual components.
 
 The `Nh` values for the KDFs defined in this section are listed in
 {{kdfid-values}}.
