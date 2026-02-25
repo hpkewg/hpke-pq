@@ -165,13 +165,21 @@ def expandDecapsKey(dk):
     return (expanded_dk, ek)
 
 def DeriveKeyPair(ikm):
-    dk = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 64)
+    dk = Derive([
+      ikm,
+      "HPKE-v1",
+      suite_id,
+      lengthPrefixed("DeriveKeyPair"),
+      I2OSP(64, 2),
+      "",
+    ], 64)
     (_expanded_dk, ek) = expandDecapsKey(dk)
     return (dk, ek)
 ~~~
 
-As discussed in {{HPKE}}, the value of `suite_id` used within
-LabeledDerive identifies the KEM in use:
+The labeled framing above follows the LabeledDerive
+construction defined in {{HPKE}}.  The value of `suite_id`
+identifies the KEM in use:
 
 * ML-KEM-512: `KEM\x00\x40` (hex: 4b454d0040)
 * ML-KEM-768: `KEM\x00\x41` (hex: 4b454d0041)
@@ -251,7 +259,14 @@ maps to the KEM interface in {{HPKE}} in the following way:
 
 ~~~ pseudocode
 def DeriveKeyPair(ikm):
-    seed = SHAKE256.LabeledDerive(ikm, "DeriveKeyPair", "", 32)
+    seed = Derive([
+      ikm,
+      "HPKE-v1",
+      suite_id,
+      lengthPrefixed("DeriveKeyPair"),
+      I2OSP(32, 2),
+      "",
+    ], 32)
     return KEM.DeriveKeyPair(seed)
 ~~~
 
@@ -267,8 +282,9 @@ def DeriveKeyPair(ikm):
     * `Npk = Nek`
     * `Nsk = Ndk`
 
-As discussed in {{HPKE}}, the value of `suite_id` used within
-LabeledDerive identifies the KEM in use:
+The labeled framing above follows the LabeledDerive
+construction defined in {{HPKE}}.  The value of `suite_id`
+identifies the KEM in use:
 
 * MLKEM768-P256: `KEM\x00\x50` (hex: 4b454d0050)
 * MLKEM768-X25519: `KEM\x64\x7a` (hex: 4b454d647a)
@@ -285,7 +301,7 @@ where `<SIZE>` is either 128 or 256:
 
 ~~~ pseudocode
 def SHAKE<SIZE>.Derive(ikm, L):
-    return SHAKE<SIZE>(M = ikm, d = 8*L)
+    return SHAKE<SIZE>(M = concat(ikm), d = 8*L)
 ~~~
 
 The `Derive()` function for TurboSHAKE is as follows,
@@ -293,8 +309,13 @@ where `<SIZE>` is either 128 or 256:
 
 ~~~ pseudocode
 def TurboSHAKE<SIZE>.Derive(ikm, L):
-    return TurboSHAKE<SIZE>(M = ikm, D = 0x1f, L)
+    return TurboSHAKE<SIZE>(M = concat(ikm), D = 0x1f, L)
 ~~~
+
+When `ikm` is an ordered list of octet strings, `concat(ikm)`
+is the concatenation of the list elements in the order given.
+When `ikm` is a single octet string, `concat(ikm)` is `ikm`
+itself.
 
 The `Nh` values for the KDFs defined in this section are listed in
 {{kdfid-values}}.
