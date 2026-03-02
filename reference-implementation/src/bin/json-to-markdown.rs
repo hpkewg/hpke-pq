@@ -107,6 +107,10 @@ fn convert_test_vector_to_markdown(tv: &TestVector) -> String {
     output.push_str(&format!("aead_id: {}\n", tv.aead_id));
     output.push_str(&format!("info: {}\n", format_hex(&tv.info, "info: ")));
 
+    if !tv.ikm_e.is_empty() {
+        output.push_str(&format!("ikmE: {}\n", format_hex(&tv.ikm_e, "ikmE: ")));
+    }
+
     if !tv.ikm_r.is_empty() {
         output.push_str(&format!("ikmR: {}\n", format_hex(&tv.ikm_r, "ikmR: ")));
     }

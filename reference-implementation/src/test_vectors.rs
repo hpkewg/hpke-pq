@@ -255,14 +255,16 @@ impl TestVector {
             A::N_N,
         );
 
-        // Generate encryption vectors
+        // Generate encryption vectors (skip for export-only AEAD)
         let mut encryptions = Vec::new();
-        let mut ctx =
-            Context::<A, Sender>::new(key.clone(), base_nonce.clone(), exporter_secret.clone());
+        if A::ID != [0xff, 0xff] {
+            let mut ctx =
+                Context::<A, Sender>::new(key.clone(), base_nonce.clone(), exporter_secret.clone());
 
-        for i in 0..10 {
-            let aad = format!("{}{}", String::from_utf8_lossy(aad_base), i);
-            encryptions.push(EncryptionVector::generate(&mut ctx, pt, aad.as_bytes()));
+            for i in 0..10 {
+                let aad = format!("{}{}", String::from_utf8_lossy(aad_base), i);
+                encryptions.push(EncryptionVector::generate(&mut ctx, pt, aad.as_bytes()));
+            }
         }
 
         // Generate export vectors
@@ -316,6 +318,12 @@ impl TestVector {
             (0x0010, 0x0003, 0x0002) => self.v::<DhkemP256HkdfSha256, HkdfSha512, Aes256Gcm>(),
             (0x0010, 0x0003, 0x0003) => self.v::<DhkemP256HkdfSha256, HkdfSha512, ChaChaPoly>(),
             (0x0010, 0x0003, 0xffff) => self.v::<DhkemP256HkdfSha256, HkdfSha512, ExportOnly>(),
+
+            // P-384 combinations
+            (0x0011, 0x0002, 0x0001) => self.v::<DhkemP384HkdfSha384, HkdfSha384, Aes128Gcm>(),
+            (0x0011, 0x0002, 0x0002) => self.v::<DhkemP384HkdfSha384, HkdfSha384, Aes256Gcm>(),
+            (0x0011, 0x0002, 0x0003) => self.v::<DhkemP384HkdfSha384, HkdfSha384, ChaChaPoly>(),
+            (0x0011, 0x0002, 0xffff) => self.v::<DhkemP384HkdfSha384, HkdfSha384, ExportOnly>(),
 
             // P-521 combinations
             (0x0012, 0x0001, 0x0001) => self.v::<DhkemP521HkdfSha512, HkdfSha256, Aes128Gcm>(),
@@ -372,7 +380,6 @@ impl TestVector {
             // Combinations that appear in the tests
             // TODO(RLB): Refactor so that all the enumeration here is unnecessary.  Probably need
             // to rewrite the KEM traits so that we can pass a `Box<dyn Kem>`.
-            (0x0011, 0x0002, 0x0002) => self.v::<DhkemP384HkdfSha384, HkdfSha384, Aes256Gcm>(),
             (0x0040, 0x0001, 0x0001) => self.v::<MlKem512, HkdfSha256, Aes128Gcm>(),
             (0x0010, 0x0010, 0x0001) => self.v::<DhkemP256HkdfSha256, Shake128, Aes128Gcm>(),
             (0x0011, 0x0011, 0x0002) => self.v::<DhkemP384HkdfSha384, Shake256, Aes256Gcm>(),
