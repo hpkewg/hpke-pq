@@ -5,8 +5,8 @@
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                             D. Connolly
-Expires: 17 May 2026                                 Selkie Cryptography
-                                                        13 November 2025
+Expires: 3 September 2026                            Selkie Cryptography
+                                                            2 March 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -59,11 +59,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 17 May 2026.
+   This Internet-Draft will expire on 3 September 2026.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -228,8 +228,8 @@ Table of Contents
        (_expanded_dk, ek) = expandDecapsKey(dk)
        return (dk, ek)
 
-   As discussed in [HPKE], the value of suite_id used within
-   LabeledDerive identifies the KEM in use:
+   As discussed in Section 4.4 of [HPKE], the value of suite_id used
+   within LabeledDerive identifies the KEM in use:
 
    *  ML-KEM-512: KEM\x00\x40 (hex: 4b454d0040)
 
@@ -517,9 +517,9 @@ Table of Contents
 
    [GENERIC]  Connolly, D., Barnes, R., and P. Grubbs, "Hybrid PQ/T Key
               Encapsulation Mechanisms", Work in Progress, Internet-
-              Draft, draft-irtf-cfrg-hybrid-kems-07, 20 October 2025,
+              Draft, draft-irtf-cfrg-hybrid-kems-09, 2 March 2026,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              hybrid-kems-07>.
+              hybrid-kems-09>.
 
    [HPKE]     Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
