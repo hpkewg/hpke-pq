@@ -347,7 +347,7 @@ impl Curve for P384 {
     }
 
     fn dh(sk: &Self::Scalar, pk: &Self::Point) -> Vec<u8> {
-        p256::ecdh::diffie_hellman(sk, pk.as_affine())
+        p384::ecdh::diffie_hellman(sk, pk.as_affine())
             .raw_secret_bytes()
             .to_vec()
     }
@@ -413,7 +413,7 @@ impl Curve for P521 {
     }
 
     fn dh(sk: &Self::Scalar, pk: &Self::Point) -> Vec<u8> {
-        p256::ecdh::diffie_hellman(sk, pk.as_affine())
+        p521::ecdh::diffie_hellman(sk, pk.as_affine())
             .raw_secret_bytes()
             .to_vec()
     }
