@@ -66,7 +66,10 @@ fn kdf_name(kdf_id: u16) -> &'static str {
         0x0001 => "HKDF-SHA256",
         0x0002 => "HKDF-SHA384",
         0x0003 => "HKDF-SHA512",
-        0x0010 => "SHAKE256",
+        0x0010 => "SHAKE128",
+        0x0011 => "SHAKE256",
+        0x0012 => "TurboSHAKE128",
+        0x0013 => "TurboSHAKE256",
         _ => "Unknown KDF",
     }
 }
