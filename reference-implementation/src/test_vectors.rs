@@ -421,15 +421,10 @@ impl TestVector {
         let (sk_r, pk_r) = K::derive_key_pair(&self.ikm_r);
 
         // Verify the derived private key matches
-        // XXX(RLB) We skip this because the test vectors present un-clamped private keys, and the
-        // serialize/deserialize round trip here always clamps.  Rather than try to fix this, we
-        // just rely on the public keys being the same, which should be equivalent.
-        /*
         let sk_rm = K::serialize_private_key(&sk_r);
         if sk_rm != self.sk_rm {
             return Err("Derived private key doesn't match skRm".to_string());
         }
-        */
 
         // Verify the derived public key matches
         let pk_rm = K::serialize_public_key(&pk_r);
