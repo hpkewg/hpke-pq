@@ -21,7 +21,7 @@ venue:
   mail: "hpke@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/hpke"
   github: "hpkewg/hpke-pq"
-  latest: "https://hpkewg.github.io/hpke-pq/draft-barnes-hpke-pq.html"
+  latest: "https://hpkewg.github.io/hpke-pq/draft-ietf-hpke-pq.html"
 
 author:
  -
