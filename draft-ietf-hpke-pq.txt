@@ -5,8 +5,8 @@
 HPKE Publication, Kept Efficient                               R. Barnes
 Internet-Draft                                                     Cisco
 Intended status: Standards Track                             D. Connolly
-Expires: 3 September 2026                            Selkie Cryptography
-                                                            2 March 2026
+Expires: 19 October 2026                             Selkie Cryptography
+                                                           17 April 2026
 
 
   Post-Quantum and Post-Quantum/Traditional Hybrid Algorithms for HPKE
@@ -59,7 +59,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 September 2026.
+   This Internet-Draft will expire on 19 October 2026.
 
 Copyright Notice
 
@@ -337,8 +337,7 @@ Table of Contents
 
    This section defines HPKE KDFs for eXtendable Output Functions (XOF)
    based on Keccak.  SHAKE is defined as part of the SHA-3 specification
-   [FIPS202].  The related TurboSHAKE XOFs are defined in
-   [I-D.irtf-cfrg-kangarootwelve].
+   [FIPS202].  The related TurboSHAKE XOFs are defined in [RFC9861].
 
    The Derive() function for SHAKE is as follows, where <SIZE> is either
    128 or 256:
@@ -496,9 +495,9 @@ Table of Contents
 
    [CONCRETE] Connolly, D. and R. Barnes, "Concrete Hybrid PQ/T Key
               Encapsulation Mechanisms", Work in Progress, Internet-
-              Draft, draft-irtf-cfrg-concrete-hybrid-kems-02, 6 November
-              2025, <https://datatracker.ietf.org/doc/html/draft-irtf-
-              cfrg-concrete-hybrid-kems-02>.
+              Draft, draft-irtf-cfrg-concrete-hybrid-kems-03, 2 March
+              2026, <https://datatracker.ietf.org/doc/html/draft-irtf-
+              cfrg-concrete-hybrid-kems-03>.
 
    [FIPS186]  "Digital Signature Standard (DSS)", National Institute of
               Standards and Technology (U.S.),
@@ -517,22 +516,15 @@ Table of Contents
 
    [GENERIC]  Connolly, D., Barnes, R., and P. Grubbs, "Hybrid PQ/T Key
               Encapsulation Mechanisms", Work in Progress, Internet-
-              Draft, draft-irtf-cfrg-hybrid-kems-09, 2 March 2026,
+              Draft, draft-irtf-cfrg-hybrid-kems-10, 2 March 2026,
               <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-
-              hybrid-kems-09>.
+              hybrid-kems-10>.
 
    [HPKE]     Barnes, R., Bhargavan, K., Lipp, B., and C. A. Wood,
               "Hybrid Public Key Encryption", Work in Progress,
-              Internet-Draft, draft-ietf-hpke-hpke-02, 4 November 2025,
+              Internet-Draft, draft-ietf-hpke-hpke-03, 2 March 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-hpke-
-              hpke-02>.
-
-   [I-D.irtf-cfrg-kangarootwelve]
-              Viguier, B., Wong, D., Van Assche, G., Dang, Q., and J.
-              Daemen, "KangarooTwelve and TurboSHAKE", Work in Progress,
-              Internet-Draft, draft-irtf-cfrg-kangarootwelve-17, 21
-              February 2025, <https://datatracker.ietf.org/doc/html/
-              draft-irtf-cfrg-kangarootwelve-17>.
+              hpke-03>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -546,6 +538,11 @@ Table of Contents
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC9861]  Viguier, B., Wong, D., Ed., Van Assche, G., Ed., Dang, Q.,
+              Ed., and J. Daemen, Ed., "KangarooTwelve and TurboSHAKE",
+              RFC 9861, DOI 10.17487/RFC9861, October 2025,
+              <https://www.rfc-editor.org/rfc/rfc9861>.
 
 9.2.  Informative References
 
