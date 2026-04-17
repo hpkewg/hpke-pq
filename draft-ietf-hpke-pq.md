@@ -278,7 +278,7 @@ LabeledDerive identifies the KEM in use:
 
 This section defines HPKE KDFs for eXtendable Output Functions (XOF) based on
 Keccak.  SHAKE is defined as part of the SHA-3 specification {{FIPS202}}.  The
-related TurboSHAKE XOFs are defined in {{!I-D.irtf-cfrg-kangarootwelve}}.
+related TurboSHAKE XOFs are defined in {{!RFC9861}}.
 
 The `Derive()` function for SHAKE is as follows,
 where `<SIZE>` is either 128 or 256:
