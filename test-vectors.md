@@ -1334,7 +1334,7 @@ exported_value: 82b5f6f11791dd39d81b7e7396e8f7c3d9a9a8341ea43f7cdbfbb2
                 75a95dca5d
 ~~~
 
-## DHKEM(P-256, HKDF-SHA256), SHAKE256, AES-128-GCM
+## DHKEM(P-256, HKDF-SHA256), SHAKE128, AES-128-GCM
 
 ### Base Setup Information
 ~~~
@@ -1481,7 +1481,7 @@ exported_value: 1583ea91298b3b4f7f0440d7bfc83743d919941734e1d3da1a3901
                 e1df3f4f95
 ~~~
 
-## DHKEM(P-384, HKDF-SHA384), Unknown KDF, AES-256-GCM
+## DHKEM(P-384, HKDF-SHA384), SHAKE256, AES-256-GCM
 
 ### Base Setup Information
 ~~~
@@ -1634,7 +1634,7 @@ exported_value: 3a18e24424a4ed12172d96f53593318398d71d3b49daba1ad138d1
                 f8e4eacb86
 ~~~
 
-## DHKEM(X25519, HKDF-SHA256), Unknown KDF, ChaCha20Poly1305
+## DHKEM(X25519, HKDF-SHA256), TurboSHAKE128, ChaCha20Poly1305
 
 ### Base Setup Information
 ~~~
@@ -1778,7 +1778,7 @@ exported_value: 583001f477fc4bb168eeb04c434bb5576456571c8153eb5880b15f
                 baa5a40a1f
 ~~~
 
-## DHKEM(X448, HKDF-SHA512), Unknown KDF, ChaCha20Poly1305
+## DHKEM(X448, HKDF-SHA512), TurboSHAKE256, ChaCha20Poly1305
 
 ### Base Setup Information
 ~~~
@@ -1929,7 +1929,7 @@ exported_value: 257de4e327f03248c71b623084e86c15ad067efd8e0e58c43cacc6
                 4f36bbc8de
 ~~~
 
-## MLKEM768-P256, SHAKE256, AES-256-GCM
+## MLKEM768-P256, SHAKE128, AES-256-GCM
 
 ### Base Setup Information
 ~~~
@@ -2150,7 +2150,7 @@ exported_value: b2a008ab3acd18fe02714053734a715f6ec97569985c9fdf9f76c8
                 c96a018706
 ~~~
 
-## MLKEM768-X25519, Unknown KDF, ChaCha20Poly1305
+## MLKEM768-X25519, SHAKE256, ChaCha20Poly1305
 
 ### Base Setup Information
 ~~~
@@ -2367,7 +2367,7 @@ exported_value: 43b55c27838a27e2710ed2b8f00b77878ca78ef5753c97d377ed78
                 3082b7d11f
 ~~~
 
-## ML-KEM-1024, Unknown KDF, AES-128-GCM
+## ML-KEM-1024, TurboSHAKE256, AES-128-GCM
 
 ### Base Setup Information
 ~~~
