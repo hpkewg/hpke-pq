@@ -57,7 +57,7 @@ fn kem_name(kem_id: u16) -> &'static str {
         0x0050 => "MLKEM768-P256",
         0x0051 => "MLKEM1024-P384",
         0x647a => "MLKEM768-X25519",
-        _ => "Unknown KEM",
+        _ => panic!("unknown KEM ID {kem_id}"),
     }
 }
 
@@ -66,8 +66,11 @@ fn kdf_name(kdf_id: u16) -> &'static str {
         0x0001 => "HKDF-SHA256",
         0x0002 => "HKDF-SHA384",
         0x0003 => "HKDF-SHA512",
-        0x0010 => "SHAKE256",
-        _ => "Unknown KDF",
+        0x0010 => "SHAKE128",
+        0x0011 => "SHAKE256",
+        0x0012 => "TurboSHAKE128",
+        0x0013 => "TurboSHAKE256",
+        _ => panic!("unknown KDF ID {kdf_id}"),
     }
 }
 
@@ -77,7 +80,7 @@ fn aead_name(aead_id: u16) -> &'static str {
         0x0002 => "AES-256-GCM",
         0x0003 => "ChaCha20Poly1305",
         0xffff => "Export-Only",
-        _ => "Unknown AEAD",
+        _ => panic!("unknown AEAD ID {aead_id}"),
     }
 }
 
