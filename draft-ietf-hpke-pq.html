@@ -2013,15 +2013,14 @@ algorithms and contains the following values:<a href="#appendix-A-1" class="pilc
 <li id="appendix-A-2.1">
           <p id="appendix-A-2.1.1">Configuration information and private key material: This includes the <code>mode</code>,
 <code>info</code> string, HPKE ciphersuite identifiers (<code>kem_id</code>, <code>kdf_id</code>, <code>aead_id</code>),
-and all sender and recipient key material. For each role S or R, (sender and
-recipient, respectively) key pairs are generated as <code>(skX, pkX) =
-DeriveKeyPair(ikmX)</code>.  Each key pair <code>(skX, pkX)</code> is written in its
-serialized form, where <code>skXm = SerializePrivateKey(skX)</code> and <code>pkXm =
-SerializePublicKey(pkX)</code>.  For the PSK mode, the shared PSK and PSK
-identifier are also included.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
+and the recipient's key material. Recipient key pairs are generated as <code>(skR,
+pkR) = DeriveKeyPair(ikmR)</code>.  Key pairs are written in their serialized form
+(as produced by <code>SerializePublicKey</code> and <code>SerializePrivateKey</code>).  For the PSK
+mode, the shared PSK and PSK identifier are also included.<a href="#appendix-A-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="appendix-A-2.2">
-          <p id="appendix-A-2.2.1">Context creation intermediate values: This includes the KEM outputs <code>enc</code> and
+          <p id="appendix-A-2.2.1">Context creation intermediate values and outputs: This includes randomness
+<code>ikmE</code> used for deterministic encapsulation, the KEM outputs <code>enc</code> and
 <code>shared_secret</code> used to create the context, as well as the context values
 <code>key</code>, <code>base_nonce</code>, and <code>exporter_secret</code>.<a href="#appendix-A-2.2.1" class="pilcrow">¶</a></p>
 </li>
@@ -2039,7 +2038,10 @@ vector lists the <code>exporter_context</code>, output length <code>L</code>, an
 value.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="appendix-A-3">These test vectors are also available in JSON format at <span>[<a href="#TestVectors" class="cite xref">TestVectors</a>]</span>.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-3">Deterministic encapsulation functions for ML-KEM and the hybrid KEMs are defined
+in <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-concrete-hybrid-kems-03#appendix-B" class="relref">Appendix B</a> of [<a href="#CONCRETE" class="cite xref">CONCRETE</a>]</span> via the generic construction in <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hybrid-kems-12#appendix-A" class="relref">Appendix A</a> of [<a href="#GENERIC" class="cite xref">GENERIC</a>]</span>.  The <code>EncapDerand()</code> function defined in <span>[<a href="#HPKE" class="cite xref">HPKE</a>]</span> corresponds to the
+<code>EncapsDerand()</code> function defined in <span>[<a href="#GENERIC" class="cite xref">GENERIC</a>]</span>.<a href="#appendix-A-3" class="pilcrow">¶</a></p>
+<p id="appendix-A-4">These test vectors are also available in JSON format at <span>[<a href="#TestVectors" class="cite xref">TestVectors</a>]</span>.<a href="#appendix-A-4" class="pilcrow">¶</a></p>
 <div id="ml-kem-512-hkdf-sha256-aes-128-gcm">
 <section id="appendix-A.1">
         <h3 id="name-ml-kem-512-hkdf-sha256-aes-">
