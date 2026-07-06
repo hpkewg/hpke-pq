@@ -347,7 +347,7 @@ impl Curve for P384 {
     }
 
     fn dh(sk: &Self::Scalar, pk: &Self::Point) -> Vec<u8> {
-        p256::ecdh::diffie_hellman(sk, pk.as_affine())
+        p384::ecdh::diffie_hellman(sk, pk.as_affine())
             .raw_secret_bytes()
             .to_vec()
     }
@@ -413,7 +413,7 @@ impl Curve for P521 {
     }
 
     fn dh(sk: &Self::Scalar, pk: &Self::Point) -> Vec<u8> {
-        p256::ecdh::diffie_hellman(sk, pk.as_affine())
+        p521::ecdh::diffie_hellman(sk, pk.as_affine())
             .raw_secret_bytes()
             .to_vec()
     }
@@ -477,32 +477,41 @@ impl Curve for X25519 {
 
 pub struct X448;
 
+/// Wrapper around x448::Secret that preserves the original unclamped bytes.
+/// The x448 crate eagerly clamps in Secret::from(), so as_bytes() returns
+/// clamped bytes. Per draft-ietf-hpke-hpke (hpkewg/hpke#42), serialized
+/// private keys should be unclamped.
+pub struct X448Secret {
+    raw: [u8; 56],
+    secret: x448::Secret,
+}
+
 impl Curve for X448 {
     const SECRET_SIZE: usize = 64;
     const SCALAR_SIZE: usize = 56;
     const POINT_SIZE: usize = 56;
 
-    type Scalar = x448::Secret;
+    type Scalar = X448Secret;
     type Point = x448::PublicKey;
 
     fn generate_key_pair(rng: &mut impl rand::CryptoRng) -> (Self::Scalar, Self::Point) {
         // Can't use x448::Secret::new because of a trait mismatch
-        let mut dk = [0; 56];
-        rng.fill_bytes(&mut dk);
-        let dk = x448::Secret::from(dk);
-        let ek = x448::PublicKey::from(&dk);
-        (dk, ek)
+        let mut raw = [0u8; 56];
+        rng.fill_bytes(&mut raw);
+        let secret = x448::Secret::from(raw);
+        let ek = x448::PublicKey::from(&secret);
+        (X448Secret { raw, secret }, ek)
     }
 
     fn derive_key_pair<K: Kdf>(suite_id: &[u8], ikm: &[u8]) -> (Self::Scalar, Self::Point) {
         let sk_vec = K::derive_sk(suite_id, ikm, Self::SCALAR_SIZE);
 
-        let mut sk_arr = [0_u8; Self::SCALAR_SIZE];
-        sk_arr.copy_from_slice(&sk_vec);
+        let mut raw = [0_u8; Self::SCALAR_SIZE];
+        raw.copy_from_slice(&sk_vec);
 
-        let dk = x448::Secret::from(sk_arr);
-        let ek = x448::PublicKey::from(&dk);
-        (dk, ek)
+        let secret = x448::Secret::from(raw);
+        let ek = x448::PublicKey::from(&secret);
+        (X448Secret { raw, secret }, ek)
     }
 
     fn serialize_public_key(pkX: &Self::Point) -> Vec<u8> {
@@ -514,19 +523,22 @@ impl Curve for X448 {
     }
 
     fn serialize_private_key(skX: &Self::Scalar) -> Vec<u8> {
-        skX.as_bytes().to_vec()
+        skX.raw.to_vec()
     }
 
     fn deserialize_private_key(skXm: &[u8]) -> Self::Scalar {
-        x448::Secret::from_bytes(skXm).unwrap()
+        let mut raw = [0u8; 56];
+        raw.copy_from_slice(skXm);
+        let secret = x448::Secret::from_bytes(skXm).unwrap();
+        X448Secret { raw, secret }
     }
 
     fn base_mult(sk: &Self::Scalar) -> Self::Point {
-        x448::PublicKey::from(sk)
+        x448::PublicKey::from(&sk.secret)
     }
 
     fn dh(sk: &Self::Scalar, pk: &Self::Point) -> Vec<u8> {
-        sk.as_diffie_hellman(pk).unwrap().as_bytes().to_vec()
+        sk.secret.as_diffie_hellman(pk).unwrap().as_bytes().to_vec()
     }
 }
 
