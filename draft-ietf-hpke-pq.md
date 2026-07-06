@@ -421,13 +421,12 @@ algorithms and contains the following values:
 
 1. Configuration information and private key material: This includes the `mode`,
    `info` string, HPKE ciphersuite identifiers (`kem_id`, `kdf_id`, `aead_id`),
-   and all sender and recipient key material. For each role S or R, (sender and
-   recipient, respectively) key pairs are generated as `(skX, pkX) =
-   DeriveKeyPair(ikmX)`.  Each key pair `(skX, pkX)` is written in its
-   serialized form, where `skXm = SerializePrivateKey(skX)` and `pkXm =
-   SerializePublicKey(pkX)`.  For the PSK mode, the shared PSK and PSK
-   identifier are also included.
-2. Context creation intermediate values: This includes the KEM outputs `enc` and
+   and the recipient's key material. Recipient key pairs are generated as `(skR,
+   pkR) = DeriveKeyPair(ikmR)`.  Key pairs are written in their serialized form
+   (as produced by `SerializePublicKey` and `SerializePrivateKey`).  For the PSK
+   mode, the shared PSK and PSK identifier are also included.
+2. Context creation intermediate values and outputs: This includes randomness
+   `ikmE` used for deterministic encapsulation, the KEM outputs `enc` and
    `shared_secret` used to create the context, as well as the context values
    `key`, `base_nonce`, and `exporter_secret`.
 3. Encryption test vectors: A fixed plaintext message is encrypted using
@@ -439,6 +438,11 @@ algorithms and contains the following values:
    context parameters are computed using the context computed in (2). Each test
    vector lists the `exporter_context`, output length `L`, and resulting export
    value.
+
+Deterministic encapsulation functions for ML-KEM and the hybrid KEMs are defined
+in {{Appendix B of CONCRETE}} via the generic construction in {{Appendix A of
+GENERIC}}.  The `EncapDerand()` function defined in {{HPKE}} corresponds to the
+`EncapsDerand()` function defined in {{GENERIC}}.
 
 These test vectors are also available in JSON format at {{TestVectors}}.
 
