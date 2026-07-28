@@ -215,7 +215,7 @@ impl TestVector {
         H: Kdf,
         A: Aead,
     {
-        use rand::RngCore;
+        use rand::{SeedableRng, RngCore};
 
         // Fixed test values
         let info = b"4f6465206f6e2061204772656369616e2055726e";
@@ -224,7 +224,7 @@ impl TestVector {
         let exporter_context_base = b"pseudorandom";
 
         // Generate random seed for recipient key pair
-        let mut rng = rand::rng();
+        let mut rng = rand::rngs::SmallRng::seed_from_u64(123454321u64);
         let ikm_r = {
             // Use the KEM's seed size
             let mut seed = vec![0u8; K::N_SK];
