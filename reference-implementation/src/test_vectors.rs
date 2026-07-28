@@ -215,7 +215,7 @@ impl TestVector {
         H: Kdf,
         A: Aead,
     {
-        use rand::{SeedableRng, RngCore};
+        use rand::{RngCore, SeedableRng};
 
         // Fixed test values
         let info = b"4f6465206f6e2061204772656369616e2055726e";
