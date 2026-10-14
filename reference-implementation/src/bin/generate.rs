@@ -35,6 +35,11 @@ fn generate_test_vectors() -> TestVectors {
     vectors.push(TestVector::new::<MlKem768X25519, Shake256, ChaChaPoly>());
     vectors.push(TestVector::new::<MlKem1024, TurboShake256, Aes128Gcm>());
 
+    // ML-KEM-768 KEMs with HKDF-SHA384 and AES-256-GCM, as used by MLS
+    vectors.push(TestVector::new::<MlKem768, HkdfSha384, Aes256Gcm>());
+    vectors.push(TestVector::new::<MlKem768P256, HkdfSha384, Aes256Gcm>());
+    vectors.push(TestVector::new::<MlKem768X25519, HkdfSha384, Aes256Gcm>());
+
     vectors
 }
 

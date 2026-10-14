@@ -360,6 +360,7 @@ impl TestVector {
             // ML-KEM-768 combinations
             (0x0041, 0x0001, 0x0001) => self.v::<MlKem768, HkdfSha256, Aes128Gcm>(),
             (0x0041, 0x0001, 0xffff) => self.v::<MlKem768, HkdfSha256, ExportOnly>(),
+            (0x0041, 0x0002, 0x0002) => self.v::<MlKem768, HkdfSha384, Aes256Gcm>(),
 
             // ML-KEM-1024 combinations
             (0x0042, 0x0002, 0x0002) => self.v::<MlKem1024, HkdfSha384, Aes256Gcm>(),
@@ -368,10 +369,12 @@ impl TestVector {
             // MLKEM768-P256 combinations
             (0x0050, 0x0011, 0x0001) => self.v::<MlKem768P256, Shake256, Aes128Gcm>(),
             (0x0050, 0x0011, 0xffff) => self.v::<MlKem768P256, Shake256, ExportOnly>(),
+            (0x0050, 0x0002, 0x0002) => self.v::<MlKem768P256, HkdfSha384, Aes256Gcm>(),
 
             // MLKEM768-X25519 combinations
             (0x647a, 0x0011, 0x0001) => self.v::<MlKem768X25519, Shake256, Aes128Gcm>(),
             (0x647a, 0x0011, 0xffff) => self.v::<MlKem768X25519, Shake256, ExportOnly>(),
+            (0x647a, 0x0002, 0x0002) => self.v::<MlKem768X25519, HkdfSha384, Aes256Gcm>(),
 
             // MLKEM1024-P384 combinations
             (0x0051, 0x0011, 0x0002) => self.v::<MlKem1024P384, Shake256, Aes256Gcm>(),
@@ -504,5 +507,10 @@ mod tests {
         test::<MlKem768P256, Shake128, Aes256Gcm>();
         test::<MlKem768X25519, Shake256, ChaChaPoly>();
         test::<MlKem1024, TurboShake256, Aes128Gcm>();
+
+        // ML-KEM-768 KEMs with HKDF-SHA384 and AES-256-GCM, as used by MLS
+        test::<MlKem768, HkdfSha384, Aes256Gcm>();
+        test::<MlKem768P256, HkdfSha384, Aes256Gcm>();
+        test::<MlKem768X25519, HkdfSha384, Aes256Gcm>();
     }
 }
